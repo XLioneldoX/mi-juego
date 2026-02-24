@@ -271,15 +271,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const hdr = document.querySelector('.field-header div:nth-child(2)');
         if (hdr) {
-            hdr.innerHTML = `<span style="color:#86efac;">${msg.myName || 'Jugador 1'}</span> <span style="color:#64748b;">VS</span> <span style="color:#fca5a5;">${msg.opponentName || 'Jugador 2'}</span>`;
+            hdr.innerHTML = `<span>${msg.myAvatar || '👦'}</span> <span style="color:#86efac;">${msg.myName || 'Jugador 1'}</span> <span style="color:#64748b;">VS</span> <span style="color:#fca5a5;">${msg.opponentName || 'Jugador 2'}</span> <span>${msg.opponentAvatar || '👦'}</span>`;
         }
 
         addLog('🌐 ¡Batalla en línea iniciada!', 'important');
         addLog(`Eres el Jugador ${MP.playerIdx + 1}`, '');
     });
 
+    // ─── LÓGICA DE PRNG (Seeded Random) ──────────────────────────────────────
+    let originalMathRandom = Math.random;
+    window.setSeededRandom = function (seed) {
+        let currentSeed = Math.floor(seed * 2147483647);
+        Math.random = function () {
+            var t = currentSeed += 0x6D2B79F5;
+            t = Math.imul(t ^ t >>> 15, t | 1);
+            t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+            return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        };
+    };
+    window.restoreRandom = function () {
+        Math.random = originalMathRandom;
+    };
+
     // El servidor resolvió el turno — ejecutar ambos movimientos
     MP.on('onTurnResolve', (msg) => {
+        if (msg.turnSeed !== undefined) {
+            window.setSeededRandom(msg.turnSeed);
+        }
+
         isBusy = true;
         disableMoves();
 
@@ -304,6 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (playerMove.type === 'switch') {
                 playerActive = playerMove.switchTo;
                 addLog(`🔄 Cambiaste a ${playerTeam[playerActive].name}`, 'important');
+                applyAbilitySwitchIn(playerTeam[playerActive], enemyTeam[enemyActive], (msg, t) => addLog(msg, t));
                 updateUI(); setTimeout(cb, 400);
             } else {
                 executeAttack(player, enemy, playerMove.moveName, 'player', cb);
@@ -313,6 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (enemyMove.type === 'switch') {
                 enemyActive = enemyMove.switchTo;
                 addLog(`🔄 Rival cambió a ${enemyTeam[enemyActive].name}`, 'important');
+                applyAbilitySwitchIn(enemyTeam[enemyActive], playerTeam[playerActive], (msg, t) => { addLog(msg, t); if (msg) revealEnemyStat('ability', enemyTeam[enemyActive]); });
                 updateUI(); setTimeout(cb, 400);
             } else {
                 executeAttack(enemy, player, enemyMove.moveName, 'enemy', cb);

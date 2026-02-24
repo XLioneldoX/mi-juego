@@ -66,6 +66,7 @@ function tryResolveTurn(room) {
     // Enviar a AMBOS jugadores los movimientos del rival para que el cliente
     // los resuelva localmente con su motor de batalla ya existente.
     // El servidor es árbitro de sincronización, no de cálculos de daño.
+    const turnSeed = Math.random(); // Semilla para sincronizar RNG
     room.players.forEach((ws, i) => {
         const myMove = i === 0 ? m0 : m1;
         const oppMove = i === 0 ? m1 : m0;
@@ -73,6 +74,7 @@ function tryResolveTurn(room) {
             myMove,        // lo que yo elegí
             opponentMove: oppMove,    // lo que eligió el rival
             turnCount: room.turnCount,
+            turnSeed: turnSeed
         });
     });
 
@@ -100,6 +102,7 @@ wss.on('connection', (ws) => {
                     players: [ws, null],
                     teams: [null, null],
                     userNames: [msg.userName || 'Jugador 1', null],
+                    userAvatars: [msg.userAvatar || '👦', null],
                     state: 'waiting',
                     moves: [null, null],
                     switches: [null, null],
@@ -131,6 +134,7 @@ wss.on('connection', (ws) => {
                     }
                     room.players[idx] = ws;
                     if (msg.userName) room.userNames[idx] = msg.userName;
+                    if (msg.userAvatar) room.userAvatars[idx] = msg.userAvatar;
                     ws._roomCode = code;
                     ws._playerIdx = idx;
                     console.log(`[${code}] Jugador ${idx + 1} reconectado `);
@@ -153,6 +157,7 @@ wss.on('connection', (ws) => {
 
                 room.players[1] = ws;
                 room.userNames[1] = msg.userName || 'Jugador 2';
+                room.userAvatars[1] = msg.userAvatar || '👦';
                 ws._roomCode = code;
                 ws._playerIdx = 1;
 
@@ -179,7 +184,9 @@ wss.on('connection', (ws) => {
                             myTeam: room.teams[i],
                             opponentTeam: room.teams[opponent(i)],
                             myName: room.userNames[i],
+                            myAvatar: room.userAvatars[i],
                             opponentName: room.userNames[opponent(i)],
+                            opponentAvatar: room.userAvatars[opponent(i)],
                             myIdx: i,
                             turnCount: 1,
                         });

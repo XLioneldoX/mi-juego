@@ -178,12 +178,19 @@ const MP = (() => {
         localStorage.setItem('userName', name);
         return name;
     }
+    function getAvatar() {
+        const input = document.getElementById('userAvatar');
+        let av = input ? input.value : '';
+        if (!av) av = localStorage.getItem('userAvatar') || '👦';
+        localStorage.setItem('userAvatar', av);
+        return av;
+    }
 
-    function createRoom() { connect(); setTimeout(() => send('create_room', { userName: getUsername() }), 200); }
+    function createRoom() { connect(); setTimeout(() => send('create_room', { userName: getUsername(), userAvatar: getAvatar() }), 200); }
 
     function joinRoom(code) {
         connect();
-        setTimeout(() => send('join_room', { code: code.toUpperCase().trim(), userName: getUsername() }), 200);
+        setTimeout(() => send('join_room', { code: code.toUpperCase().trim(), userName: getUsername(), userAvatar: getAvatar() }), 200);
     }
 
     function submitTeam() {

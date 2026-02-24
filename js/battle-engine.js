@@ -31,24 +31,24 @@ function calcStat(base, ev, iv, level, natMult) {
 // Construye el objeto stats completo de un Pokémon
 // baseStats: stats base del PokemonDB · evs: EVs asignados · level: nivel
 function buildStats(baseStats, evs, level, natureName) {
-    evs   = evs   || {};
+    evs = evs || {};
     level = level || 100;
     const nat = getNatureMultipliers(natureName || 'Seria');
     return {
-        hp:  calcStatHP(baseStats.hp,  evs.hp  || 0, DEFAULT_IV, level),
-        atk: calcStat  (baseStats.atk, evs.atk || 0, DEFAULT_IV, level, nat.atk),
-        def: calcStat  (baseStats.def, evs.def || 0, DEFAULT_IV, level, nat.def),
-        spa: calcStat  (baseStats.spa, evs.spa || 0, DEFAULT_IV, level, nat.spa),
-        spd: calcStat  (baseStats.spd, evs.spd || 0, DEFAULT_IV, level, nat.spd),
-        spe: calcStat  (baseStats.spe, evs.spe || 0, DEFAULT_IV, level, nat.spe),
+        hp: calcStatHP(baseStats.hp, evs.hp || 0, DEFAULT_IV, level),
+        atk: calcStat(baseStats.atk, evs.atk || 0, DEFAULT_IV, level, nat.atk),
+        def: calcStat(baseStats.def, evs.def || 0, DEFAULT_IV, level, nat.def),
+        spa: calcStat(baseStats.spa, evs.spa || 0, DEFAULT_IV, level, nat.spa),
+        spd: calcStat(baseStats.spd, evs.spd || 0, DEFAULT_IV, level, nat.spd),
+        spe: calcStat(baseStats.spe, evs.spe || 0, DEFAULT_IV, level, nat.spe),
     };
 }
 
 // ─── MULTIPLICADORES DE NATURALEZA ───────────────────────────────────────────
 function getNatureMultipliers(natureName) {
-    const nat  = NaturesDB[natureName] || {};
-    const muls = { atk:1.0, def:1.0, spa:1.0, spd:1.0, spe:1.0 };
-    if (nat.up)   muls[nat.up]   = 1.1;
+    const nat = NaturesDB[natureName] || {};
+    const muls = { atk: 1.0, def: 1.0, spa: 1.0, spd: 1.0, spe: 1.0 };
+    if (nat.up) muls[nat.up] = 1.1;
     if (nat.down) muls[nat.down] = 0.9;
     return muls;
 }
@@ -63,7 +63,7 @@ function getStatBoostMultiplier(stage) {
 // Nota: las stats en pokemon.stats YA tienen naturaleza y EVs aplicados
 // via buildStats(). Aquí solo aplicamos boosts de combate, objetos y hab. pasivas.
 function getModifiedStats(pokemon) {
-    const itemBoost   = getItemStatBoost(pokemon);
+    const itemBoost = getItemStatBoost(pokemon);
     const abilityMult = getAbilityPassiveStatMult(pokemon);
     return {
         atk: Math.floor(pokemon.stats.atk * itemBoost.atk * abilityMult.atk * getStatBoostMultiplier(pokemon.statBoosts?.atk || 0)),
@@ -80,7 +80,7 @@ function getEffectiveSpe(pokemon) {
 
 // ─── MULTIPLICADORES PASIVOS DE HABILIDAD ────────────────────────────────────
 function getAbilityPassiveStatMult(pokemon) {
-    const mults = { atk:1, def:1, spa:1, spd:1, spe:1 };
+    const mults = { atk: 1, def: 1, spa: 1, spd: 1, spe: 1 };
     const ab = AbilitiesDB[pokemon.ability];
     if (!ab || ab.trigger !== 'passive') return mults;
     if (ab.effect === 'boost_spe_mult') mults.spe = ab.value;
@@ -114,13 +114,13 @@ function calculateDamage(attacker, defender, moveName) {
     const move = getMoveInfo(moveName);
     if (!move.power || move.category === 'status') return 0;
 
-    const moveType   = move.type;
+    const moveType = move.type;
     const isPhysical = move.category === 'physical';
-    const aStats     = getModifiedStats(attacker);
-    const dStats     = getModifiedStats(defender);
-    const atk        = isPhysical ? aStats.atk : aStats.spa;
-    const def        = isPhysical ? dStats.def : dStats.spd;
-    const lvl        = attacker.level || 100;
+    const aStats = getModifiedStats(attacker);
+    const dStats = getModifiedStats(defender);
+    const atk = isPhysical ? aStats.atk : aStats.spa;
+    const def = isPhysical ? dStats.def : dStats.spd;
+    const lvl = attacker.level || 100;
 
     // Fórmula base oficial
     let dmg = Math.floor(
@@ -169,8 +169,8 @@ function calculateDamage(attacker, defender, moveName) {
     const defAb = AbilitiesDB[defender.ability];
     if (defAb && defAb.trigger === 'on_hit') {
         switch (defAb.effect) {
-            case 'reduce_physical_dmg': if (isPhysical)  dmg *= defAb.value; break;
-            case 'reduce_special_dmg':  if (!isPhysical) dmg *= defAb.value; break;
+            case 'reduce_physical_dmg': if (isPhysical) dmg *= defAb.value; break;
+            case 'reduce_special_dmg': if (!isPhysical) dmg *= defAb.value; break;
         }
     }
 
@@ -248,11 +248,18 @@ function isImmuneToStatus(pokemon, statusKey) {
 // ─── QUIÉN VA PRIMERO ─────────────────────────────────────────────────────────
 function whoGoesFirst(playerMove, enemyMove) {
     const pP = getMoveInfo(playerMove).priority || 0;
-    const eP = getMoveInfo(enemyMove).priority  || 0;
+    const eP = getMoveInfo(enemyMove).priority || 0;
     if (pP !== eP) return pP > eP ? 'player' : 'enemy';
     const pS = getEffectiveSpe(playerTeam[playerActive]);
     const eS = getEffectiveSpe(enemyTeam[enemyActive]);
-    if (pS === eS) return Math.random() < 0.5 ? 'player' : 'enemy';
+    if (pS === eS) {
+        const rand = Math.random();
+        if (typeof MP !== 'undefined' && MP.active) {
+            const absoluteWinner = rand < 0.5 ? 0 : 1;
+            return absoluteWinner === MP.playerIdx ? 'player' : 'enemy';
+        }
+        return rand < 0.5 ? 'player' : 'enemy';
+    }
     return pS > eS ? 'player' : 'enemy';
 }
 

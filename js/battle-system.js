@@ -21,11 +21,11 @@ function playerAttack(moveIndex) {
     isBusy = true;
     disableMoves();
 
-    const player     = playerTeam[playerActive];
-    const enemy      = enemyTeam[enemyActive];
+    const player = playerTeam[playerActive];
+    const enemy = enemyTeam[enemyActive];
     const playerMove = player.moves[moveIndex];
-    const enemyMove  = enemy.moves[chooseEnemyMove(enemy, player)];
-    const first      = whoGoesFirst(playerMove, enemyMove);
+    const enemyMove = enemy.moves[chooseEnemyMove(enemy, player)];
+    const first = whoGoesFirst(playerMove, enemyMove);
 
     const pSpe = getEffectiveSpe(player);
     const eSpe = getEffectiveSpe(enemy);
@@ -34,16 +34,16 @@ function playerAttack(moveIndex) {
 
     // Log de orden de turno
     const pPrio = getMoveInfo(playerMove).priority || 0;
-    const ePrio = getMoveInfo(enemyMove).priority  || 0;
+    const ePrio = getMoveInfo(enemyMove).priority || 0;
     if (pPrio !== ePrio)
         addLog(first === 'player' ? `⚡ ${playerMove} tiene PRIORIDAD` : `⚡ ${enemyMove} tiene PRIORIDAD (rival)`, 'speed-win');
     else if (pSpe !== eSpe)
-        addLog(`🏃 ${first==='player'?player.name:enemy.name} (SPE ${first==='player'?pSpe:eSpe}) ataca primero`, 'speed-win');
+        addLog(`🏃 ${first === 'player' ? player.name : enemy.name} (SPE ${first === 'player' ? pSpe : eSpe}) ataca primero`, 'speed-win');
     else
         addLog('🎲 Velocidades iguales – orden aleatorio', 'speed-win');
 
     const doPlayerAtk = (cb) => executeAttack(player, enemy, playerMove, 'player', cb);
-    const doEnemyAtk  = (cb) => executeAttack(enemy, player, enemyMove,  'enemy',  cb);
+    const doEnemyAtk = (cb) => executeAttack(enemy, player, enemyMove, 'enemy', cb);
 
     if (first === 'player') {
         doPlayerAtk(() => {
@@ -79,7 +79,7 @@ function checkStatusBlock(pokemon, logFn) {
             }
             pokemon.sleepTurns--;
             if (pokemon.sleepTurns <= 0) {
-                pokemon.status     = null;
+                pokemon.status = null;
                 pokemon.sleepTurns = undefined;
                 logFn(`💤 ${pokemon.name} ${sd.wakeMsg || 'se despertó!'}`, 'boost');
                 return true; // se despertó este turno, puede moverse
@@ -115,7 +115,7 @@ function checkStatusBlock(pokemon, logFn) {
 
 // ─── EJECUTAR UN ATAQUE ───────────────────────────────────────────────────────
 function executeAttack(attacker, defender, moveName, side, callback) {
-    const move    = getMoveInfo(moveName);
+    const move = getMoveInfo(moveName);
     const defSide = side === 'player' ? 'enemy' : 'player';
 
     // ── Chequeo de estado: ¿puede moverse? ───────────────────────────────
@@ -125,7 +125,7 @@ function executeAttack(attacker, defender, moveName, side, callback) {
         return;
     }
 
-    addLog(`${side==='player'?'▶️':'◀️'} ${attacker.name} usa <b>${moveName}</b>`, side==='player'?'important':'');
+    addLog(`${side === 'player' ? '▶️' : '◀️'} ${attacker.name} usa <b>${moveName}</b>`, side === 'player' ? 'important' : '');
 
     // ── Movimiento de estado ──────────────────────────────────────────────
     if (move.category === 'status') {
@@ -145,15 +145,15 @@ function executeAttack(attacker, defender, moveName, side, callback) {
         return;
     }
 
-    const isPhysical    = move.category === 'physical';
+    const isPhysical = move.category === 'physical';
     const effectiveness = calculateEffectiveness(move.type, defender.types);
-    let   dmg           = calculateDamage(attacker, defender, moveName);
+    let dmg = calculateDamage(attacker, defender, moveName);
 
     // ── Cinta Focus ───────────────────────────────────────────────────────
     if (defender.currentHp - dmg <= 0 && !defender.itemUsed
         && defender.item === 'Cinta Focus' && defender.currentHp === defender.stats.hp) {
         defender.currentHp = 1;
-        defender.itemUsed  = true;
+        defender.itemUsed = true;
         addLog(`💪 ¡Cinta Focus: ${defender.name} aguantó con 1 HP!`, 'boost');
         if (defSide === 'enemy') revealEnemyStat('item', defender);
         else revealPlayerStat('item', defender);
@@ -166,9 +166,9 @@ function executeAttack(attacker, defender, moveName, side, callback) {
     }
 
     // ── Log efectividad ───────────────────────────────────────────────────
-    if (effectiveness > 1)             addLog('💥 ¡Es súper efectivo!', 'important');
+    if (effectiveness > 1) addLog('💥 ¡Es súper efectivo!', 'important');
     if (effectiveness < 1 && effectiveness > 0) addLog('💨 No es muy efectivo...', '');
-    if (effectiveness === 0)           addLog('❌ No tiene efecto', '');
+    if (effectiveness === 0) addLog('❌ No tiene efecto', '');
     addLog(`💔 ${Math.floor(dmg)} de daño a ${defender.name}`, 'damage');
 
     // ── Recoil del movimiento ─────────────────────────────────────────────
@@ -194,7 +194,7 @@ function executeAttack(attacker, defender, moveName, side, callback) {
     // (solo si el defensor no tiene habilidad Fuerza Bruta en el atacante)
     const bruteForce = AbilitiesDB[attacker.ability]?.effect === 'brute_force';
     if (!bruteForce && move.effect?.startsWith('apply_') && !defender.fainted) {
-        const sk     = move.effect.replace('apply_', '');
+        const sk = move.effect.replace('apply_', '');
         const chance = move.effectChance || 0;
         if (!defender.status && !isImmuneToStatus(defender, sk) && Math.random() * 100 < chance) {
             defender.status = sk;
@@ -213,7 +213,7 @@ function executeAttack(attacker, defender, moveName, side, callback) {
         && (defender.currentHp / defender.stats.hp) < 0.25) {
         const h = Math.floor(defender.stats.hp / 3);
         defender.currentHp = Math.min(defender.currentHp + h, defender.stats.hp);
-        defender.itemUsed  = true;
+        defender.itemUsed = true;
         addLog(`🍓 ¡Baya Zidra restauró ${h} HP a ${defender.name}!`, 'heal');
     }
 
@@ -221,7 +221,7 @@ function executeAttack(attacker, defender, moveName, side, callback) {
     updateUI();
 
     if (defender.fainted) { setTimeout(() => handleFaint(defSide, callback), 600); return; }
-    if (attacker.fainted) { setTimeout(() => handleFaint(side, callback), 600);    return; }
+    if (attacker.fainted) { setTimeout(() => handleFaint(side, callback), 600); return; }
     setTimeout(callback, 600);
 }
 
@@ -237,18 +237,18 @@ function handleStatusMove(user, target, moveName) {
     }
     if (move.effect === 'heal_100_sleep') {
         user.currentHp = user.stats.hp;
-        user.status    = 'sleep';
+        user.status = 'sleep';
         addLog(`💚 ${user.name} se durmió y recuperó todo el HP`, 'heal');
         return;
     }
     if (move.effect === 'boost_atk_spe') {
-        user.statBoosts.atk = Math.min(6, (user.statBoosts.atk||0)+1);
-        user.statBoosts.spe = Math.min(6, (user.statBoosts.spe||0)+1);
+        user.statBoosts.atk = Math.min(6, (user.statBoosts.atk || 0) + 1);
+        user.statBoosts.spe = Math.min(6, (user.statBoosts.spe || 0) + 1);
         addLog(`⬆️ ${user.name}: ↑ ATK y ↑ SPE`, 'boost');
         return;
     }
     if (move.effect === 'boost_spe') {
-        user.statBoosts.spe = Math.min(6, (user.statBoosts.spe||0)+1);
+        user.statBoosts.spe = Math.min(6, (user.statBoosts.spe || 0) + 1);
         addLog(`⬆️ ${user.name}: ↑ SPE`, 'boost');
         return;
     }
@@ -259,7 +259,7 @@ function handleStatusMove(user, target, moveName) {
     }
     if (move.effect?.startsWith('apply_')) {
         const sk = move.effect.replace('apply_', '');
-        if (move.accuracy !== null && Math.random()*100 > (move.accuracy||100)) {
+        if (move.accuracy !== null && Math.random() * 100 > (move.accuracy || 100)) {
             addLog(`✗ ${moveName} falló`, ''); return;
         }
         if (target.status) { addLog(`${target.name} ya tiene un estado`, ''); return; }
@@ -282,7 +282,7 @@ function afterTurn() {
 
     [
         { p: playerTeam[playerActive] },
-        { p: enemyTeam[enemyActive]   },
+        { p: enemyTeam[enemyActive] },
     ].forEach(({ p }) => {
         if (p.fainted) return;
 
@@ -328,10 +328,10 @@ function afterTurn() {
         });
         return;
     }
-    if (eFainted) { handleFaint('enemy',  () => { isBusy = false; renderMoves(); }); return; }
-    if (pFainted) { handleFaint('player', () => {}); return; }
+    if (eFainted) { handleFaint('enemy', () => { isBusy = false; renderMoves(); }); return; }
+    if (pFainted) { handleFaint('player', () => { }); return; }
     if (playerTeam.every(p => p.fainted)) { endBattle(false); return; }
-    if (enemyTeam.every(p => p.fainted))  { endBattle(true);  return; }
+    if (enemyTeam.every(p => p.fainted)) { endBattle(true); return; }
 
     isBusy = false;
     renderMoves();
@@ -339,8 +339,8 @@ function afterTurn() {
 
 // ─── DEBILITAMIENTO ───────────────────────────────────────────────────────────
 function handleFaint(side, callback) {
-    const team    = side === 'player' ? playerTeam : enemyTeam;
-    const active  = side === 'player' ? playerActive : enemyActive;
+    const team = side === 'player' ? playerTeam : enemyTeam;
+    const active = side === 'player' ? playerActive : enemyActive;
     addLog(`😵 ¡${team[active].name} se debilitó!`, 'important');
     animFaint(side);
 
@@ -368,7 +368,7 @@ function handleFaint(side, callback) {
 // ─── CAMBIO DE POKÉMON ────────────────────────────────────────────────────────
 function openSwitch(forced = false) {
     switchForced = forced;
-    const available = playerTeam.map((p,i) => ({p,i})).filter(o => !o.p.fainted && o.i !== playerActive);
+    const available = playerTeam.map((p, i) => ({ p, i })).filter(o => !o.p.fainted && o.i !== playerActive);
     if (!available.length) { addLog('⚠️ No hay Pokémon disponibles', ''); return; }
 
     const titleEl = document.getElementById('switchTitle');
@@ -379,15 +379,15 @@ function openSwitch(forced = false) {
     grid.innerHTML = '';
     available.forEach(({ p, i }) => {
         const hpPct = (p.currentHp / p.stats.hp) * 100;
-        const col   = hpPct > 50 ? '#22c55e' : hpPct > 20 ? '#eab308' : '#ef4444';
+        const col = hpPct > 50 ? '#22c55e' : hpPct > 20 ? '#eab308' : '#ef4444';
         const sprite = getSpriteUrl(p.id, 'front');
-        const ab     = AbilitiesDB[p.ability];
-        const card   = document.createElement('div');
+        const ab = AbilitiesDB[p.ability];
+        const card = document.createElement('div');
         card.className = 'switch-card';
         card.innerHTML = `
             <img src="${sprite}" onerror="onSpriteError(this,p.id)">
             <div class="switch-card-name">${p.name}</div>
-            <div style="font-size:6px;color:#94a3b8;margin-bottom:2px;">${ab ? ab.icon+' '+ab.name : ''}</div>
+            <div style="font-size:6px;color:#94a3b8;margin-bottom:2px;">${ab ? ab.icon + ' ' + ab.name : ''}</div>
             <div class="switch-card-hp" style="color:${col};">${Math.floor(p.currentHp)}/${p.stats.hp}</div>
             <div style="height:4px;background:#1e293b;border-radius:2px;margin-top:4px;overflow:hidden;">
                 <div style="height:100%;width:${hpPct}%;background:${col};border-radius:2px;"></div>
@@ -415,10 +415,12 @@ function switchTo(newIndex) {
             MP.forcedSwitch(newIndex);
         } else {
             MP.chooseSwitch(newIndex);
+            document.getElementById('switchModal').classList.remove('open');
+            return; // En multiplayer regular switch, esperar respuesta del servidor
         }
     }
 
-    playerActive  = newIndex;
+    playerActive = newIndex;
     const newPoke = playerTeam[playerActive];
 
     document.getElementById('switchModal').classList.remove('open');
@@ -439,14 +441,14 @@ function switchTo(newIndex) {
         setTimeout(() => executeAttack(enemy, newPoke, enemy.moves[emIdx], 'enemy', () => afterTurn()), 800);
     } else {
         switchForced = false;
-        isBusy       = false;
+        isBusy = false;
     }
 }
 
 // ─── FIN DE BATALLA ───────────────────────────────────────────────────────────
 function endBattle(playerWon) {
     battleOver = true;
-    isBusy     = true;
+    isBusy = true;
     addLog('━━━━━━━━━━━━━━', 'separator');
     addLog(playerWon ? '🏆 ¡VICTORIA TOTAL!' : '💀 HAS SIDO DERROTADO', 'important');
     setTimeout(() => {

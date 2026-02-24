@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Kanto Showdown - Menú</title>
+    <!-- fuente offline: usa monospace del sistema -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background: #0a0a1a;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Fondo animado con estrellas */
+        .stars {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: radial-gradient(ellipse at center, #1a1a3e 0%, #0a0a1a 70%);
+        }
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            animation: twinkle var(--d) ease-in-out infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.3); }
+        }
+
+        /* Grid de pokeballs de fondo */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            opacity: 0.03;
+            background-image: 
+                radial-gradient(circle at 50% 50%, #f59e0b 20%, transparent 20%),
+                radial-gradient(circle at 50% 50%, #f59e0b 20%, transparent 20%);
+            background-size: 80px 80px;
+            background-position: 0 0, 40px 40px;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        /* Logo */
+        .logo-wrapper {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        .logo-subtitle {
+            font-size: 9px;
+            color: #64748b;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            animation: fadeDown 0.8s ease-out both;
+        }
+        .logo-title {
+            font-size: clamp(24px, 4vw, 42px);
+            background: linear-gradient(135deg, #fbbf24, #f59e0b, #ef4444, #fbbf24);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s linear infinite, fadeDown 0.8s ease-out 0.2s both;
+            line-height: 1.4;
+            text-shadow: none;
+            filter: drop-shadow(0 0 30px rgba(251, 191, 36, 0.4));
+        }
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        .logo-version {
+            font-size: 8px;
+            color: #fbbf24;
+            margin-top: 0.5rem;
+            animation: fadeDown 0.8s ease-out 0.4s both;
+        }
+        
+        /* Pokeball decorativa */
+        .pokeball-deco {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #ef4444 50%, #f0f0f0 50%);
+            border: 4px solid #1a1a2e;
+            position: relative;
+            margin: 1.5rem auto;
+            animation: float 3s ease-in-out infinite, fadeDown 0.8s ease-out 0.6s both;
+            box-shadow: 0 0 40px rgba(239, 68, 68, 0.5), inset 0 0 20px rgba(0,0,0,0.3);
+        }
+        .pokeball-deco::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            border: 4px solid #1a1a2e;
+            z-index: 1;
+        }
+        .pokeball-deco::after {
+            content: '';
+            position: absolute;
+            top: calc(50% - 2px);
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #1a1a2e;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(5deg); }
+            75% { transform: translateY(-5px) rotate(-5deg); }
+        }
+
+        /* Botones del menú */
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 340px;
+            animation: fadeUp 0.8s ease-out 0.8s both;
+        }
+
+        .menu-btn {
+            display: block;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+            text-decoration: none;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .menu-btn::before {
+            content: '▶';
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%) translateX(-20px);
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        .menu-btn:hover::before {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+        }
+        .menu-btn:hover {
+            transform: translateX(8px);
+            padding-left: 2.5rem;
+        }
+        .menu-btn:active {
+            transform: translateX(4px) scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: #1a1a2e;
+            box-shadow: 0 4px 0 #b45309, 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 6px 0 #b45309, 0 10px 30px rgba(245, 158, 11, 0.6);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #94a3b8;
+            border: 2px solid #334155;
+        }
+        .btn-secondary:hover {
+            border-color: #fbbf24;
+            color: #fbbf24;
+            background: rgba(251, 191, 36, 0.05);
+        }
+
+        /* Info badges */
+        .info-badges {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            animation: fadeUp 0.8s ease-out 1s both;
+        }
+        .badge {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 7px;
+            color: #64748b;
+        }
+        .badge span {
+            color: #fbbf24;
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scanlines effect */
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.03) 2px,
+                rgba(0,0,0,0.03) 4px
+            );
+        }
+
+        /* CRT border glow */
+        .crt-glow {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            box-shadow: inset 0 0 100px rgba(251, 191, 36, 0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stars" id="starsContainer"></div>
+    <div class="bg-grid"></div>
+    <div class="scanlines"></div>
+    <div class="crt-glow"></div>
+
+    <div class="container">
+        <div class="logo-wrapper">
+            <div class="logo-subtitle">Pokémon Fan Game</div>
+            <div class="logo-title">PROSTAR<br>SHOWDOWN</div>
+            <div class="logo-version">v2.0 — Edición Kanto</div>
+            <div class="pokeball-deco"></div>
+        </div>
+
+        <div class="menu-buttons">
+            <a href="battle.html?mp=1" style="display:block;padding:12px 20px;background:linear-gradient(135deg,#1e1b4b,#312e81);border:2px solid #4f46e5;border-radius:8px;color:#a5b4fc;text-decoration:none;font-family:'Courier New',Courier,monospace;font-size:11px;text-align:center;margin-bottom:10px;">
+    🌐 MULTIJUGADOR (Online)
+</a>
+<a href="team-builder.html" class="menu-btn btn-primary">
+                ⚔️ NUEVA BATALLA
+            </a>
+            <button onclick="continueTeam()" class="menu-btn btn-secondary">
+                📂 CONTINUAR EQUIPO
+            </button>
+            <button onclick="showCredits()" class="menu-btn btn-secondary">
+                ℹ️ INFORMACIÓN
+            </button>
+        </div>
+
+        <div class="info-badges">
+            <div class="badge"><span>20</span> Pokémon</div>
+            <div class="badge"><span>18</span> Tipos</div>
+            <div class="badge"><span>40+</span> Movimientos</div>
+        </div>
+    </div>
+
+    <!-- Modal de info -->
+    <div id="infoModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:200; align-items:center; justify-content:center;">
+        <div style="background:#0f172a; border:2px solid #fbbf24; padding:2rem; border-radius:8px; max-width:500px; width:90%; font-size:9px; line-height:2;">
+            <div style="color:#fbbf24; font-size:12px; margin-bottom:1.5rem; text-align:center;">CÓMO JUGAR</div>
+            <div style="color:#94a3b8;">
+                <p>1. Selecciona 3-6 Pokémon para tu equipo</p>
+                <p>2. Equipa objetos y distribuye EVs</p>
+                <p>3. El turno lo decide la <span style="color:#fbbf24;">VELOCIDAD</span></p>
+                <p>4. Elige movimientos estratégicamente</p>
+                <p>5. ¡Derrota al equipo rival!</p>
+                <br>
+                <p style="color:#64748b;">Los ataques con <span style="color:#fbbf24;">mayor prioridad</span> van primero.<br>
+                Si hay empate, gana quien tenga más <span style="color:#22c55e;">SPE</span>.</p>
+            </div>
+            <button onclick="closeInfo()" style="width:100%; margin-top:1.5rem; padding:0.8rem; background:#ef4444; border:none; color:white; font-family:'Courier New',Courier,monospace; font-size:9px; cursor:pointer; border-radius:4px;">CERRAR</button>
+        </div>
+    </div>
+
+    <script>
+        // Generar estrellas
+        const container = document.getElementById('starsContainer');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 1;
+            star.style.cssText = `
+                width: ${size}px;
+                height: ${size}px;
+                top: ${Math.random() * 100}%;
+                left: ${Math.random() * 100}%;
+                --d: ${Math.random() * 3 + 2}s;
+                animation-delay: ${Math.random() * 3}s;
+            `;
+            container.appendChild(star);
+        }
+
+        function continueTeam() {
+            const saved = localStorage.getItem('kantoTeam');
+            if (!saved) {
+                alert('No hay equipo guardado. ¡Crea uno primero!');
+                return;
+            }
+            window.location.href = 'team-builder.html';
+        }
+
+        function showCredits() {
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+
+        function closeInfo() {
+            document.getElementById('infoModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

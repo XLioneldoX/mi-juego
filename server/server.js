@@ -1,0 +1,268 @@
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  server/server.js  —  SERVIDOR MULTIJUGADOR                              ║
+// ║                                                                          ║
+// ║  Tecnología: WebSockets (ws) + Express                                  ║
+// ║  Protocolo:  Turnos simultáneos — ambos eligen, se resuelve junto       ║
+// ║  Salas:      Código de 4 letras (ej: KXQR)                              ║
+// ║  Timeout:    60s para reconectarse antes de perder                       ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+const express   = require('express');
+const http      = require('http');
+const WebSocket = require('ws');
+const path      = require('path');
+const crypto    = require('crypto');
+
+const app    = express();
+const server = http.createServer(app);
+const wss    = new WebSocket.Server({ server });
+
+// Servir archivos estáticos del juego
+app.use(express.static(path.join(__dirname, '..')));
+
+// ─── ESTADO DE SALAS ─────────────────────────────────────────────────────────
+// rooms[code] = {
+//   code, players: [ws1, ws2|null], teams: [team1, team2|null],
+//   state: 'waiting'|'ready'|'battle'|'ended',
+//   moves: [null, null],        ← movimiento elegido este turno por cada jugador
+//   switches: [null, null],     ← cambio de Pokémon elegido (índice)
+//   activeIdx: [0, 0],          ← índice del Pokémon activo de cada jugador
+//   turnCount: 1,
+//   disconnectTimers: [null, null]
+// }
+const rooms = new Map();
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function genCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // sin I,O para evitar confusión
+    let code;
+    do { code = Array.from({length:4}, () => chars[Math.floor(Math.random()*chars.length)]).join(''); }
+    while (rooms.has(code));
+    return code;
+}
+
+function send(ws, type, payload) {
+    if (ws && ws.readyState === WebSocket.OPEN)
+        ws.send(JSON.stringify({ type, ...payload }));
+}
+
+function broadcast(room, type, payload, excludeIdx = -1) {
+    room.players.forEach((ws, i) => {
+        if (i !== excludeIdx) send(ws, type, payload);
+    });
+}
+
+function opponent(idx) { return idx === 0 ? 1 : 0; }
+
+// ─── LÓGICA DE TURNO ─────────────────────────────────────────────────────────
+// Cuando ambos jugadores han enviado su movimiento, resolver el turno
+function tryResolveTurn(room) {
+    const bothReady = room.moves[0] !== null && room.moves[1] !== null;
+    if (!bothReady) return;
+
+    const m0 = room.moves[0];
+    const m1 = room.moves[1];
+
+    // Enviar a AMBOS jugadores los movimientos del rival para que el cliente
+    // los resuelva localmente con su motor de batalla ya existente.
+    // El servidor es árbitro de sincronización, no de cálculos de daño.
+    room.players.forEach((ws, i) => {
+        const myMove  = i === 0 ? m0 : m1;
+        const oppMove = i === 0 ? m1 : m0;
+        send(ws, 'turn_resolve', {
+            myMove,        // lo que yo elegí
+            opponentMove:  oppMove,    // lo que eligió el rival
+            turnCount:     room.turnCount,
+        });
+    });
+
+    room.moves     = [null, null];
+    room.switches  = [null, null];
+    room.turnCount++;
+}
+
+// ─── WEBSOCKET ────────────────────────────────────────────────────────────────
+wss.on('connection', (ws) => {
+    ws._roomCode  = null;
+    ws._playerIdx = null;
+
+    ws.on('message', (raw) => {
+        let msg;
+        try { msg = JSON.parse(raw); } catch { return; }
+
+        switch (msg.type) {
+
+            // ── CREAR SALA ──────────────────────────────────────────────────
+            case 'create_room': {
+                const code = genCode();
+                const room = {
+                    code,
+                    players:          [ws, null],
+                    teams:            [null, null],
+                    state:            'waiting',
+                    moves:            [null, null],
+                    switches:         [null, null],
+                    activeIdx:        [0, 0],
+                    turnCount:        1,
+                    disconnectTimers: [null, null],
+                };
+                rooms.set(code, room);
+                ws._roomCode  = code;
+                ws._playerIdx = 0;
+                send(ws, 'room_created', { code, playerIdx: 0 });
+                console.log(`[${code}] Sala creada`);
+                break;
+            }
+
+            // ── UNIRSE A SALA ───────────────────────────────────────────────
+            case 'join_room': {
+                const code = (msg.code || '').toUpperCase().trim();
+                const room = rooms.get(code);
+                if (!room) { send(ws, 'error', { msg: 'Sala no encontrada' }); break; }
+                if (room.players[1]) { send(ws, 'error', { msg: 'Sala llena' }); break; }
+                if (room.state === 'ended') { send(ws, 'error', { msg: 'Partida ya terminada' }); break; }
+
+                room.players[1] = ws;
+                ws._roomCode    = code;
+                ws._playerIdx   = 1;
+
+                // Cancelar timer de reconexión si existía
+                if (room.disconnectTimers[1]) { clearTimeout(room.disconnectTimers[1]); room.disconnectTimers[1] = null; }
+
+                send(ws,          'room_joined',   { code, playerIdx: 1 });
+                send(room.players[0], 'opponent_joined', { msg: '¡Un rival entró a la sala!' });
+                console.log(`[${code}] Jugador 2 se unió`);
+
+                // Si ambos ya tienen equipo (reconexión), reanudar
+                if (room.teams[0] && room.teams[1] && room.state === 'battle') {
+                    send(ws, 'battle_resume', {
+                        opponentTeam: room.teams[0],
+                        myTeam:       room.teams[1],
+                        turnCount:    room.turnCount,
+                        activeIdx:    room.activeIdx,
+                    });
+                }
+                break;
+            }
+
+            // ── ENVIAR EQUIPO ───────────────────────────────────────────────
+            case 'submit_team': {
+                const room = rooms.get(ws._roomCode);
+                if (!room) break;
+                const idx = ws._playerIdx;
+                room.teams[idx] = msg.team;
+
+                // Cuando ambos han enviado equipo → empezar batalla
+                if (room.teams[0] && room.teams[1]) {
+                    room.state = 'battle';
+                    room.players.forEach((p, i) => {
+                        send(p, 'battle_start', {
+                            myTeam:       room.teams[i],
+                            opponentTeam: room.teams[opponent(i)],
+                            myIdx:        i,
+                            turnCount:    1,
+                        });
+                    });
+                    console.log(`[${room.code}] Batalla iniciada`);
+                } else {
+                    send(ws, 'waiting_opponent', { msg: 'Esperando al rival...' });
+                }
+                break;
+            }
+
+            // ── MOVIMIENTO ELEGIDO ──────────────────────────────────────────
+            case 'choose_move': {
+                const room = rooms.get(ws._roomCode);
+                if (!room || room.state !== 'battle') break;
+                const idx = ws._playerIdx;
+                room.moves[idx] = { type: 'move', moveName: msg.moveName, switchTo: null };
+
+                // Avisar al rival que el jugador ya eligió (sin decirle qué)
+                send(room.players[opponent(idx)], 'opponent_chose', {});
+                tryResolveTurn(room);
+                break;
+            }
+
+            // ── CAMBIO DE POKÉMON ───────────────────────────────────────────
+            case 'choose_switch': {
+                const room = rooms.get(ws._roomCode);
+                if (!room || room.state !== 'battle') break;
+                const idx = ws._playerIdx;
+                room.moves[idx]   = { type: 'switch', moveName: null, switchTo: msg.switchTo };
+                room.activeIdx[idx] = msg.switchTo;
+
+                send(room.players[opponent(idx)], 'opponent_chose', {});
+                tryResolveTurn(room);
+                break;
+            }
+
+            // ── POKÉMON DEBILITADO → CAMBIO FORZADO ────────────────────────
+            case 'forced_switch': {
+                const room = rooms.get(ws._roomCode);
+                if (!room) break;
+                const idx = ws._playerIdx;
+                room.activeIdx[idx] = msg.switchTo;
+                // Avisar al rival del cambio forzado
+                send(room.players[opponent(idx)], 'opponent_forced_switch', {
+                    switchTo: msg.switchTo,
+                });
+                break;
+            }
+
+            // ── FIN DE BATALLA ──────────────────────────────────────────────
+            case 'battle_end': {
+                const room = rooms.get(ws._roomCode);
+                if (!room) break;
+                room.state = 'ended';
+                broadcast(room, 'battle_ended', { winner: msg.winner });
+                console.log(`[${room.code}] Partida terminada — ganador: jugador ${msg.winner}`);
+                // Limpiar sala después de 60s
+                setTimeout(() => rooms.delete(room.code), 60000);
+                break;
+            }
+
+            // ── PING ────────────────────────────────────────────────────────
+            case 'ping':
+                send(ws, 'pong', {});
+                break;
+        }
+    });
+
+    // ── DESCONEXIÓN ───────────────────────────────────────────────────────────
+    ws.on('close', () => {
+        const code = ws._roomCode;
+        const idx  = ws._playerIdx;
+        if (!code || idx === null) return;
+        const room = rooms.get(code);
+        if (!room) return;
+
+        room.players[idx] = null;
+        console.log(`[${code}] Jugador ${idx+1} se desconectó`);
+
+        if (room.state === 'ended') { rooms.delete(code); return; }
+
+        // Avisar al rival
+        const opp = room.players[opponent(idx)];
+        send(opp, 'opponent_disconnected', {
+            msg: 'El rival se desconectó. Tiene 60 segundos para reconectarse...',
+            seconds: 60,
+        });
+
+        // Timer de 60 segundos
+        room.disconnectTimers[idx] = setTimeout(() => {
+            send(opp, 'opponent_timeout', { msg: '¡El rival no volvió! Ganaste por abandono.' });
+            room.state = 'ended';
+            rooms.delete(code);
+            console.log(`[${code}] Sala eliminada por timeout`);
+        }, 60000);
+    });
+});
+
+// ─── ARRANCAR ─────────────────────────────────────────────────────────────────
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`\n╔═══════════════════════════════════════╗`);
+    console.log(`║  Servidor corriendo en puerto ${PORT}     ║`);
+    console.log(`║  Abre: http://localhost:${PORT}           ║`);
+    console.log(`╚═══════════════════════════════════════╝\n`);
+});

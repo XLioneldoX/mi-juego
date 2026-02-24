@@ -99,6 +99,7 @@ wss.on('connection', (ws) => {
                     code,
                     players: [ws, null],
                     teams: [null, null],
+                    userNames: [msg.userName || 'Jugador 1', null],
                     state: 'waiting',
                     moves: [null, null],
                     switches: [null, null],
@@ -118,7 +119,7 @@ wss.on('connection', (ws) => {
             case 'join_room': {
                 const code = (msg.code || '').toUpperCase().trim();
                 const room = rooms.get(code);
-                if (!room) { send(ws, 'error', { msg: 'Sala no encontrada' }); break; }
+                if (!room) { send(ws, 'error', { msg: 'No se encontró la sala. Tal vez ha expirado, intente crear otra.' }); break; }
                 if (room.state === 'ended') { send(ws, 'error', { msg: 'Partida ya terminada' }); break; }
 
                 // ── RECONEXIÓN (cualquier estado) ─────────────────────────
@@ -129,6 +130,7 @@ wss.on('connection', (ws) => {
                         room.disconnectTimers[idx] = null;
                     }
                     room.players[idx] = ws;
+                    if (msg.userName) room.userNames[idx] = msg.userName;
                     ws._roomCode = code;
                     ws._playerIdx = idx;
                     console.log(`[${code}] Jugador ${idx + 1} reconectado `);
@@ -150,6 +152,7 @@ wss.on('connection', (ws) => {
                 if (room.players[1]) { send(ws, 'error', { msg: 'Sala llena' }); break; }
 
                 room.players[1] = ws;
+                room.userNames[1] = msg.userName || 'Jugador 2';
                 ws._roomCode = code;
                 ws._playerIdx = 1;
 
@@ -175,6 +178,8 @@ wss.on('connection', (ws) => {
                         send(p, 'battle_start', {
                             myTeam: room.teams[i],
                             opponentTeam: room.teams[opponent(i)],
+                            myName: room.userNames[i],
+                            opponentName: room.userNames[opponent(i)],
                             myIdx: i,
                             turnCount: 1,
                         });

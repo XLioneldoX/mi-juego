@@ -9,13 +9,13 @@
 const MP = (() => {
 
     // ─── ESTADO ──────────────────────────────────────────────────────────────
-    let ws           = null;
-    let roomCode     = null;
-    let myPlayerIdx  = null;   // 0 = creador, 1 = unido
+    let ws = null;
+    let roomCode = null;
+    let myPlayerIdx = null;   // 0 = creador, 1 = unido
     let isMultiplayer = false;
-    let moveChosen   = false;  // ya elegí mi movimiento este turno
+    let moveChosen = false;  // ya elegí mi movimiento este turno
     let waitingOpponent = false;
-    let reconnectTimer  = null;
+    let reconnectTimer = null;
     let disconnectCountdown = null;
 
     // Callbacks que el sistema de batalla llama
@@ -31,7 +31,7 @@ const MP = (() => {
         try {
             const session = JSON.parse(sessionStorage.getItem('mpBattleSession') || 'null');
             if (session && session.roomCode) {
-                roomCode    = session.roomCode;
+                roomCode = session.roomCode;
                 myPlayerIdx = session.playerIdx;
                 console.log('[MP] Reconectando sala', roomCode, 'como jugador', myPlayerIdx);
                 connect();
@@ -42,13 +42,13 @@ const MP = (() => {
                         type: 'join_room',
                         code: roomCode,
                         playerIdx: myPlayerIdx,
-                        userName:   localStorage.getItem('userName')   || 'Jugador',
+                        userName: localStorage.getItem('userName') || 'Jugador',
                         userAvatar: localStorage.getItem('userAvatar') || '🎮',
                     }));
                 };
                 return;
             }
-        } catch(e) {}
+        } catch (e) { }
 
         // Sin sesión → mostrar lobby normal
         showLobby();
@@ -57,16 +57,16 @@ const MP = (() => {
     // ─── CONECTAR AL SERVIDOR ─────────────────────────────────────────────────
     function connect() {
         const proto = location.protocol === 'https:' ? 'wss' : 'ws';
-        const url   = `${proto}://${location.host}`;
+        const url = `${proto}://${location.host}`;
         ws = new WebSocket(url);
 
-        ws.onopen    = () => { console.log('[MP] Conectado al servidor'); };
+        ws.onopen = () => { console.log('[MP] Conectado al servidor'); };
         ws.onmessage = (e) => handleMessage(JSON.parse(e.data));
-        ws.onclose   = () => handleDisconnect();
-        ws.onerror   = () => updateLobbyStatus('❌ Error de conexión. Recarga la página.', 'error');
+        ws.onclose = () => handleDisconnect();
+        ws.onerror = () => updateLobbyStatus('❌ Error de conexión. Recarga la página.', 'error');
 
         // Ping cada 25s para mantener conexión viva (Railway cierra idle)
-        setInterval(() => { if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({type:'ping'})); }, 25000);
+        setInterval(() => { if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'ping' })); }, 25000);
     }
 
     function send(type, payload) {
@@ -79,14 +79,14 @@ const MP = (() => {
         switch (msg.type) {
 
             case 'room_created':
-                roomCode    = msg.code;
+                roomCode = msg.code;
                 myPlayerIdx = 0;
                 updateLobbyStatus(`✅ Sala creada. Código: <b style="color:var(--gold);font-size:16px;letter-spacing:4px;">${msg.code}</b><br><span style="font-size:8px;color:#64748b;">Comparte este código con tu rival</span>`, 'waiting');
                 showCopyButton(msg.code);
                 break;
 
             case 'room_joined':
-                roomCode    = msg.code;
+                roomCode = msg.code;
                 myPlayerIdx = 1;
                 updateLobbyStatus('✅ Unido a la sala. Esperando al rival...', 'waiting');
                 // Enviar equipo automáticamente
@@ -108,10 +108,10 @@ const MP = (() => {
                 // Guardar sesión para reconexión en battle.html
                 try {
                     sessionStorage.setItem('mpBattleSession', JSON.stringify({
-                        roomCode:  roomCode,
+                        roomCode: roomCode,
                         playerIdx: myPlayerIdx,
                     }));
-                } catch(e) {}
+                } catch (e) { }
                 if (handlers.onBattleStart) handlers.onBattleStart(msg);
                 break;
 
@@ -127,8 +127,8 @@ const MP = (() => {
                 break;
 
             case 'turn_resolve':
-                moveChosen       = false;
-                waitingOpponent  = false;
+                moveChosen = false;
+                waitingOpponent = false;
                 hideOpponentChoseIndicator();
                 hideWaitingBanner();
                 if (handlers.onTurnResolve) handlers.onTurnResolve(msg);
@@ -149,7 +149,7 @@ const MP = (() => {
                 if (typeof addLog === 'function')
                     addLog('🏆 ¡El rival no volvió! Ganaste por abandono.', 'important');
                 if (typeof battleOver !== 'undefined') battleOver = true;
-                if (typeof isBusy    !== 'undefined') isBusy = false;
+                if (typeof isBusy !== 'undefined') isBusy = false;
                 showResult('🏆 ¡GANASTE!', 'El rival abandonó la partida.');
                 break;
 
@@ -158,6 +158,11 @@ const MP = (() => {
                 break;
 
             case 'error':
+                if (!document.getElementById('mpLobby') || document.getElementById('mpLobby').style.display === 'none') {
+                    // Si el lobby estaba oculto (ej. reconexión a sala borrada)
+                    sessionStorage.removeItem('mpBattleSession');
+                    showLobby();
+                }
                 updateLobbyStatus(`❌ ${msg.msg}`, 'error');
                 break;
 
@@ -166,26 +171,34 @@ const MP = (() => {
     }
 
     // ─── ACCIONES DEL JUGADOR ─────────────────────────────────────────────────
-    function createRoom() { connect(); setTimeout(() => send('create_room', {}), 200); }
+    function getUsername() {
+        const input = document.getElementById('mpUserName');
+        let name = input ? input.value.trim() : '';
+        if (!name) name = localStorage.getItem('userName') || 'Jugador';
+        localStorage.setItem('userName', name);
+        return name;
+    }
+
+    function createRoom() { connect(); setTimeout(() => send('create_room', { userName: getUsername() }), 200); }
 
     function joinRoom(code) {
         connect();
-        setTimeout(() => send('join_room', { code: code.toUpperCase().trim() }), 200);
+        setTimeout(() => send('join_room', { code: code.toUpperCase().trim(), userName: getUsername() }), 200);
     }
 
     function submitTeam() {
         // Serializar el equipo del jugador (playerTeam ya construido)
         const team = playerTeam.map(p => ({
-            id:        p.id,
-            name:      p.name,
-            types:     p.types,
-            stats:     p.stats,
-            moves:     p.moves,
-            ability:   p.ability,
-            item:      p.item,
-            nature:    p.nature,
-            evs:       p.evs,
-            level:     p.level,
+            id: p.id,
+            name: p.name,
+            types: p.types,
+            stats: p.stats,
+            moves: p.moves,
+            ability: p.ability,
+            item: p.item,
+            nature: p.nature,
+            evs: p.evs,
+            level: p.level,
             currentHp: p.currentHp,
         }));
         send('submit_team', { team });
@@ -224,13 +237,22 @@ const MP = (() => {
 
     // ─── UI DEL LOBBY ─────────────────────────────────────────────────────────
     function showLobby() {
+        const layout = document.querySelector('.battle-layout');
+        if (layout) layout.style.display = 'none';
+
         let lobby = document.getElementById('mpLobby');
         if (!lobby) {
             lobby = document.createElement('div');
-            lobby.id        = 'mpLobby';
+            lobby.id = 'mpLobby';
+            const savedName = localStorage.getItem('userName') || '';
             lobby.innerHTML = `
                 <div class="mp-lobby-box">
                     <div class="mp-title">🌐 MULTIJUGADOR</div>
+                    <div style="margin-bottom:12px;text-align:center;">
+                        <input id="mpUserName" type="text" maxlength="12" placeholder="Tu Nombre (Ej. Ash)" 
+                            value="${savedName}"
+                            style="padding:6px; background:#111827; border:1px solid #334155; color:var(--gold); font-family:'Courier New', monospace; border-radius:4px; text-align:center; width:80%;">
+                    </div>
                     <div id="mpStatus" class="mp-status">Elige una opción</div>
                     <div class="mp-buttons">
                         <button class="mp-btn mp-btn-create" onclick="MP.createRoom()">
@@ -257,13 +279,16 @@ const MP = (() => {
     function hideLobby() {
         const lobby = document.getElementById('mpLobby');
         if (lobby) lobby.style.display = 'none';
+
+        const layout = document.querySelector('.battle-layout');
+        if (layout) layout.style.display = '';
     }
 
     function updateLobbyStatus(html, type) {
         const el = document.getElementById('mpStatus');
         if (!el) return;
-        el.innerHTML  = html;
-        el.className  = 'mp-status mp-status-' + (type || 'info');
+        el.innerHTML = html;
+        el.className = 'mp-status mp-status-' + (type || 'info');
     }
 
     function showCopyButton(code) {
@@ -291,9 +316,9 @@ const MP = (() => {
             el.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e1b4b;border:2px solid #4f46e5;border-radius:8px;padding:8px 16px;font-family:"Courier New",monospace;font-size:9px;color:#a5b4fc;z-index:500;';
             document.body.appendChild(el);
         }
-        el.textContent    = msg;
-        el.style.display  = 'block';
-        waitingOpponent   = true;
+        el.textContent = msg;
+        el.style.display = 'block';
+        waitingOpponent = true;
     }
 
     function hideWaitingBanner() {
@@ -309,7 +334,7 @@ const MP = (() => {
             el.style.cssText = 'position:fixed;top:60px;right:16px;background:rgba(34,197,94,.15);border:1px solid #22c55e;border-radius:6px;padding:5px 10px;font-size:8px;color:#22c55e;z-index:500;';
             document.body.appendChild(el);
         }
-        el.textContent   = '✅ Rival eligió';
+        el.textContent = '✅ Rival eligió';
         el.style.display = 'block';
     }
 
@@ -362,9 +387,9 @@ const MP = (() => {
         init, createRoom, joinRoom, joinWithCode,
         chooseMove, chooseSwitch, forcedSwitch, reportBattleEnd,
         on: (event, fn) => { handlers[event] = fn; },
-        get active()    { return isMultiplayer; },
+        get active() { return isMultiplayer; },
         get playerIdx() { return myPlayerIdx; },
-        get code()      { return roomCode; },
+        get code() { return roomCode; },
     };
 })();
 

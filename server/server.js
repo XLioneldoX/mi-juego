@@ -7,15 +7,15 @@
 // ║  Timeout:    60s para reconectarse antes de perder                       ║
 // ╚══════════════════════════════════════════════════════════════════════════╝
 
-const express   = require('express');
-const http      = require('http');
+const express = require('express');
+const http = require('http');
 const WebSocket = require('ws');
-const path      = require('path');
-const crypto    = require('crypto');
+const path = require('path');
+const crypto = require('crypto');
 
-const app    = express();
+const app = express();
 const server = http.createServer(app);
-const wss    = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({ server });
 
 // Servir archivos estáticos del juego
 app.use(express.static(path.join(__dirname, '..')));
@@ -36,7 +36,7 @@ const rooms = new Map();
 function genCode() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // sin I,O para evitar confusión
     let code;
-    do { code = Array.from({length:4}, () => chars[Math.floor(Math.random()*chars.length)]).join(''); }
+    do { code = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join(''); }
     while (rooms.has(code));
     return code;
 }
@@ -67,23 +67,23 @@ function tryResolveTurn(room) {
     // los resuelva localmente con su motor de batalla ya existente.
     // El servidor es árbitro de sincronización, no de cálculos de daño.
     room.players.forEach((ws, i) => {
-        const myMove  = i === 0 ? m0 : m1;
+        const myMove = i === 0 ? m0 : m1;
         const oppMove = i === 0 ? m1 : m0;
         send(ws, 'turn_resolve', {
             myMove,        // lo que yo elegí
-            opponentMove:  oppMove,    // lo que eligió el rival
-            turnCount:     room.turnCount,
+            opponentMove: oppMove,    // lo que eligió el rival
+            turnCount: room.turnCount,
         });
     });
 
-    room.moves     = [null, null];
-    room.switches  = [null, null];
+    room.moves = [null, null];
+    room.switches = [null, null];
     room.turnCount++;
 }
 
 // ─── WEBSOCKET ────────────────────────────────────────────────────────────────
 wss.on('connection', (ws) => {
-    ws._roomCode  = null;
+    ws._roomCode = null;
     ws._playerIdx = null;
 
     ws.on('message', (raw) => {
@@ -97,17 +97,17 @@ wss.on('connection', (ws) => {
                 const code = genCode();
                 const room = {
                     code,
-                    players:          [ws, null],
-                    teams:            [null, null],
-                    state:            'waiting',
-                    moves:            [null, null],
-                    switches:         [null, null],
-                    activeIdx:        [0, 0],
-                    turnCount:        1,
+                    players: [ws, null],
+                    teams: [null, null],
+                    state: 'waiting',
+                    moves: [null, null],
+                    switches: [null, null],
+                    activeIdx: [0, 0],
+                    turnCount: 1,
                     disconnectTimers: [null, null],
                 };
                 rooms.set(code, room);
-                ws._roomCode  = code;
+                ws._roomCode = code;
                 ws._playerIdx = 0;
                 send(ws, 'room_created', { code, playerIdx: 0 });
                 console.log(`[${code}] Sala creada`);
@@ -121,22 +121,28 @@ wss.on('connection', (ws) => {
                 if (!room) { send(ws, 'error', { msg: 'Sala no encontrada' }); break; }
                 if (room.state === 'ended') { send(ws, 'error', { msg: 'Partida ya terminada' }); break; }
 
-                // ── RECONEXIÓN durante batalla ─────────────────────────────
-                if (room.state === 'battle' && msg.playerIdx !== undefined) {
+                // ── RECONEXIÓN (cualquier estado) ─────────────────────────
+                if (msg.playerIdx !== undefined && room.players[parseInt(msg.playerIdx)] === null) {
                     const idx = parseInt(msg.playerIdx);
                     if (room.disconnectTimers[idx]) {
                         clearTimeout(room.disconnectTimers[idx]);
                         room.disconnectTimers[idx] = null;
                     }
                     room.players[idx] = ws;
-                    ws._roomCode  = code;
+                    ws._roomCode = code;
                     ws._playerIdx = idx;
-                    console.log(`[${code}] Jugador ${idx+1} reconectado`);
+                    console.log(`[${code}] Jugador ${idx + 1} reconectado `);
                     // Avisar al rival
-                    const opp = room.players[idx === 0 ? 1 : 0];
+                    const opp = room.players[opponent(idx)];
                     if (opp) send(opp, 'opponent_reconnected', { msg: '¡El rival volvió!' });
-                    // Confirmar reconexión
-                    send(ws, 'reconnected_ok', { myIdx: idx, turnCount: room.turnCount });
+
+                    if (room.state === 'battle') {
+                        // Confirmar reconexión de batalla
+                        send(ws, 'reconnected_ok', { myIdx: idx, turnCount: room.turnCount });
+                    } else {
+                        // Reenviar confirmación al lobby
+                        send(ws, 'room_joined', { code, playerIdx: idx });
+                    }
                     break;
                 }
 
@@ -144,12 +150,12 @@ wss.on('connection', (ws) => {
                 if (room.players[1]) { send(ws, 'error', { msg: 'Sala llena' }); break; }
 
                 room.players[1] = ws;
-                ws._roomCode    = code;
-                ws._playerIdx   = 1;
+                ws._roomCode = code;
+                ws._playerIdx = 1;
 
                 if (room.disconnectTimers[1]) { clearTimeout(room.disconnectTimers[1]); room.disconnectTimers[1] = null; }
 
-                send(ws,              'room_joined',    { code, playerIdx: 1 });
+                send(ws, 'room_joined', { code, playerIdx: 1 });
                 send(room.players[0], 'opponent_joined', { msg: '¡Un rival entró a la sala!' });
                 console.log(`[${code}] Jugador 2 se unió`);
                 break;
@@ -167,10 +173,10 @@ wss.on('connection', (ws) => {
                     room.state = 'battle';
                     room.players.forEach((p, i) => {
                         send(p, 'battle_start', {
-                            myTeam:       room.teams[i],
+                            myTeam: room.teams[i],
                             opponentTeam: room.teams[opponent(i)],
-                            myIdx:        i,
-                            turnCount:    1,
+                            myIdx: i,
+                            turnCount: 1,
                         });
                     });
                     console.log(`[${room.code}] Batalla iniciada`);
@@ -198,7 +204,7 @@ wss.on('connection', (ws) => {
                 const room = rooms.get(ws._roomCode);
                 if (!room || room.state !== 'battle') break;
                 const idx = ws._playerIdx;
-                room.moves[idx]   = { type: 'switch', moveName: null, switchTo: msg.switchTo };
+                room.moves[idx] = { type: 'switch', moveName: null, switchTo: msg.switchTo };
                 room.activeIdx[idx] = msg.switchTo;
 
                 send(room.players[opponent(idx)], 'opponent_chose', {});
@@ -241,13 +247,13 @@ wss.on('connection', (ws) => {
     // ── DESCONEXIÓN ───────────────────────────────────────────────────────────
     ws.on('close', () => {
         const code = ws._roomCode;
-        const idx  = ws._playerIdx;
+        const idx = ws._playerIdx;
         if (!code || idx === null) return;
         const room = rooms.get(code);
         if (!room) return;
 
         room.players[idx] = null;
-        console.log(`[${code}] Jugador ${idx+1} se desconectó`);
+        console.log(`[${code}] Jugador ${idx + 1} se desconectó`);
 
         if (room.state === 'ended') { rooms.delete(code); return; }
 
@@ -259,6 +265,7 @@ wss.on('connection', (ws) => {
         });
 
         // Timer de 60 segundos
+        if (room.disconnectTimers[idx]) clearTimeout(room.disconnectTimers[idx]);
         room.disconnectTimers[idx] = setTimeout(() => {
             send(opp, 'opponent_timeout', { msg: '¡El rival no volvió! Ganaste por abandono.' });
             room.state = 'ended';

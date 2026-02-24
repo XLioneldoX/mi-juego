@@ -22,7 +22,13 @@ function init() {
     battleLevel  = Math.min(100, Math.max(1, parseInt(params.get('level') || '100')));
 
     // ── MODO MULTIJUGADOR: no iniciar batalla normal, esperar al servidor ────
-    if (params.has('mp')) return;
+    if (params.has('mp')) {
+        const loadResult = loadPlayerTeam(params);
+        if (loadResult !== 'OK') {
+            showError(loadResult, 'Ve al constructor y arma tu equipo para jugar online.');
+        }
+        return;
+    }
 
     const trainerId = params.get('trainer');
     const wildDiff  = params.get('wild');
@@ -45,6 +51,19 @@ function init() {
     }
 
     // ─ Modo trainer/libre: leer equipo del jugador ───────────────────────────
+    const loadResult = loadPlayerTeam(params);
+    if (loadResult !== 'OK') {
+        if (loadResult === 'NO HAY EQUIPO') showError(loadResult, 'Ve al constructor y arma tu equipo.');
+        else if (loadResult === 'ERROR DE DATOS') showError(loadResult, 'Datos corruptos. Ve al constructor.');
+        else if (loadResult === 'EQUIPO VACÍO') showError(loadResult, 'Añade al menos 3 Pokémon.');
+        else if (loadResult === 'POKÉMON NO ENCONTRADOS') showError(loadResult, 'Reconstruye el equipo.');
+        return;
+    }
+
+    buildPlayerBattle();
+}
+
+function loadPlayerTeam(params) {
     let rawData = null;
     try {
         const tp = params.get('team');
@@ -57,24 +76,23 @@ function init() {
     if (!rawData) try { rawData = sessionStorage.getItem('kantoTeam'); } catch(e){}
     if (!rawData) try { rawData = localStorage.getItem('kantoTeam') || localStorage.getItem('savedTeam'); } catch(e){}
 
-    if (!rawData) { showError('NO HAY EQUIPO', 'Ve al constructor y arma tu equipo.'); return; }
+    if (!rawData) return 'NO HAY EQUIPO';
 
     let parsed;
     try { parsed = JSON.parse(rawData); }
-    catch(e) { showError('ERROR DE DATOS', 'Datos corruptos. Ve al constructor.'); return; }
+    catch(e) { return 'ERROR DE DATOS'; }
 
-    if (!Array.isArray(parsed) || !parsed.length) { showError('EQUIPO VACÍO', 'Añade al menos 3 Pokémon.'); return; }
+    if (!Array.isArray(parsed) || !parsed.length) return 'EQUIPO VACÍO';
 
     playerTeamRaw = parsed.filter(e => PokemonDB[e.id]);
-    if (!playerTeamRaw.length) { showError('POKÉMON NO ENCONTRADOS', 'Reconstruye el equipo.'); return; }
+    if (!playerTeamRaw.length) return 'POKÉMON NO ENCONTRADOS';
 
-    buildPlayerBattle();
+    playerTeam = playerTeamRaw.map(e => makePokemon(PokemonDB[e.id], e, battleLevel));
+    return 'OK';
 }
 
 // ─── CONSTRUIR BATALLA CON EQUIPO DEL JUGADOR ─────────────────────────────────
 function buildPlayerBattle() {
-    playerTeam = playerTeamRaw.map(e => makePokemon(PokemonDB[e.id], e, battleLevel));
-
     if (battleMode === 'trainer') {
         // Equipo del entrenador con sus propios EVs/naturaleza definidos en trainers.js
         enemyTeam = trainerData.team

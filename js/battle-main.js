@@ -21,6 +21,9 @@ function init() {
     const params = new URLSearchParams(window.location.search);
     battleLevel  = Math.min(100, Math.max(1, parseInt(params.get('level') || '100')));
 
+    // ── MODO MULTIJUGADOR: no iniciar batalla normal, esperar al servidor ────
+    if (params.has('mp')) return;
+
     const trainerId = params.get('trainer');
     const wildDiff  = params.get('wild');
 
@@ -226,10 +229,12 @@ function revancha() { window.location.reload(); }
 init();
 
 // ═══════════════════════════════════════════════════════════════════════════
-// HANDLERS MULTIJUGADOR — se activan solo si MP.active === true
+// HANDLERS MULTIJUGADOR — se registran si hay ?mp=1 en la URL
 // ═══════════════════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-    if (typeof MP === 'undefined' || !MP.active) return;
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('mp')) return;
+    if (typeof MP === 'undefined') return;
 
     // Batalla iniciada: el servidor envía los dos equipos
     MP.on('onBattleStart', (msg) => {

@@ -24,8 +24,33 @@ const MP = (() => {
     // ─── INICIALIZAR ─────────────────────────────────────────────────────────
     function init() {
         const params = new URLSearchParams(window.location.search);
-        if (!params.has('mp')) return; // modo single, no hacer nada
+        if (!params.has('mp')) return;
         isMultiplayer = true;
+
+        // Si hay sesión guardada del lobby → reconectar directamente
+        try {
+            const session = JSON.parse(sessionStorage.getItem('mpBattleSession') || 'null');
+            if (session && session.roomCode) {
+                roomCode    = session.roomCode;
+                myPlayerIdx = session.playerIdx;
+                console.log('[MP] Reconectando sala', roomCode, 'como jugador', myPlayerIdx);
+                connect();
+                // Cuando conecte, enviar join_room con playerIdx para recuperar el slot
+                const _origOnOpen = null;
+                ws.onopen = () => {
+                    ws.send(JSON.stringify({
+                        type: 'join_room',
+                        code: roomCode,
+                        playerIdx: myPlayerIdx,
+                        userName:   localStorage.getItem('userName')   || 'Jugador',
+                        userAvatar: localStorage.getItem('userAvatar') || '🎮',
+                    }));
+                };
+                return;
+            }
+        } catch(e) {}
+
+        // Sin sesión → mostrar lobby normal
         showLobby();
     }
 
@@ -80,6 +105,13 @@ const MP = (() => {
             case 'battle_start':
                 hideLobby();
                 myPlayerIdx = msg.myIdx;
+                // Guardar sesión para reconexión en battle.html
+                try {
+                    sessionStorage.setItem('mpBattleSession', JSON.stringify({
+                        roomCode:  roomCode,
+                        playerIdx: myPlayerIdx,
+                    }));
+                } catch(e) {}
                 if (handlers.onBattleStart) handlers.onBattleStart(msg);
                 break;
 

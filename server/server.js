@@ -119,29 +119,39 @@ wss.on('connection', (ws) => {
                 const code = (msg.code || '').toUpperCase().trim();
                 const room = rooms.get(code);
                 if (!room) { send(ws, 'error', { msg: 'Sala no encontrada' }); break; }
-                if (room.players[1]) { send(ws, 'error', { msg: 'Sala llena' }); break; }
                 if (room.state === 'ended') { send(ws, 'error', { msg: 'Partida ya terminada' }); break; }
+
+                // ── RECONEXIÓN durante batalla ─────────────────────────────
+                if (room.state === 'battle' && msg.playerIdx !== undefined) {
+                    const idx = parseInt(msg.playerIdx);
+                    if (room.disconnectTimers[idx]) {
+                        clearTimeout(room.disconnectTimers[idx]);
+                        room.disconnectTimers[idx] = null;
+                    }
+                    room.players[idx] = ws;
+                    ws._roomCode  = code;
+                    ws._playerIdx = idx;
+                    console.log(`[${code}] Jugador ${idx+1} reconectado`);
+                    // Avisar al rival
+                    const opp = room.players[idx === 0 ? 1 : 0];
+                    if (opp) send(opp, 'opponent_reconnected', { msg: '¡El rival volvió!' });
+                    // Confirmar reconexión
+                    send(ws, 'reconnected_ok', { myIdx: idx, turnCount: room.turnCount });
+                    break;
+                }
+
+                // ── PRIMERA CONEXIÓN ───────────────────────────────────────
+                if (room.players[1]) { send(ws, 'error', { msg: 'Sala llena' }); break; }
 
                 room.players[1] = ws;
                 ws._roomCode    = code;
                 ws._playerIdx   = 1;
 
-                // Cancelar timer de reconexión si existía
                 if (room.disconnectTimers[1]) { clearTimeout(room.disconnectTimers[1]); room.disconnectTimers[1] = null; }
 
-                send(ws,          'room_joined',   { code, playerIdx: 1 });
+                send(ws,              'room_joined',    { code, playerIdx: 1 });
                 send(room.players[0], 'opponent_joined', { msg: '¡Un rival entró a la sala!' });
                 console.log(`[${code}] Jugador 2 se unió`);
-
-                // Si ambos ya tienen equipo (reconexión), reanudar
-                if (room.teams[0] && room.teams[1] && room.state === 'battle') {
-                    send(ws, 'battle_resume', {
-                        opponentTeam: room.teams[0],
-                        myTeam:       room.teams[1],
-                        turnCount:    room.turnCount,
-                        activeIdx:    room.activeIdx,
-                    });
-                }
                 break;
             }
 

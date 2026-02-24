@@ -224,6 +224,26 @@ wss.on('connection', (ws) => {
                 break;
             }
 
+            // ── CANCELAR ACCIÓN ─────────────────────────────────────────────
+            case 'cancel_action': {
+                const room = rooms.get(ws._roomCode);
+                if (!room || room.state !== 'battle') break;
+                const idx = ws._playerIdx;
+
+                // Si el otro ya eligió y el turno se resolvió, no podemos cancelar
+                if (room.moves[0] && room.moves[1]) break;
+
+                // Si era un cambio, revertir el índice activo anticipado
+                if (room.moves[idx] && room.moves[idx].type === 'switch') {
+                    // Tendríamos que guardar el activeIdx original, pero como el turno no 
+                    // se resolvió, el cliente aún no procesó nada visualmente.
+                }
+
+                room.moves[idx] = null;
+                send(room.players[opponent(idx)], 'opponent_canceled', {});
+                break;
+            }
+
             // ── POKÉMON DEBILITADO → CAMBIO FORZADO ────────────────────────
             case 'forced_switch': {
                 const room = rooms.get(ws._roomCode);

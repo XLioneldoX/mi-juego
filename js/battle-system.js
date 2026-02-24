@@ -349,18 +349,30 @@ function handleFaint(side, callback) {
         return;
     }
     setTimeout(() => {
-        if (side === 'enemy') {
-            enemyActive = enemyTeam.findIndex(p => !p.fainted);
-            const newEnemy = enemyTeam[enemyActive];
-            addLog(`🔄 ¡El rival envió a ${newEnemy.name}!`, 'important');
-            // Habilidad on_switch_in del rival
-            applyAbilitySwitchIn(newEnemy, playerTeam[playerActive], (msg, t) => { addLog(msg, t); if (msg) revealEnemyStat('ability', newEnemy); });
-            updateUI();
-            if (callback) callback();
+        if (typeof MP !== 'undefined' && MP.active) {
+            // MULTIPLAYER: El jugador decide cuándo enviar su nuevo Pokémon.
+            // Si el enemigo murió, solo esperamos a que el rival elija.
+            // Si yo morí, levanto el switch de manera forzada para elegir.
+            if (side === 'player') {
+                switchForced = true;
+                isBusy = false;
+                openSwitch(true);
+            }
         } else {
-            switchForced = true;
-            isBusy = false;
-            openSwitch(true);
+            // SINGLE-PLAYER ORIGINAL
+            if (side === 'enemy') {
+                enemyActive = enemyTeam.findIndex(p => !p.fainted);
+                const newEnemy = enemyTeam[enemyActive];
+                addLog(`🔄 ¡El rival envió a ${newEnemy.name}!`, 'important');
+                // Habilidad on_switch_in del rival
+                applyAbilitySwitchIn(newEnemy, playerTeam[playerActive], (msg, t) => { addLog(msg, t); if (msg) revealEnemyStat('ability', newEnemy); });
+                updateUI();
+                if (callback) callback();
+            } else {
+                switchForced = true;
+                isBusy = false;
+                openSwitch(true);
+            }
         }
     }, 1000);
 }

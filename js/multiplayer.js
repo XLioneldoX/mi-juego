@@ -148,6 +148,11 @@ const MP = (() => {
                 if (handlers.onTurnResolve) handlers.onTurnResolve(msg);
                 break;
 
+            case 'opponent_canceled':
+                hideOpponentChoseIndicator();
+                if (typeof addLog === 'function') addLog('El rival canceló su acción', '');
+                break;
+
             case 'opponent_forced_switch':
                 if (handlers.onOpponentSwitch) handlers.onOpponentSwitch(msg.switchTo);
                 break;
@@ -239,6 +244,13 @@ const MP = (() => {
         showWaitingBanner('⏳ Esperando al rival...');
     }
 
+    function cancelAction() {
+        if (!isMultiplayer || !moveChosen) return;
+        moveChosen = false;
+        hideWaitingBanner();
+        send('cancel_action', {});
+    }
+
     function forcedSwitch(switchIdx) {
         send('forced_switch', { switchTo: switchIdx });
     }
@@ -255,9 +267,21 @@ const MP = (() => {
     function handleDisconnect() {
         if (!isMultiplayer || !roomCode) return;
         console.log('[MP] Desconectado, intentando reconectar...');
+
+        // El reconectar automático debe re-certificarse mandando el playerIdx
         setTimeout(() => {
             connect();
-            setTimeout(() => send('join_room', { code: roomCode }), 200);
+            setTimeout(() => {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'join_room',
+                        code: roomCode,
+                        playerIdx: myPlayerIdx,
+                        userName: getUsername(),
+                        userAvatar: getAvatar()
+                    }));
+                }
+            }, 300);
         }, 2000);
     }
 
@@ -339,10 +363,13 @@ const MP = (() => {
         if (!el) {
             el = document.createElement('div');
             el.id = 'mpWaitBanner';
-            el.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e1b4b;border:2px solid #4f46e5;border-radius:8px;padding:8px 16px;font-family:"Courier New",monospace;font-size:9px;color:#a5b4fc;z-index:500;';
+            el.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e1b4b;border:2px solid #4f46e5;border-radius:8px;padding:8px 16px;font-family:"Courier New",monospace;font-size:9px;color:#a5b4fc;z-index:500;text-align:center;';
             document.body.appendChild(el);
         }
-        el.textContent = msg;
+        el.innerHTML = `
+            <div style="margin-bottom:6px;">${msg}</div>
+            <button onclick="MP.cancelAction()" style="background:#ef4444;border:none;border-radius:4px;color:white;padding:4px 10px;font-size:8px;font-family:'Courier New',monospace;cursor:pointer;">❌ Cancelar Acción</button>
+        `;
         el.style.display = 'block';
         waitingOpponent = true;
     }
@@ -380,9 +407,10 @@ const MP = (() => {
         let remaining = seconds;
         el.style.display = 'block';
         const update = () => {
-            el.innerHTML = `<div style="font-size:11px;color:#ef4444;margin-bottom:8px;">⚠️ RIVAL DESCONECTADO</div>
+            el.innerHTML = `<div style="font-size:11px;color:#ef4444;margin-bottom:8px;">⚠️ PROBLEMAS DE CONEXIÓN</div>
                 <div style="font-size:9px;color:#94a3b8;">${msg}</div>
-                <div style="font-size:20px;color:#fbbf24;margin-top:8px;">${remaining}s</div>`;
+                <div style="font-size:20px;color:#fbbf24;margin-top:8px;">${remaining}s</div>
+                <button onclick="MP.reconnect()" style="margin-top:12px;background:#3b82f6;border:none;border-radius:4px;color:white;padding:6px 12px;font-size:9px;font-family:'Courier New',monospace;cursor:pointer;width:100%;font-weight:bold;">🔄 Forzar Reconexión</button>`;
         };
         update();
         disconnectCountdown = setInterval(() => { remaining--; update(); if (remaining <= 0) clearInterval(disconnectCountdown); }, 1000);
@@ -411,7 +439,7 @@ const MP = (() => {
     // ─── API PÚBLICA ──────────────────────────────────────────────────────────
     return {
         init, createRoom, joinRoom, joinWithCode,
-        chooseMove, chooseSwitch, forcedSwitch, reportBattleEnd, surrender,
+        chooseMove, chooseSwitch, cancelAction, forcedSwitch, reportBattleEnd, surrender, reconnect: handleDisconnect,
         on: (event, fn) => { handlers[event] = fn; },
         get active() { return isMultiplayer; },
         get playerIdx() { return myPlayerIdx; },

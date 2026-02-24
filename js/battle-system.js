@@ -465,5 +465,8 @@ function endBattle(playerWon) {
 
 function confirmSurrender() {
     if (!confirm('¿Seguro que quieres rendirte?')) return;
+    if (typeof MP !== 'undefined' && MP.active) {
+        MP.surrender();
+    }
     endBattle(false);
 }

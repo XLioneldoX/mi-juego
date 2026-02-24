@@ -249,6 +249,20 @@ wss.on('connection', (ws) => {
                 break;
             }
 
+            // ── RENDICIÓN (SURRENDER) ─────────────────────────────────────────
+            case 'surrender': {
+                const room = rooms.get(ws._roomCode);
+                if (!room) break;
+                const idx = ws._playerIdx;
+                const opp = room.players[opponent(idx)];
+
+                room.state = 'ended';
+                if (opp) send(opp, 'opponent_timeout', { msg: '¡El rival se rindió! Ganaste la partida.' });
+                console.log(`[${room.code}] Jugador ${idx + 1} se rindió`);
+                rooms.delete(room.code);
+                break;
+            }
+
             // ── PING ────────────────────────────────────────────────────────
             case 'ping':
                 send(ws, 'pong', {});

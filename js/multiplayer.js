@@ -55,12 +55,21 @@ const MP = (() => {
     }
 
     // ─── CONECTAR AL SERVIDOR ─────────────────────────────────────────────────
+    let pendingMessages = [];
+
     function connect() {
+        if (ws && (ws.readyState === WebSocket.CONNECTING || ws.readyState === WebSocket.OPEN)) return;
+
         const proto = location.protocol === 'https:' ? 'wss' : 'ws';
         const url = `${proto}://${location.host}`;
         ws = new WebSocket(url);
 
-        ws.onopen = () => { console.log('[MP] Conectado al servidor'); };
+        ws.onopen = () => {
+            console.log('[MP] Conectado al servidor');
+            while (pendingMessages.length > 0) {
+                ws.send(pendingMessages.shift());
+            }
+        };
         ws.onmessage = (e) => handleMessage(JSON.parse(e.data));
         ws.onclose = () => handleDisconnect();
         ws.onerror = () => updateLobbyStatus('❌ Error de conexión. Recarga la página.', 'error');
@@ -70,8 +79,13 @@ const MP = (() => {
     }
 
     function send(type, payload) {
-        if (ws && ws.readyState === WebSocket.OPEN)
-            ws.send(JSON.stringify({ type, ...payload }));
+        const data = JSON.stringify({ type, ...payload });
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(data);
+        } else {
+            pendingMessages.push(data);
+            if (!ws || ws.readyState === WebSocket.CLOSED) connect();
+        }
     }
 
     // ─── MENSAJES DEL SERVIDOR ───────────────────────────────────────────────
@@ -186,11 +200,12 @@ const MP = (() => {
         return av;
     }
 
-    function createRoom() { connect(); setTimeout(() => send('create_room', { userName: getUsername(), userAvatar: getAvatar() }), 200); }
+    function createRoom() {
+        send('create_room', { userName: getUsername(), userAvatar: getAvatar() });
+    }
 
     function joinRoom(code) {
-        connect();
-        setTimeout(() => send('join_room', { code: code.toUpperCase().trim(), userName: getUsername(), userAvatar: getAvatar() }), 200);
+        send('join_room', { code: code.toUpperCase().trim(), userName: getUsername(), userAvatar: getAvatar() });
     }
 
     function submitTeam() {
@@ -230,6 +245,10 @@ const MP = (() => {
 
     function reportBattleEnd(winnerIdx) {
         send('battle_end', { winner: winnerIdx });
+    }
+
+    function surrender() {
+        send('surrender', {});
     }
 
     // ─── RECONEXIÓN ───────────────────────────────────────────────────────────
@@ -392,7 +411,7 @@ const MP = (() => {
     // ─── API PÚBLICA ──────────────────────────────────────────────────────────
     return {
         init, createRoom, joinRoom, joinWithCode,
-        chooseMove, chooseSwitch, forcedSwitch, reportBattleEnd,
+        chooseMove, chooseSwitch, forcedSwitch, reportBattleEnd, surrender,
         on: (event, fn) => { handlers[event] = fn; },
         get active() { return isMultiplayer; },
         get playerIdx() { return myPlayerIdx; },

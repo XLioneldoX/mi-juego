@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 applyAbilitySwitchIn(playerTeam[playerActive], enemyTeam[enemyActive], (msg, t) => addLog(msg, t));
                 updateUI(); setTimeout(cb, 400);
             } else {
-                executeAttack(player, enemy, playerMove.moveName, 'player', cb);
+                executeAttack(playerTeam[playerActive], enemyTeam[enemyActive], playerMove.moveName, 'player', cb);
             }
         };
         const handleEnemyAction = (cb) => {
@@ -336,19 +336,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 applyAbilitySwitchIn(enemyTeam[enemyActive], playerTeam[playerActive], (msg, t) => { addLog(msg, t); if (msg) revealEnemyStat('ability', enemyTeam[enemyActive]); });
                 updateUI(); setTimeout(cb, 400);
             } else {
-                executeAttack(enemy, player, enemyMove.moveName, 'enemy', cb);
+                executeAttack(enemyTeam[enemyActive], playerTeam[playerActive], enemyMove.moveName, 'enemy', cb);
             }
         };
 
         if (first === 'player') {
             handlePlayerAction(() => {
-                if (!enemy.fainted && !player.fainted && !battleOver)
+                if (!enemyTeam[enemyActive].fainted && !playerTeam[playerActive].fainted && !battleOver)
                     setTimeout(() => handleEnemyAction(() => afterTurn()), 800);
                 else afterTurn();
             });
         } else {
             handleEnemyAction(() => {
-                if (!player.fainted && !enemy.fainted && !battleOver)
+                if (!playerTeam[playerActive].fainted && !enemyTeam[enemyActive].fainted && !battleOver)
                     setTimeout(() => handlePlayerAction(() => afterTurn()), 800);
                 else afterTurn();
             });

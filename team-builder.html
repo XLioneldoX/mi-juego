@@ -4,160 +4,241 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Kanto Showdown - Constructor de Equipo</title>
-    <!-- fuente offline: usa monospace del sistema -->
+    <!-- Aplica tema ANTES de renderizar -->
+    <script>(function(){var t=localStorage.getItem('prostarTheme')||'default';document.documentElement.setAttribute('data-theme',t);})();</script>
     <style>
+        /* ══════════════════════════════════════════════
+           SISTEMA DE TEMAS
+           ══════════════════════════════════════════════ */
+        :root {
+            --t-bg:         #0a0a1a;
+            --t-panel:      #0f172a;
+            --t-panel2:     #060612;
+            --t-border:     #1e293b;
+            --t-border2:    #0f172a;
+            --t-gold:       #fbbf24;
+            --t-gold-dim:   rgba(251,191,36,0.05);
+            --t-gold-glow:  rgba(251,191,36,0.5);
+            --t-red:        #ef4444;
+            --t-green:      #22c55e;
+            --t-blue:       #3b82f6;
+            --t-text:       white;
+            --t-text-muted: #94a3b8;
+            --t-text-dim:   #64748b;
+            --t-header-g1:  #0f172a;
+            --t-header-g2:  #1e1b4b;
+            --t-btn-battle: linear-gradient(135deg,#f59e0b,#ef4444);
+            --t-btn-battle-shadow: #b45309;
+            --t-btn-multi:  linear-gradient(135deg,#1e1b4b,#1e3a5f);
+            --t-btn-multi-border: #0891b2;
+            --t-btn-multi-color:  #67e8f9;
+            --t-input-bg:   #111827;
+            --t-input-border:#334155;
+        }
+
+        [data-theme="helodian"] {
+            --t-bg:         #06000a;
+            --t-panel:      #0d0010;
+            --t-panel2:     #080010;
+            --t-border:     #2d0020;
+            --t-border2:    #180010;
+            --t-gold:       #f59e0b;
+            --t-gold-dim:   rgba(245,158,11,0.05);
+            --t-gold-glow:  rgba(239,68,68,0.5);
+            --t-red:        #ef4444;
+            --t-green:      #22c55e;
+            --t-blue:       #dc2626;
+            --t-text:       white;
+            --t-text-muted: #94a3b8;
+            --t-text-dim:   #6b7280;
+            --t-header-g1:  #180008;
+            --t-header-g2:  #3b0018;
+            --t-btn-battle: linear-gradient(135deg,#7f1d1d,#b45309,#ef4444);
+            --t-btn-battle-shadow: #7f1d1d;
+            --t-btn-multi:  linear-gradient(135deg,#1a0010,#2d0018);
+            --t-btn-multi-border: #8b0030;
+            --t-btn-multi-color:  #fca5a5;
+            --t-input-bg:   #140008;
+            --t-input-border:#2d0018;
+        }
+
+        [data-theme="etherdiel"] {
+            --t-bg:         #020a1a;
+            --t-panel:      #050f20;
+            --t-panel2:     #030c18;
+            --t-border:     #1e3a5f;
+            --t-border2:    #0d1f35;
+            --t-gold:       #38bdf8;
+            --t-gold-dim:   rgba(56,189,248,0.05);
+            --t-gold-glow:  rgba(56,189,248,0.5);
+            --t-red:        #f87171;
+            --t-green:      #34d399;
+            --t-blue:       #3b82f6;
+            --t-text:       white;
+            --t-text-muted: #94a3b8;
+            --t-text-dim:   #64748b;
+            --t-header-g1:  #050f20;
+            --t-header-g2:  #0a1f40;
+            --t-btn-battle: linear-gradient(135deg,#1d4ed8,#38bdf8);
+            --t-btn-battle-shadow: #1e3a8a;
+            --t-btn-multi:  linear-gradient(135deg,#0a1f40,#0d2850);
+            --t-btn-multi-border: #38bdf8;
+            --t-btn-multi-color:  #bae6fd;
+            --t-input-bg:   #060f20;
+            --t-input-border:#1e3a5f;
+        }
+
+        /* ══════════════════════════════════════════════
+           ESTILOS PRINCIPALES
+           ══════════════════════════════════════════════ */
         * { margin:0; padding:0; box-sizing:border-box; }
-        :root { --bg:#0a0a1a; --panel:#0f172a; --border:#1e293b; --gold:#fbbf24; --red:#ef4444; --green:#22c55e; --blue:#3b82f6; }
-        body { font-family:'Courier New',Courier,monospace; background:var(--bg); color:white; height:100vh; overflow:hidden; font-size:13px; }
+        :root { --bg:var(--t-bg); --panel:var(--t-panel); --border:var(--t-border); --gold:var(--t-gold); --red:var(--t-red); --green:var(--t-green); --blue:var(--t-blue); }
+
+        body { font-family:'Courier New',Courier,monospace; background:var(--t-bg); color:var(--t-text); height:100vh; overflow:hidden; font-size:13px; }
         body::after { content:''; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.015) 2px,rgba(0,0,0,.015) 4px); z-index:9999; }
 
-        /* ── HEADER ─────────────────────────────────────────────────── */
-        .header { background:linear-gradient(90deg,#0f172a,#1e1b4b,#0f172a); border-bottom:2px solid var(--gold); padding:.75rem 1.5rem; display:flex; align-items:center; justify-content:space-between; height:52px; }
-        .header-title { font-size:13px; color:var(--gold); text-shadow:0 0 20px rgba(251,191,36,.5); }
-        .nav-btn { padding:.4rem .8rem; background:transparent; border:1px solid var(--border); color:#64748b; font-family:'Courier New',Courier,monospace; font-size: 13px; cursor:pointer; border-radius:4px; text-decoration:none; transition:all .15s; }
-        .nav-btn:hover { border-color:var(--gold); color:var(--gold); }
+        /* ── HEADER ───────────────────────────────────────────── */
+        .header { background:linear-gradient(90deg,var(--t-header-g1),var(--t-header-g2),var(--t-header-g1)); border-bottom:2px solid var(--t-gold); padding:.75rem 1.5rem; display:flex; align-items:center; justify-content:space-between; height:52px; }
+        .header-title { font-size:13px; color:var(--t-gold); text-shadow:0 0 20px var(--t-gold-glow); }
+        .nav-btn { padding:.4rem .8rem; background:transparent; border:1px solid var(--t-border); color:var(--t-text-dim); font-family:'Courier New',Courier,monospace; font-size:13px; cursor:pointer; border-radius:4px; text-decoration:none; transition:all .15s; }
+        .nav-btn:hover { border-color:var(--t-gold); color:var(--t-gold); }
 
-        /* ── LAYOUT 2 COLUMNAS ──────────────────────────────────────── */
+        /* ── LAYOUT ───────────────────────────────────────────── */
         .layout { display:grid; grid-template-columns:380px 1fr; height:calc(100vh - 52px); overflow:hidden; }
 
-        /* ── PANEL IZQUIERDO ────────────────────────────────────────── */
-        .left-panel { background:#060612; border-right:2px solid #1e293b; display:flex; flex-direction:column; overflow:hidden; }
+        /* ── PANEL IZQUIERDO ──────────────────────────────────── */
+        .left-panel { background:var(--t-panel2); border-right:2px solid var(--t-border); display:flex; flex-direction:column; overflow:hidden; }
 
-        /* Equipo activo */
-        .team-section { padding:12px 14px 8px; border-bottom:1px solid #1e293b; }
-        .section-title { font-size: 13px; color:var(--gold); letter-spacing:1px; margin-bottom:8px; }
+        /* Equipo */
+        .team-section { padding:12px 14px 8px; border-bottom:1px solid var(--t-border); }
+        .section-title { font-size:13px; color:var(--t-gold); letter-spacing:1px; margin-bottom:8px; }
         .team-slots { display:flex; gap:5px; margin-bottom:6px; }
-        .team-slot { position:relative; width:52px; height:52px; background:rgba(255,255,255,.02); border:2px solid #1e293b; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .15s; overflow:hidden; }
-        .team-slot.filled:hover { border-color:var(--gold); transform:translateY(-2px); }
-        .team-slot.editing { border-color:var(--gold)!important; box-shadow:0 0 10px rgba(251,191,36,.4); }
+        .team-slot { position:relative; width:52px; height:52px; background:rgba(255,255,255,.02); border:2px solid var(--t-border); border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .15s; overflow:hidden; }
+        .team-slot.filled:hover { border-color:var(--t-gold); transform:translateY(-2px); }
+        .team-slot.editing { border-color:var(--t-gold)!important; box-shadow:0 0 10px var(--t-gold-glow); }
         .team-slot img { width:46px; height:46px; object-fit:contain; image-rendering:pixelated; }
-        .slot-empty-icon { font-size:20px; color:#1e293b; }
-        .slot-remove { position:absolute; top:1px; right:2px; font-size: 13px; color:#ef4444; cursor:pointer; opacity:0; transition:opacity .15s; line-height:1; }
+        .slot-empty-icon { font-size:20px; color:var(--t-border); }
+        .slot-remove { position:absolute; top:1px; right:2px; font-size:13px; color:var(--t-red); cursor:pointer; opacity:0; transition:opacity .15s; line-height:1; }
         .team-slot:hover .slot-remove { opacity:1; }
         .slot-nature-badge { position:absolute; bottom:0; left:0; right:0; font-size:4.5px; padding:1px 2px; text-align:center; }
-        .slot-item-dot { position:absolute; top:2px; left:2px; width:5px; height:5px; border-radius:50%; background:var(--gold); }
-        .team-meta { display:flex; justify-content:space-between; align-items:center; font-size: 8.5px; color:#475569; }
-        #minWarning { color:#ef4444; }
+        .slot-item-dot { position:absolute; top:2px; left:2px; width:5px; height:5px; border-radius:50%; background:var(--t-gold); }
+        .team-meta { display:flex; justify-content:space-between; align-items:center; font-size:8.5px; color:var(--t-text-dim); }
+        #minWarning { color:var(--t-red); }
 
-        /* Botones de acción */
-        .action-buttons { padding:10px 14px; border-bottom:1px solid #1e293b; display:flex; flex-direction:column; gap:6px; }
-        .action-btn { width:100%; padding:8px; border:none; border-radius:5px; font-family:'Courier New',Courier,monospace; font-size: 12px; cursor:pointer; transition:all .15s; }
+        /* Botones */
+        .action-buttons { padding:10px 14px; border-bottom:1px solid var(--t-border); display:flex; flex-direction:column; gap:6px; }
+        .action-btn { width:100%; padding:8px; border:none; border-radius:5px; font-family:'Courier New',Courier,monospace; font-size:12px; cursor:pointer; transition:all .15s; }
         .action-btn:hover { filter:brightness(1.1); }
         .action-btn:disabled { opacity:.4; cursor:not-allowed; filter:none; }
-        .btn-battle { background:linear-gradient(135deg,#f59e0b,#ef4444); color:#1a1a2e; font-size:13px; box-shadow:0 3px 0 #b45309; }
+        .btn-battle { background:var(--t-btn-battle); color:#1a1a2e; font-size:13px; box-shadow:0 3px 0 var(--t-btn-battle-shadow); }
         .btn-row { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-        .btn-save  { background:#166534; color:#4ade80; font-size: 13px; }
-        .btn-load  { background:#1e1b4b; color:#818cf8; border:1px solid #3730a3; font-size: 13px; }
-        .btn-trainer{ background:#4c1d95; color:#c4b5fd; font-size: 13px; }
-        .btn-wild   { background:#164e63; color:#67e8f9; font-size: 13px; }
-        .btn-multi  { background:linear-gradient(135deg,#1e1b4b,#1e3a5f); color:#67e8f9;
-                      border:2px solid #0891b2; font-size:13px; }
-        #savedStatus { font-size: 12px; color:#334155; text-align:center; padding:3px; border:1px solid #1e293b; border-radius:3px; }
+        .btn-save    { background:#166534; color:#4ade80; font-size:13px; }
+        .btn-load    { background:var(--t-panel); color:var(--t-gold); border:1px solid var(--t-border); font-size:13px; }
+        .btn-trainer { background:#4c1d95; color:#c4b5fd; font-size:13px; }
+        .btn-wild    { background:#164e63; color:#67e8f9; font-size:13px; }
+        .btn-multi   { background:var(--t-btn-multi); color:var(--t-btn-multi-color); border:2px solid var(--t-btn-multi-border); font-size:13px; }
+        #savedStatus { font-size:12px; color:var(--t-border); text-align:center; padding:3px; border:1px solid var(--t-border); border-radius:3px; }
 
         /* Pokémon disponibles */
         .available-section { flex:1; overflow-y:auto; padding:10px 14px; }
         .pokemon-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
-        .poke-card { background:rgba(255,255,255,.03); border:2px solid var(--border); border-radius:7px; padding:6px 4px; cursor:pointer; transition:all .15s; text-align:center; }
-        .poke-card:hover:not(.in-team) { border-color:var(--gold); background:rgba(251,191,36,.05); transform:translateY(-2px); }
-        .poke-card.in-team { border-color:var(--green); background:rgba(34,197,94,.06); opacity:.55; cursor:not-allowed; }
+        .poke-card { background:rgba(255,255,255,.03); border:2px solid var(--t-border); border-radius:7px; padding:6px 4px; cursor:pointer; transition:all .15s; text-align:center; }
+        .poke-card:hover:not(.in-team) { border-color:var(--t-gold); background:var(--t-gold-dim); transform:translateY(-2px); }
+        .poke-card.in-team { border-color:var(--t-green); background:rgba(34,197,94,.06); opacity:.55; cursor:not-allowed; }
         .poke-card img { width:52px; height:52px; object-fit:contain; image-rendering:pixelated; }
-        .poke-name { font-size: 9.5px; color:#94a3b8; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .poke-name { font-size:9.5px; color:var(--t-text-muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         .poke-types { display:flex; gap:2px; justify-content:center; margin-top:3px; flex-wrap:wrap; }
-        .type-badge { font-size: 13px; padding:1px 4px; border-radius:2px; }
+        .type-badge { font-size:13px; padding:1px 4px; border-radius:2px; }
 
-        /* Type colors */
         .type-FUEGO,.type-FIRE{background:#dc2626;} .type-AGUA,.type-WATER{background:#2563eb;} .type-PLANTA{background:#16a34a;}
         .type-ELECTRICO,.type-ELÉCTRICO{background:#ca8a04;color:#1a1a2e;} .type-FANTASMA{background:#7e22ce;} .type-TIERRA{background:#92400e;}
         .type-NORMAL{background:#6b7280;} .type-PSÍQUICO,.type-PSIQUICO{background:#db2777;} .type-LUCHA{background:#c2410c;}
         .type-VOLADOR{background:#4f46e5;} .type-VENENO{background:#7c3aed;} .type-HIELO{background:#0891b2;}
         .type-ROCA{background:#a16207;} .type-DRAGÓN,.type-DRAGON{background:#4338ca;} .type-SINIESTRO{background:#1f2937;border:1px solid #374151;}
         .type-ACERO{background:#64748b;} .type-BICHO{background:#4d7c0f;} .type-HADA{background:#f472b6;color:#1a1a2e;}
-        ::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-thumb{background:#1e293b;border-radius:2px;}
 
-        /* ── PANEL DERECHO ───────────────────────────────────────────── */
-        .right-panel { background:var(--bg); overflow-y:auto; padding:1.5rem; display:flex; flex-direction:column; gap:14px; }
+        ::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-thumb{background:var(--t-border);border-radius:2px;}
 
-        /* Pokémon del equipo como selector visual */
-        .team-editor-bar { display:none; /* se muestra con JS cuando hay equipo */ }
+        /* ── PANEL DERECHO ────────────────────────────────────── */
+        .right-panel { background:var(--t-bg); overflow-y:auto; padding:1.5rem; display:flex; flex-direction:column; gap:14px; }
+
+        .team-editor-bar { display:none; }
         .team-editor-bar.visible { display:block; }
-        .teb-title { font-size: 13px; color:var(--gold); margin-bottom:8px; }
+        .teb-title { font-size:13px; color:var(--t-gold); margin-bottom:8px; }
         .teb-slots { display:flex; gap:8px; flex-wrap:wrap; }
         .teb-slot { position:relative; cursor:pointer; transition:all .15s; }
-        .teb-slot img { width:64px; height:64px; object-fit:contain; image-rendering:pixelated; border:2px solid #1e293b; border-radius:8px; background:rgba(255,255,255,.02); }
-        .teb-slot:hover img { border-color:#fbbf24; }
-        .teb-slot.active img { border-color:var(--gold); box-shadow:0 0 14px rgba(251,191,36,.5); }
-        .teb-slot-name { font-size: 13px; color:#64748b; text-align:center; margin-top:3px; }
-        .teb-slot.active .teb-slot-name { color:var(--gold); }
+        .teb-slot img { width:64px; height:64px; object-fit:contain; image-rendering:pixelated; border:2px solid var(--t-border); border-radius:8px; background:rgba(255,255,255,.02); }
+        .teb-slot:hover img { border-color:var(--t-gold); }
+        .teb-slot.active img { border-color:var(--t-gold); box-shadow:0 0 14px var(--t-gold-glow); }
+        .teb-slot-name { font-size:13px; color:var(--t-text-dim); text-align:center; margin-top:3px; }
+        .teb-slot.active .teb-slot-name { color:var(--t-gold); }
 
-        /* Panel de entrenadores */
+        /* Paneles de entrenador/salvaje */
         .trainer-select-panel { display:none; }
         .trainer-select-panel.visible { display:block; }
         .trainer-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; }
-        .trainer-card { background:#0f172a; border:2px solid #1e293b; border-radius:8px; padding:14px 12px; cursor:pointer; transition:all .15s; text-align:center; }
-        .trainer-card:hover { transform:translateY(-3px); box-shadow:0 6px 20px rgba(0,0,0,.5); }
+        .trainer-card { background:var(--t-panel); border:2px solid var(--t-border); border-radius:8px; padding:14px 12px; cursor:pointer; transition:all .15s; text-align:center; }
+        .trainer-card:hover { transform:translateY(-3px); box-shadow:0 6px 20px rgba(0,0,0,.5); border-color:var(--t-gold); }
         .trainer-avatar { font-size:32px; margin-bottom:8px; }
-        .trainer-name { font-size: 13px; margin-bottom:4px; }
-        .trainer-title { font-size: 9.5px; color:#64748b; margin-bottom:6px; line-height:1.6; }
+        .trainer-name { font-size:13px; margin-bottom:4px; }
+        .trainer-title { font-size:9.5px; color:var(--t-text-dim); margin-bottom:6px; line-height:1.6; }
         .trainer-team-preview { display:flex; justify-content:center; gap:3px; flex-wrap:wrap; }
         .trainer-team-preview img { width:24px; height:24px; image-rendering:pixelated; }
 
-        /* Panel salvaje */
         .wild-select-panel { display:none; }
         .wild-select-panel.visible { display:block; }
         .wild-grid { display:flex; flex-direction:column; gap:10px; max-width:500px; }
-        .wild-card { background:#0f172a; border:2px solid #1e293b; border-radius:8px; padding:16px; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:14px; }
-        .wild-card:hover { border-color:var(--gold); transform:translateY(-2px); }
+        .wild-card { background:var(--t-panel); border:2px solid var(--t-border); border-radius:8px; padding:16px; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:14px; }
+        .wild-card:hover { border-color:var(--t-gold); transform:translateY(-2px); }
         .wild-icon { font-size:28px; }
-        .wc-title { font-size: 13px; margin-bottom:5px; }
-        .wc-desc  { font-size: 8.5px; color:#64748b; line-height:1.7; }
+        .wc-title { font-size:13px; margin-bottom:5px; }
+        .wc-desc  { font-size:8.5px; color:var(--t-text-dim); line-height:1.7; }
 
-        /* Placeholder central */
-        .right-placeholder { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; color:#1e293b; gap:12px; }
+        .right-placeholder { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; color:var(--t-border); gap:12px; }
         .right-placeholder .ph-icon { font-size:64px; }
-        .right-placeholder .ph-text { font-size: 12px; text-align:center; line-height:2.2; }
+        .right-placeholder .ph-text { font-size:12px; text-align:center; line-height:2.2; }
 
         /* Toast */
-        .toast { position:fixed; bottom:2rem; right:2rem; background:#0f172a; border:2px solid var(--gold); color:var(--gold); padding:.6rem 1.2rem; border-radius:4px; font-size: 12px; z-index:1000; animation:toastIn .3s; }
-        @keyframes toastIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        .toast { position:fixed; bottom:2rem; right:2rem; background:var(--t-panel); border:2px solid var(--t-gold); color:var(--t-gold); padding:.6rem 1.2rem; border-radius:4px; font-size:12px; z-index:1000; animation:toastIn .3s; }
+        @keyframes toastIn { from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
 
-        /* ══════════════════════════════════════════════════════════════
-           EDITOR MODAL
-           ══════════════════════════════════════════════════════════════ */
+        /* ── EDITOR MODAL / INLINE ────────────────────────────── */
         .editor-modal { position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:500; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
         .editor-modal.open { display:flex; }
-        .editor-modal-box { background:#0d1117; border:2px solid var(--gold); border-radius:10px; width:700px; max-width:96vw; max-height:92vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 0 60px rgba(251,191,36,.15); animation:modalIn .2s; }
-        @keyframes modalIn { from{opacity:0;transform:scale(.95) translateY(-10px)} to{opacity:1;transform:scale(1) translateY(0)} }
+        .editor-modal-box { background:#0d1117; border:2px solid var(--t-gold); border-radius:10px; width:700px; max-width:96vw; max-height:92vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 0 60px var(--t-gold-glow); animation:modalIn .2s; }
+        @keyframes modalIn { from{opacity:0;transform:scale(.95) translateY(-10px);}to{opacity:1;transform:scale(1) translateY(0);} }
 
-        .em-header { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:linear-gradient(90deg,#0f172a,#1e1b4b,#0f172a); border-bottom:2px solid #1e293b; flex-shrink:0; }
+        .em-header { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:linear-gradient(90deg,var(--t-header-g1),var(--t-header-g2),var(--t-header-g1)); border-bottom:2px solid var(--t-border); flex-shrink:0; }
         .em-header-left { display:flex; align-items:center; gap:12px; }
         .em-header-sprite { width:60px; height:60px; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
         .em-header-name  { font-size:12px; margin-bottom:4px; }
         .em-header-types { display:flex; gap:4px; margin-bottom:3px; }
-        .em-header-ability { font-size: 12px; color:#a5b4fc; }
-        .em-close-btn { background:transparent; border:1px solid #374151; color:#64748b; padding:5px 10px; border-radius:4px; cursor:pointer; font-family:'Courier New',Courier,monospace; font-size: 12px; transition:all .15s; }
-        .em-close-btn:hover { border-color:#ef4444; color:#ef4444; }
+        .em-header-ability { font-size:12px; color:#a5b4fc; }
+        .em-close-btn { background:transparent; border:1px solid #374151; color:var(--t-text-dim); padding:5px 10px; border-radius:4px; cursor:pointer; font-family:'Courier New',Courier,monospace; font-size:12px; transition:all .15s; }
+        .em-close-btn:hover { border-color:var(--t-red); color:var(--t-red); }
 
-        .em-tabs { display:flex; background:#060612; border-bottom:2px solid #1e293b; flex-shrink:0; }
-        .em-tab { flex:1; padding:9px 4px; background:transparent; border:none; border-bottom:3px solid transparent; color:#475569; font-family:'Courier New',Courier,monospace; font-size: 8.5px; cursor:pointer; transition:all .15s; }
-        .em-tab:hover { color:#94a3b8; }
-        .em-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+        .em-tabs { display:flex; background:var(--t-panel2); border-bottom:2px solid var(--t-border); flex-shrink:0; }
+        .em-tab { flex:1; padding:9px 4px; background:transparent; border:none; border-bottom:3px solid transparent; color:#475569; font-family:'Courier New',Courier,monospace; font-size:8.5px; cursor:pointer; transition:all .15s; }
+        .em-tab:hover { color:var(--t-text-muted); }
+        .em-tab.active { color:var(--t-gold); border-bottom-color:var(--t-gold); }
 
         .em-body { flex:1; overflow-y:auto; padding:14px 16px; }
-        .em-footer { padding:10px 16px; border-top:2px solid #1e293b; background:#060612; flex-shrink:0; }
-        .em-save-btn { width:100%; padding:9px; background:linear-gradient(135deg,#f59e0b,#d97706); border:none; border-radius:5px; color:#0a0a0a; font-family:'Courier New',Courier,monospace; font-size: 12px; cursor:pointer; transition:all .15s; }
+        .em-footer { padding:10px 16px; border-top:2px solid var(--t-border); background:var(--t-panel2); flex-shrink:0; }
+        .em-save-btn { width:100%; padding:9px; background:var(--t-btn-battle); border:none; border-radius:5px; color:#0a0a0a; font-family:'Courier New',Courier,monospace; font-size:12px; cursor:pointer; transition:all .15s; }
         .em-save-btn:hover { filter:brightness(1.1); }
 
         /* Movimientos */
-        .moves-count-badge { display:inline-block; font-size: 13px; padding:2px 8px; border-radius:12px; margin-bottom:8px; }
+        .moves-count-badge { display:inline-block; font-size:13px; padding:2px 8px; border-radius:12px; margin-bottom:8px; }
         .moves-count-ok   { background:rgba(34,197,94,.15); color:#22c55e; border:1px solid #22c55e; }
         .moves-count-warn { background:rgba(251,191,36,.15); color:#fbbf24; border:1px solid #fbbf24; }
         .moves-grid { display:grid; grid-template-columns:1fr 1fr; gap:5px; }
-        .move-option { background:#111827; border:2px solid #1e293b; border-radius:5px; padding:7px; cursor:pointer; transition:all .15s; opacity:.7; }
+        .move-option { background:var(--t-input-bg); border:2px solid var(--t-border); border-radius:5px; padding:7px; cursor:pointer; transition:all .15s; opacity:.7; }
         .move-option:hover { border-color:#475569; opacity:1; }
-        .move-option.selected { border-color:var(--gold); opacity:1; background:#1c1a0e; }
-        .mo-name { font-size: 13px; color:white; margin-bottom:3px; }
-        .mo-meta { font-size: 12px; color:#64748b; }
-        .mo-desc { font-size: 9.5px; color:#475569; line-height:1.4; margin-top:2px; }
+        .move-option.selected { border-color:var(--t-gold); opacity:1; background:var(--t-panel); }
+        .mo-name { font-size:13px; color:white; margin-bottom:3px; }
+        .mo-meta { font-size:12px; color:var(--t-text-dim); }
+        .mo-desc { font-size:9.5px; color:#475569; line-height:1.4; margin-top:2px; }
+
         .mv-FUEGO{border-left:3px solid #ef4444;} .mv-AGUA{border-left:3px solid #3b82f6;} .mv-PLANTA{border-left:3px solid #22c55e;}
         .mv-ELECTRICO,.mv-ELÉCTRICO{border-left:3px solid #eab308;} .mv-PSIQUICO,.mv-PSÍQUICO{border-left:3px solid #ec4899;}
         .mv-HIELO{border-left:3px solid #67e8f9;} .mv-DRAGON,.mv-DRAGÓN{border-left:3px solid #6366f1;} .mv-ACERO{border-left:3px solid #94a3b8;}
@@ -165,92 +246,101 @@
         .mv-VOLADOR{border-left:3px solid #7dd3fc;} .mv-FANTASMA{border-left:3px solid #7c3aed;} .mv-ROCA{border-left:3px solid #a8a29e;}
         .mv-NORMAL{border-left:3px solid #64748b;} .mv-SINIESTRO{border-left:3px solid #374151;} .mv-BICHO{border-left:3px solid #84cc16;} .mv-HADA{border-left:3px solid #f472b6;}
 
-        /* Naturaleza + EVs en misma pestaña */
+        /* Naturaleza + EVs */
         .nature-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(115px,1fr)); gap:4px; margin-bottom:12px; }
-        .nature-option { padding:6px 8px; background:#111827; border:2px solid #1e293b; border-radius:5px; cursor:pointer; transition:all .15s; font-size: 8.5px; }
+        .nature-option { padding:6px 8px; background:var(--t-input-bg); border:2px solid var(--t-border); border-radius:5px; cursor:pointer; transition:all .15s; font-size:8.5px; }
         .nature-option:hover { border-color:#334155; }
-        .nature-option.selected { border-color:var(--gold); background:#1c1a0e; color:var(--gold); }
+        .nature-option.selected { border-color:var(--t-gold); background:var(--t-panel); color:var(--t-gold); }
 
-        /* Habilidad (2 opciones) + Objeto */
+        /* Objetos */
         .items-list { display:flex; flex-direction:column; gap:5px; }
-        .item-option { display:flex; align-items:center; gap:10px; background:#111827; border:2px solid #1e293b; border-radius:6px; padding:8px 10px; cursor:pointer; transition:all .15s; }
+        .item-option { display:flex; align-items:center; gap:10px; background:var(--t-input-bg); border:2px solid var(--t-border); border-radius:6px; padding:8px 10px; cursor:pointer; transition:all .15s; }
         .item-option:hover { border-color:#334155; }
-        .item-option.selected { border-color:var(--gold); background:#1c1a0e; }
+        .item-option.selected { border-color:var(--t-gold); background:var(--t-panel); }
         .item-icon { font-size:18px; flex-shrink:0; }
-        .item-option-name { font-size: 13px; color:white; margin-bottom:3px; }
-        .item-option-desc { font-size: 12px; color:#64748b; line-height:1.5; }
+        .item-option-name { font-size:13px; color:white; margin-bottom:3px; }
+        .item-option-desc { font-size:12px; color:var(--t-text-dim); line-height:1.5; }
 
         /* EVs */
-        .evs-total { font-size: 8.5px; margin-bottom:8px; }
+        .evs-total { font-size:8.5px; margin-bottom:8px; }
         .evs-total.ok { color:#22c55e; } .evs-total.over { color:#ef4444; }
         .stat-row { margin-bottom:9px; }
-        .stat-label-row { display:flex; justify-content:space-between; font-size: 13px; margin-bottom:4px; }
+        .stat-label-row { display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px; }
         .stat-controls { display:flex; align-items:center; gap:4px; }
-        .stat-btn { background:#1e293b; border:1px solid #334155; color:white; padding:2px 7px; font-size: 13px; cursor:pointer; border-radius:3px; }
-        .stat-btn:hover { background:#334155; }
-        input[type=range].stat-slider { accent-color:var(--gold); height:4px; cursor:pointer; flex:1; }
-        .stat-bar-bg   { height:3px; background:#1e293b; border-radius:2px; margin:3px 0 2px; overflow:hidden; }
+        .stat-btn { background:var(--t-border); border:1px solid var(--t-border2); color:white; padding:2px 7px; font-size:13px; cursor:pointer; border-radius:3px; }
+        .stat-btn:hover { background:var(--t-input-border); }
+        input[type=range].stat-slider { accent-color:var(--t-gold); height:4px; cursor:pointer; flex:1; }
+        .stat-bar-bg   { height:3px; background:var(--t-border); border-radius:2px; margin:3px 0 2px; overflow:hidden; }
         .stat-bar-fill { height:100%; border-radius:2px; transition:width .2s; }
-        .stat-evs { font-size: 9.5px; color:#475569; }
-        .editor-hint { font-size: 9.5px; color:#334155; margin-top:8px; line-height:1.8; }
+        .stat-evs { font-size:9.5px; color:#475569; }
+        .editor-hint { font-size:9.5px; color:var(--t-border); margin-top:8px; line-height:1.8; }
         .editor-hint code { color:#7dd3fc; }
 
-        /* Modal mis equipos */
-        .saved-team-row { display:flex; align-items:center; gap:10px; padding:10px; background:#0f172a; border:1px solid #1e293b; border-radius:6px; margin-bottom:6px; }
+        /* Mis equipos */
+        .saved-team-row { display:flex; align-items:center; gap:10px; padding:10px; background:var(--t-panel); border:1px solid var(--t-border); border-radius:6px; margin-bottom:6px; }
         .saved-team-sprites { display:flex; gap:2px; }
         .saved-team-sprites img { width:30px; height:30px; image-rendering:pixelated; }
-        .saved-team-name { flex:1; font-size: 12px; color:white; }
+        .saved-team-name { flex:1; font-size:12px; color:white; }
         .saved-team-actions { display:flex; gap:5px; }
-        .stm-btn { padding:4px 8px; border:none; border-radius:3px; font-family:'Courier New',Courier,monospace; font-size: 12px; cursor:pointer; }
+        .stm-btn { padding:4px 8px; border:none; border-radius:3px; font-family:'Courier New',Courier,monospace; font-size:12px; cursor:pointer; }
         .stm-btn.load { background:#166534; color:#4ade80; }
         .stm-btn.del  { background:#7f1d1d; color:#fca5a5; }
 
-        /* ── EDITOR INLINE (panel derecho) ────────────────── */
+        /* Editor inline */
         .editor-inline { display:none; max-height:calc(100vh - 52px - 110px); }
         .editor-inline.visible { display:flex; flex-direction:column; gap:0; overflow:hidden; }
-
-        .ei-header { display:flex; align-items:center; gap:12px; padding:14px 16px;
-            background:linear-gradient(90deg,#0f172a,#1e1b4b,#0f172a);
-            border-bottom:2px solid #1e293b; flex-shrink:0; }
-        .ei-sprite { width:56px; height:56px; object-fit:contain; image-rendering:pixelated;
-            filter:drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
-        .ei-name  { font-size: 13px; margin-bottom:4px; }
+        .ei-header { display:flex; align-items:center; gap:12px; padding:14px 16px; background:linear-gradient(90deg,var(--t-header-g1),var(--t-header-g2),var(--t-header-g1)); border-bottom:2px solid var(--t-border); flex-shrink:0; }
+        .ei-sprite { width:56px; height:56px; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
+        .ei-name  { font-size:13px; margin-bottom:4px; }
         .ei-types { display:flex; gap:4px; margin-bottom:3px; }
-        .ei-ability-text { font-size: 12px; color:#a5b4fc; }
-        .ei-close { margin-left:auto; background:transparent; border:1px solid #374151;
-            color:#64748b; padding:4px 9px; border-radius:4px; cursor:pointer;
-            font-family:'Courier New',Courier,monospace; font-size: 12px; transition:all .15s; }
-        .ei-close:hover { border-color:#ef4444; color:#ef4444; }
-
-        .ei-tabs { display:flex; background:#060612; border-bottom:2px solid #1e293b; flex-shrink:0; }
-        .ei-tab { flex:1; padding:8px 4px; background:transparent; border:none;
-            border-bottom:3px solid transparent; color:#475569;
-            font-family:'Courier New',Courier,monospace; font-size: 12px; cursor:pointer; transition:all .15s; }
-        .ei-tab:hover { color:#94a3b8; }
-        .ei-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
-
+        .ei-ability-text { font-size:12px; color:#a5b4fc; }
+        .ei-close { margin-left:auto; background:transparent; border:1px solid #374151; color:var(--t-text-dim); padding:4px 9px; border-radius:4px; cursor:pointer; font-family:'Courier New',Courier,monospace; font-size:12px; transition:all .15s; }
+        .ei-close:hover { border-color:var(--t-red); color:var(--t-red); }
+        .ei-tabs { display:flex; background:var(--t-panel2); border-bottom:2px solid var(--t-border); flex-shrink:0; }
+        .ei-tab { flex:1; padding:8px 4px; background:transparent; border:none; border-bottom:3px solid transparent; color:#475569; font-family:'Courier New',Courier,monospace; font-size:12px; cursor:pointer; transition:all .15s; }
+        .ei-tab:hover { color:var(--t-text-muted); }
+        .ei-tab.active { color:var(--t-gold); border-bottom-color:var(--t-gold); }
         .ei-body { flex:1; overflow-y:auto; padding:14px 16px; min-height:0; }
-        .ei-footer { padding:10px 16px; border-top:2px solid #1e293b; background:#060612; flex-shrink:0; }
-        .ei-save-btn { width:100%; padding:8px;
-            background:linear-gradient(135deg,#f59e0b,#d97706); border:none; border-radius:5px;
-            color:#0a0a0a; font-family:'Courier New',Courier,monospace; font-size: 12px;
-            cursor:pointer; transition:all .15s; }
+        .ei-footer { padding:10px 16px; border-top:2px solid var(--t-border); background:var(--t-panel2); flex-shrink:0; }
+        .ei-save-btn { width:100%; padding:8px; background:var(--t-btn-battle); border:none; border-radius:5px; color:#0a0a0a; font-family:'Courier New',Courier,monospace; font-size:12px; cursor:pointer; transition:all .15s; }
         .ei-save-btn:hover { filter:brightness(1.1); }
 
-        /* nivel badge en el team-editor-bar */
-        .level-selector { display:flex; align-items:center; gap:6px; font-size: 8.5px; color:#64748b; margin-left:auto; }
-        .level-input { background:#111827; border:1px solid #334155; color:var(--gold);
-            font-family:'Courier New',Courier,monospace; font-size: 13px; padding:3px 6px;
-            border-radius:3px; width:52px; text-align:center; }
+        .level-selector { display:flex; align-items:center; gap:6px; font-size:8.5px; color:var(--t-text-dim); margin-left:auto; }
+        .level-input { background:var(--t-input-bg); border:1px solid var(--t-input-border); color:var(--t-gold); font-family:'Courier New',Courier,monospace; font-size:13px; padding:3px 6px; border-radius:3px; width:52px; text-align:center; }
 
-        /* ── BUSCADOR DE POKÉMON ─────────────────────────────────── */
-        .search-bar { padding:8px 14px; border-bottom:1px solid #1e293b; }
-        .search-input { width:100%; background:#111827; border:1px solid #334155;
-            color:white; font-family:'Courier New',Courier,monospace; font-size: 12px;
-            padding:6px 10px; border-radius:5px; outline:none; }
-        .search-input::placeholder { color:#334155; }
-        .search-input:focus { border-color:var(--gold); }
-        .search-results-count { font-size: 9.5px; color:#475569; margin-top:4px; }
+        /* Buscador */
+        .search-bar { padding:8px 14px; border-bottom:1px solid var(--t-border); }
+        .search-input { width:100%; background:var(--t-input-bg); border:1px solid var(--t-input-border); color:white; font-family:'Courier New',Courier,monospace; font-size:12px; padding:6px 10px; border-radius:5px; outline:none; }
+        .search-input::placeholder { color:var(--t-border); }
+        .search-input:focus { border-color:var(--t-gold); }
+        .search-results-count { font-size:9.5px; color:var(--t-text-dim); margin-top:4px; }
+
+        /* ── THEME SWITCHER ──────────────────────────────── */
+        .theme-switcher {
+            position:fixed; bottom:1rem; right:1rem; z-index:9000;
+            display:flex; flex-direction:column; align-items:flex-end; gap:4px;
+        }
+        .theme-label-mini { font-size:6px;letter-spacing:2px;color:#475569;text-transform:uppercase; }
+        .theme-options-mini { display:flex; gap:4px; }
+        .theme-btn-mini {
+            display:flex; align-items:center; gap:4px;
+            padding:4px 8px; border-radius:3px;
+            font-family:'Courier New',Courier,monospace; font-size:6px;
+            cursor:pointer; border:1px solid transparent; transition:all 0.2s;
+            text-transform:uppercase; letter-spacing:1px; opacity:0.6;
+        }
+        .theme-btn-mini:hover, .theme-btn-mini.active { opacity:1; }
+        .theme-btn-mini-default  { background:rgba(10,10,26,0.9); color:#fbbf24; border-color:#334155; }
+        .theme-btn-mini-default:hover,  [data-theme="default"]  .theme-btn-mini-default  { border-color:#fbbf24; box-shadow:0 0 8px rgba(251,191,36,0.3); }
+        .theme-btn-mini-helodian { background:rgba(15,0,10,0.9); color:#ef4444; border-color:#3a0010; }
+        .theme-btn-mini-helodian:hover, [data-theme="helodian"] .theme-btn-mini-helodian { border-color:#ef4444; box-shadow:0 0 8px rgba(239,68,68,0.3); }
+        .theme-btn-mini-etherdiel{ background:rgba(2,10,26,0.9); color:#38bdf8; border-color:#1e3a5f; }
+        .theme-btn-mini-etherdiel:hover,[data-theme="etherdiel"] .theme-btn-mini-etherdiel { border-color:#38bdf8; box-shadow:0 0 8px rgba(56,189,248,0.3); }
+        .tdot { width:6px;height:6px;border-radius:50%; }
+        .theme-btn-mini-default  .tdot { background:radial-gradient(#fbbf24,#ef4444); }
+        .theme-btn-mini-helodian .tdot { background:radial-gradient(#fbbf24,#dc2626); }
+        .theme-btn-mini-etherdiel .tdot { background:radial-gradient(#eab308,#38bdf8); }
+        .theme-btn-mini.active::after { content:'✓'; margin-left:2px; }
     </style>
 </head>
 <body>
@@ -262,11 +352,10 @@
 
 <div class="layout">
 
-    <!-- ── COL IZQUIERDA: equipo + acciones + dex ─────────────────── -->
+    <!-- COL IZQUIERDA -->
     <div class="left-panel">
-
         <div class="team-section">
-            <div class="section-title">TU EQUIPO <span style="color:#334155;font-size:6px;">— clic para editar</span></div>
+            <div class="section-title">TU EQUIPO <span style="color:var(--t-border);font-size:6px;">— clic para editar</span></div>
             <div class="team-slots" id="teamSlots"></div>
             <div class="team-meta">
                 <span>Seleccionados: <span id="teamCount">0</span>/6</span>
@@ -300,22 +389,19 @@
         </div>
     </div>
 
-    <!-- ── COL DERECHA: editor inline + modos ───────────────────── -->
+    <!-- COL DERECHA -->
     <div class="right-panel" id="rightPanel" style="display:flex;flex-direction:column;overflow:hidden;padding:0;">
 
-        <!-- Barra superior con selector de Pokémon + nivel -->
-        <div class="team-editor-bar" id="teamEditorBar" style="padding:10px 14px;border-bottom:1px solid #1e293b;flex-shrink:0;">
+        <div class="team-editor-bar" id="teamEditorBar" style="padding:10px 14px;border-bottom:1px solid var(--t-border);flex-shrink:0;">
             <div class="teb-title">✏️ SELECCIONA UN POKÉMON PARA EDITAR</div>
             <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">
                 <div class="teb-slots" id="tebSlots"></div>
                 <div class="level-selector">
-                    Lvl <input class="level-input" type="number" id="levelInput" value="100" min="1" max="100"
-                               onchange="onLevelChange(this.value)">
+                    Lvl <input class="level-input" type="number" id="levelInput" value="100" min="1" max="100" onchange="onLevelChange(this.value)">
                 </div>
             </div>
         </div>
 
-        <!-- Editor inline -->
         <div class="editor-inline" id="editorInline">
             <div class="ei-header">
                 <img class="ei-sprite" id="eiSprite" src="">
@@ -327,11 +413,11 @@
                 <button class="ei-close" onclick="closeEditor()">✕</button>
             </div>
             <div class="ei-tabs">
-                <button class="ei-tab"         id="tab-summary" onclick="switchTab('summary')">📋 Info</button>
-                <button class="ei-tab active"  id="tab-moves"   onclick="switchTab('moves')">⚔️ Movs</button>
-                <button class="ei-tab"         id="tab-nature"  onclick="switchTab('nature')">🌿 Nat+EVs</button>
-                <button class="ei-tab"         id="tab-ability" onclick="switchTab('ability')">✨ Hab</button>
-                <button class="ei-tab"         id="tab-item"    onclick="switchTab('item')">🎒 Objeto</button>
+                <button class="ei-tab"        id="tab-summary" onclick="switchTab('summary')">📋 Info</button>
+                <button class="ei-tab active" id="tab-moves"   onclick="switchTab('moves')">⚔️ Movs</button>
+                <button class="ei-tab"        id="tab-nature"  onclick="switchTab('nature')">🌿 Nat+EVs</button>
+                <button class="ei-tab"        id="tab-ability" onclick="switchTab('ability')">✨ Hab</button>
+                <button class="ei-tab"        id="tab-item"    onclick="switchTab('item')">🎒 Objeto</button>
             </div>
             <div class="ei-body" id="eiBody"></div>
             <div class="ei-footer">
@@ -339,35 +425,19 @@
             </div>
         </div>
 
-        <!-- Paneles de modo (entrenadores / salvaje / placeholder) -->
         <div id="modePanels" style="flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:14px;">
-
-            <!-- Entrenadores -->
             <div class="trainer-select-panel" id="trainerPanel">
                 <div class="section-title" style="margin-bottom:12px;">🎖️ ELIGE ENTRENADOR RIVAL</div>
                 <div class="trainer-grid" id="trainerGrid"></div>
             </div>
-
-            <!-- Salvaje -->
             <div class="wild-select-panel" id="wildPanel">
-                <div class="section-title" style="margin-bottom:12px;">🎲 MODO POKÉMON SALVAJE <span style="font-size:6px;color:#64748b;">(ambos equipos aleatorios)</span></div>
+                <div class="section-title" style="margin-bottom:12px;">🎲 MODO POKÉMON SALVAJE <span style="font-size:6px;color:var(--t-text-dim);">(ambos equipos aleatorios)</span></div>
                 <div class="wild-grid">
-                    <div class="wild-card" onclick="goToWild('normal')">
-                        <div class="wild-icon">🌿</div>
-                        <div><div class="wc-title">NORMAL</div><div class="wc-desc">EVs modestos, objetos básicos. Tú y el rival tienen equipos aleatorios justos.</div></div>
-                    </div>
-                    <div class="wild-card" onclick="goToWild('hard')">
-                        <div class="wild-icon">🔥</div>
-                        <div><div class="wc-title">DIFÍCIL</div><div class="wc-desc">EVs optimizados, objetos competitivos. Prepárate para sufrir.</div></div>
-                    </div>
-                    <div class="wild-card" onclick="goToWild('chaos')">
-                        <div class="wild-icon">💀</div>
-                        <div><div class="wc-title">CAOS TOTAL</div><div class="wc-desc">Stats exageradas, combos locos. ¡Buena suerte!</div></div>
-                    </div>
+                    <div class="wild-card" onclick="goToWild('normal')"><div class="wild-icon">🌿</div><div><div class="wc-title">NORMAL</div><div class="wc-desc">EVs modestos, objetos básicos. Tú y el rival tienen equipos aleatorios justos.</div></div></div>
+                    <div class="wild-card" onclick="goToWild('hard')"><div class="wild-icon">🔥</div><div><div class="wc-title">DIFÍCIL</div><div class="wc-desc">EVs optimizados, objetos competitivos. Prepárate para sufrir.</div></div></div>
+                    <div class="wild-card" onclick="goToWild('chaos')"><div class="wild-icon">💀</div><div><div class="wc-title">CAOS TOTAL</div><div class="wc-desc">Stats exageradas, combos locos. ¡Buena suerte!</div></div></div>
                 </div>
             </div>
-
-            <!-- Placeholder -->
             <div class="right-placeholder" id="rightPlaceholder" style="flex:1;">
                 <div class="ph-icon">🎮</div>
                 <div class="ph-text">Añade Pokémon a tu equipo<br>y haz clic en ellos para editar</div>
@@ -376,7 +446,7 @@
     </div>
 </div>
 
-<!-- ══ MODAL MIS EQUIPOS ═════════════════════════════════════════════ -->
+<!-- MODAL MIS EQUIPOS -->
 <div class="editor-modal" id="savedTeamsModal">
     <div class="editor-modal-box" style="max-width:560px;">
         <div class="em-header">
@@ -398,9 +468,28 @@
 <script src="data/items.js"></script>
 <script src="data/natures.js"></script>
 <script src="data/abilities.js"></script>
-<script src="data/sprites.js"></script>  <!-- Sprites personalizados en Base64 (sin internet) -->
+<script src="data/sprites.js"></script>
 <script src="data/pokemon.js"></script>
 <script src="data/trainers.js"></script>
 <script src="js/team-builder-main.js"></script>
-</body>
-</html>
+
+<!-- SELECTOR DE TEMA -->
+<div class="theme-switcher">
+    <div class="theme-label-mini">Tema</div>
+    <div class="theme-options-mini">
+        <button class="theme-btn-mini theme-btn-mini-default"   id="tbtn-default"   onclick="setTheme('default')">  <span class="tdot"></span>Default</button>
+        <button class="theme-btn-mini theme-btn-mini-helodian"  id="tbtn-helodian"  onclick="setTheme('helodian')"> <span class="tdot"></span>Helodian</button>
+        <button class="theme-btn-mini theme-btn-mini-etherdiel" id="tbtn-etherdiel" onclick="setTheme('etherdiel')"><span class="tdot"></span>Etherdiel</button>
+    </div>
+</div>
+<script>
+function setTheme(t){
+    document.documentElement.setAttribute('data-theme',t);
+    localStorage.setItem('prostarTheme',t);
+    ['default','helodian','etherdiel'].forEach(function(x){
+        var b=document.getElementById('tbtn-'+x);
+        if(b) b.classList.toggle('active', x===t);
+    });
+}
+(function(){ setTheme(localStorage.getItem('prostarTheme')||'default'); })();
+</script>

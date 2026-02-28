@@ -145,8 +145,19 @@ function executeAttack(attacker, defender, moveName, side, callback) {
         return;
     }
 
+    // ── Precisión (Accuracy) ──────────────────────────────────────────────
+    if (move.accuracy !== null) {
+        let accMult = getStatBoostMultiplier(attacker.statBoosts?.acc || 0);
+        let finalAcc = move.accuracy * accMult;
+        if (Math.random() * 100 > finalAcc) {
+            addLog(`❌ ¡El ataque falló!`, '');
+            setTimeout(callback, 600);
+            return;
+        }
+    }
+
     const isPhysical = move.category === 'physical';
-    const effectiveness = calculateEffectiveness(move.type, defender.types);
+    const effectiveness = calculateEffectiveness(move.type, defender.types, move.name, move.dualType);
     let dmg = calculateDamage(attacker, defender, moveName);
 
     // ── Cinta Focus ───────────────────────────────────────────────────────
@@ -190,16 +201,50 @@ function executeAttack(attacker, defender, moveName, side, callback) {
         if (attacker.currentHp <= 0) attacker.fainted = true;
     }
 
-    // ── Efectos secundarios de estado del movimiento ──────────────────────
-    // (solo si el defensor no tiene habilidad Fuerza Bruta en el atacante)
+    // ── Efectos secundarios del movimiento ────────────────────────────────
     const bruteForce = AbilitiesDB[attacker.ability]?.effect === 'brute_force';
-    if (!bruteForce && move.effect?.startsWith('apply_') && !defender.fainted) {
-        const sk = move.effect.replace('apply_', '');
+    if (!bruteForce && move.effect && move.effect !== 'recoil_33') {
         const chance = move.effectChance || 0;
-        if (!defender.status && !isImmuneToStatus(defender, sk) && Math.random() * 100 < chance) {
-            defender.status = sk;
-            const sd = StatusDB[sk];
-            addLog(sd?.applyMsg?.replace('{pokemon}', defender.name) || `${defender.name} fue afectado`, 'boost');
+        if (chance === 100 || Math.random() * 100 < chance) {
+            if (move.effect.startsWith('apply_') && !['apply_toxic_spikes'].includes(move.effect)) {
+                if (!defender.fainted) {
+                    const sk = move.effect.replace('apply_', '');
+                    if (!defender.status && !isImmuneToStatus(defender, sk)) {
+                        defender.status = sk;
+                        const sd = StatusDB[sk];
+                        addLog(sd?.applyMsg?.replace('{pokemon}', defender.name) || `${defender.name} fue afectado`, 'boost');
+                    }
+                }
+            } else if (move.effect === 'apply_toxic_spikes') {
+                const hz = defSide === 'player' ? playerHazards : enemyHazards;
+                if (hz.toxicSpikes < 2) {
+                    hz.toxicSpikes++;
+                    addLog(`☠️ ¡Púas Tóxicas se esparcieron por el equipo rival!`, 'boost');
+                }
+            } else if (move.effect === 'drop_self_spa_2') {
+                attacker.statBoosts.spa = Math.max(-6, (attacker.statBoosts.spa || 0) - 2);
+                addLog(`⬇️ El Ataque Especial de ${attacker.name} bajó drásticamente`, 'damage');
+            } else if (move.effect === 'drop_self_atk_2') {
+                attacker.statBoosts.atk = Math.max(-6, (attacker.statBoosts.atk || 0) - 2);
+                addLog(`⬇️ El Ataque de ${attacker.name} bajó drásticamente`, 'damage');
+            } else if (move.effect === 'drop_self_acc_2') {
+                attacker.statBoosts.acc = Math.max(-6, (attacker.statBoosts.acc || 0) - 2);
+                addLog(`⬇️ La Precisión de ${attacker.name} bajó drásticamente`, 'damage');
+            } else if (move.effect === 'drop_target_atk_1' && !defender.fainted) {
+                defender.statBoosts.atk = Math.max(-6, (defender.statBoosts.atk || 0) - 1);
+                addLog(`⬇️ El Ataque de ${defender.name} bajó`, 'damage');
+            } else if (move.effect === 'cure_status_on_hit_and_double_dmg') {
+                if (attacker.status) {
+                    const msg = StatusCureMessages[attacker.status] || `${attacker.name} se curó de su estado.`;
+                    attacker.status = null;
+                    addLog(`✨ ${msg}`, 'heal');
+                }
+                if (!defender.fainted && defender.status) {
+                    const msg = StatusCureMessages[defender.status] || `${defender.name} se curó de su estado.`;
+                    defender.status = null;
+                    addLog(`✨ ${msg}`, 'heal');
+                }
+            }
         }
     }
 
@@ -239,6 +284,27 @@ function handleStatusMove(user, target, moveName) {
         user.currentHp = user.stats.hp;
         user.status = 'sleep';
         addLog(`💚 ${user.name} se durmió y recuperó todo el HP`, 'heal');
+        return;
+    }
+    if (move.effect === 'heal_100_petrify') {
+        user.currentHp = user.stats.hp;
+        user.status = 'petrify';
+        addLog(`🗿 ${user.name} se petrificó y recuperó todo el HP`, 'heal');
+        return;
+    }
+    if (move.effect === 'change_type_flying') {
+        target.types = ["VOLADOR"];
+        addLog(`💨 ¡El tipo de ${target.name} cambió a Volador!`, 'boost');
+        return;
+    }
+    if (move.effect === 'apply_toxic_spikes') {
+        const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
+        if (hz.toxicSpikes < 2) {
+            hz.toxicSpikes++;
+            addLog(`☠️ ¡Púas Tóxicas se esparcieron por el equipo rival!`, 'boost');
+        } else {
+            addLog(`❌ Las púas tóxicas no pueden apilarse más.`, '');
+        }
         return;
     }
     if (move.effect === 'boost_atk_spe') {
@@ -366,6 +432,20 @@ function handleFaint(side, callback) {
                 addLog(`🔄 ¡El rival envió a ${newEnemy.name}!`, 'important');
                 // Habilidad on_switch_in del rival
                 applyAbilitySwitchIn(newEnemy, playerTeam[playerActive], (msg, t) => { addLog(msg, t); if (msg) revealEnemyStat('ability', newEnemy); });
+
+                // ── PÚAS TÓXICAS DEL RIVAL ────────────────────────────────────
+                if (enemyHazards.toxicSpikes > 0 && !newEnemy.fainted) {
+                    if (newEnemy.types.includes("VENENO") && !newEnemy.types.includes("VOLADOR") && AbilitiesDB[newEnemy.ability]?.effect !== 'immune_ground') {
+                        enemyHazards.toxicSpikes = 0;
+                        addLog(`🧹 ¡${newEnemy.name} absorbió las Púas Tóxicas!`, 'heal');
+                    } else if (!newEnemy.types.includes("VOLADOR") && !newEnemy.types.includes("ACERO") && AbilitiesDB[newEnemy.ability]?.effect !== 'immune_ground') {
+                        if (!newEnemy.status && !isImmuneToStatus(newEnemy, 'poison') && !isImmuneToStatus(newEnemy, 'badPoison')) {
+                            const tox = enemyHazards.toxicSpikes === 2 ? 'badPoison' : 'poison';
+                            newEnemy.status = tox;
+                            addLog(`☠️ ¡${newEnemy.name} fue envenenado por las púas tóxicas!`, 'damage');
+                        }
+                    }
+                }
                 updateUI();
                 if (callback) callback();
             } else {
@@ -441,6 +521,23 @@ function switchTo(newIndex) {
 
     // Habilidad on_switch_in del nuevo Pokémon
     applyAbilitySwitchIn(newPoke, enemyTeam[enemyActive], (msg, t) => addLog(msg, t));
+
+    // ── PÚAS TÓXICAS ──────────────────────────────────────────────────────────
+    const mySide = playerTeam === playerTeam ? 'player' : 'enemy';
+    // Wait, switchTo only handles player switching. Let's make sure:
+    // Actually we only have playerHazards representing hazards ON player side
+    if (playerHazards.toxicSpikes > 0 && !newPoke.fainted) {
+        if (newPoke.types.includes("VENENO") && !newPoke.types.includes("VOLADOR") && AbilitiesDB[newPoke.ability]?.effect !== 'immune_ground') {
+            playerHazards.toxicSpikes = 0;
+            addLog(`🧹 ¡${newPoke.name} absorbió las Púas Tóxicas!`, 'heal');
+        } else if (!newPoke.types.includes("VOLADOR") && !newPoke.types.includes("ACERO") && AbilitiesDB[newPoke.ability]?.effect !== 'immune_ground') {
+            if (!newPoke.status && !isImmuneToStatus(newPoke, 'poison') && !isImmuneToStatus(newPoke, 'badPoison')) {
+                const tox = playerHazards.toxicSpikes === 2 ? 'badPoison' : 'poison';
+                newPoke.status = tox;
+                addLog(`☠️ ¡${newPoke.name} fue envenenado por las púas tóxicas!`, 'damage');
+            }
+        }
+    }
 
     updateUI();
     renderMoves();

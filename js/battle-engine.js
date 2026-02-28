@@ -65,9 +65,15 @@ function getStatBoostMultiplier(stage) {
 function getModifiedStats(pokemon) {
     const itemBoost = getItemStatBoost(pokemon);
     const abilityMult = getAbilityPassiveStatMult(pokemon);
+
+    let defBonus = 1;
+    if (pokemon.status === 'petrify') {
+        defBonus = 1.5; // +50% Defensa Física
+    }
+
     return {
         atk: Math.floor(pokemon.stats.atk * itemBoost.atk * abilityMult.atk * getStatBoostMultiplier(pokemon.statBoosts?.atk || 0)),
-        def: Math.floor(pokemon.stats.def * itemBoost.def * abilityMult.def * getStatBoostMultiplier(pokemon.statBoosts?.def || 0)),
+        def: Math.floor(pokemon.stats.def * itemBoost.def * abilityMult.def * getStatBoostMultiplier(pokemon.statBoosts?.def || 0) * defBonus),
         spa: Math.floor(pokemon.stats.spa * itemBoost.spa * abilityMult.spa * getStatBoostMultiplier(pokemon.statBoosts?.spa || 0)),
         spd: Math.floor(pokemon.stats.spd * itemBoost.spd * abilityMult.spd * getStatBoostMultiplier(pokemon.statBoosts?.spd || 0)),
         spe: Math.floor(pokemon.stats.spe * itemBoost.spe * abilityMult.spe * getStatBoostMultiplier(pokemon.statBoosts?.spe || 0)),
@@ -92,13 +98,29 @@ function getAbilityPassiveStatMult(pokemon) {
 
 // ─── EFECTIVIDAD DE TIPOS ─────────────────────────────────────────────────────
 // Doble tipo: multiplica ambos modificadores (×0.5 × ×2 = ×1, etc.)
-function calculateEffectiveness(attackType, defenderTypes) {
+function calculateEffectiveness(attackType, defenderTypes, moveName = null, dualType = null) {
     let mult = 1;
     const chart = TypeChart[attackType];
-    if (!chart) return mult;
-    for (const dt of defenderTypes) {
-        if (chart[dt] !== undefined) mult *= chart[dt];
+    if (chart) {
+        for (const dt of defenderTypes) {
+            if (chart[dt] !== undefined) mult *= chart[dt];
+        }
     }
+
+    if (dualType && TypeChart[dualType]) {
+        const dualChart = TypeChart[dualType];
+        for (const dt of defenderTypes) {
+            if (dualChart[dt] !== undefined) mult *= dualChart[dt];
+        }
+    }
+
+    // Overrides mecánicos
+    if (moveName === 'Grease Fire' && defenderTypes.includes('AGUA')) {
+        // En lugar de x0.5 al fuego, el agua es x2. El multiplicador base redujo a la mitad,
+        // así que multiplicamos por 4 para volverlo x2 (o proporcional si hay otro tipo).
+        mult *= 4;
+    }
+
     return mult;
 }
 
@@ -114,6 +136,11 @@ function calculateDamage(attacker, defender, moveName) {
     const move = getMoveInfo(moveName);
     if (!move.power || move.category === 'status') return 0;
 
+    let effPower = move.power;
+    if (moveName === "Healing Spa" && (attacker.status || defender.status)) {
+        effPower *= 2;
+    }
+
     const moveType = move.type;
     const isPhysical = move.category === 'physical';
     const aStats = getModifiedStats(attacker);
@@ -124,7 +151,7 @@ function calculateDamage(attacker, defender, moveName) {
 
     // Fórmula base oficial
     let dmg = Math.floor(
-        Math.floor(Math.floor(2 * lvl / 5 + 2) * move.power * atk / def) / 50
+        Math.floor(Math.floor(2 * lvl / 5 + 2) * effPower * atk / def) / 50
     ) + 2;
 
     // ── STAB ─────────────────────────────────────────────────────────────
@@ -158,7 +185,7 @@ function calculateDamage(attacker, defender, moveName) {
     dmg *= stabMult;
 
     // ── Efectividad de tipos (doble tipo = multiplicación de multiplicadores)
-    const effectiveness = calculateEffectiveness(moveType, defender.types);
+    const effectiveness = calculateEffectiveness(moveType, defender.types, move.name, move.dualType);
     dmg *= effectiveness;
 
     // ── Objeto del atacante ───────────────────────────────────────────────
@@ -270,7 +297,7 @@ function chooseEnemyMove(attacker, defender) {
         attacker.moves.forEach((mv, i) => {
             const move = getMoveInfo(mv);
             if (!move.power) return;
-            const score = move.power * calculateEffectiveness(move.type, defender.types);
+            const score = move.power * calculateEffectiveness(move.type, defender.types, move.name, move.dualType);
             if (score > bestScore) { bestScore = score; best = i; }
         });
         return best;

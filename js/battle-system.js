@@ -217,7 +217,7 @@ function executeAttack(attacker, defender, moveName, side, callback) {
                 }
             } else if (move.effect === 'apply_toxic_spikes') {
                 const hz = defSide === 'player' ? playerHazards : enemyHazards;
-                if (hz.toxicSpikes < 2) {
+                if (hz.toxicSpikes < 3) {
                     hz.toxicSpikes++;
                     addLog(`☠️ ¡Púas Tóxicas se esparcieron por el equipo rival!`, 'boost');
                 }
@@ -299,7 +299,7 @@ function handleStatusMove(user, target, moveName) {
     }
     if (move.effect === 'apply_toxic_spikes') {
         const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
-        if (hz.toxicSpikes < 2) {
+        if (hz.toxicSpikes < 3) {
             hz.toxicSpikes++;
             addLog(`☠️ ¡Púas Tóxicas se esparcieron por el equipo rival!`, 'boost');
         } else {
@@ -440,7 +440,7 @@ function handleFaint(side, callback) {
                         addLog(`🧹 ¡${newEnemy.name} absorbió las Púas Tóxicas!`, 'heal');
                     } else if (!newEnemy.types.includes("VOLADOR") && !newEnemy.types.includes("ACERO") && AbilitiesDB[newEnemy.ability]?.effect !== 'immune_ground') {
                         if (!newEnemy.status && !isImmuneToStatus(newEnemy, 'poison') && !isImmuneToStatus(newEnemy, 'badPoison')) {
-                            const tox = enemyHazards.toxicSpikes === 2 ? 'badPoison' : 'poison';
+                            const tox = enemyHazards.toxicSpikes >= 2 ? 'badPoison' : 'poison';
                             newEnemy.status = tox;
                             addLog(`☠️ ¡${newEnemy.name} fue envenenado por las púas tóxicas!`, 'damage');
                         }
@@ -532,7 +532,7 @@ function switchTo(newIndex) {
             addLog(`🧹 ¡${newPoke.name} absorbió las Púas Tóxicas!`, 'heal');
         } else if (!newPoke.types.includes("VOLADOR") && !newPoke.types.includes("ACERO") && AbilitiesDB[newPoke.ability]?.effect !== 'immune_ground') {
             if (!newPoke.status && !isImmuneToStatus(newPoke, 'poison') && !isImmuneToStatus(newPoke, 'badPoison')) {
-                const tox = playerHazards.toxicSpikes === 2 ? 'badPoison' : 'poison';
+                const tox = playerHazards.toxicSpikes >= 2 ? 'badPoison' : 'poison';
                 newPoke.status = tox;
                 addLog(`☠️ ¡${newPoke.name} fue envenenado por las púas tóxicas!`, 'damage');
             }

@@ -12,6 +12,9 @@ function updateUI() {
     updatePokemonCard('player', player);
     updatePokemonCard('enemy', enemy);
     updateTeamMinis();
+
+    if (typeof playerHazards !== 'undefined') renderHazards('player', playerHazards);
+    if (typeof enemyHazards !== 'undefined') renderHazards('enemy', enemyHazards);
 }
 
 // ─── TARJETA DE POKÉMON ───────────────────────────────────────────────────────
@@ -154,6 +157,33 @@ function renderMoves() {
         btn.onmouseleave = () => hideMoveTooltip();
         grid.appendChild(btn);
     });
+}
+
+// ─── TRAMPAS / HAZARDS ────────────────────────────────────────────────────────
+function renderHazards(side, hazards) {
+    const cont = document.getElementById(`${side}HazardsCont`);
+    if (!cont) return;
+
+    const currentSpikes = cont.querySelectorAll('.spike').length;
+    const targetSpikes = hazards.toxicSpikes || 0;
+
+    if (targetSpikes > currentSpikes) {
+        for (let i = currentSpikes; i < targetSpikes; i++) {
+            const img = document.createElement('img');
+            img.src = 'moves_effect/Toxic_spikes.png';
+            img.className = `spike spike-${i}`;
+            img.style.animationDelay = `${(i - currentSpikes) * 0.15}s`;
+            cont.appendChild(img);
+        }
+    } else if (targetSpikes < currentSpikes) {
+        cont.innerHTML = '';
+        for (let i = 0; i < targetSpikes; i++) {
+            const img = document.createElement('img');
+            img.src = 'moves_effect/Toxic_spikes.png';
+            img.className = `spike spike-${i}`;
+            cont.appendChild(img);
+        }
+    }
 }
 
 // ─── TOOLTIP DE MOVIMIENTO (solo descripción) ────────────────────────────────

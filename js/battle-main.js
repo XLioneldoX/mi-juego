@@ -326,6 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 playerActive = playerMove.switchTo;
                 addLog(`🔄 Cambiaste a ${playerTeam[playerActive].name}`, 'important');
                 applyAbilitySwitchIn(playerTeam[playerActive], enemyTeam[enemyActive], (msg, t) => addLog(msg, t));
+                applyHazardsOnSwitchIn(playerTeam[playerActive], 'player');
                 updateUI(); setTimeout(cb, 400);
             } else {
                 executeAttack(playerTeam[playerActive], enemyTeam[enemyActive], playerMove.moveName, 'player', cb);
@@ -336,6 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 enemyActive = enemyMove.switchTo;
                 addLog(`🔄 Rival cambió a ${enemyTeam[enemyActive].name}`, 'important');
                 applyAbilitySwitchIn(enemyTeam[enemyActive], playerTeam[playerActive], (msg, t) => { addLog(msg, t); if (msg) revealEnemyStat('ability', enemyTeam[enemyActive]); });
+                applyHazardsOnSwitchIn(enemyTeam[enemyActive], 'enemy');
                 updateUI(); setTimeout(cb, 400);
             } else {
                 executeAttack(enemyTeam[enemyActive], playerTeam[playerActive], enemyMove.moveName, 'enemy', cb);
@@ -361,6 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
     MP.on('onOpponentSwitch', (idx) => {
         enemyActive = idx;
         addLog(`🔄 Rival envió a ${enemyTeam[enemyActive].name}`, 'important');
+        applyHazardsOnSwitchIn(enemyTeam[enemyActive], 'enemy');
         updateUI();
         isBusy = false;
         renderMoves();

@@ -403,6 +403,34 @@ function afterTurn() {
     renderMoves();
 }
 
+// ─── APLICACIÓN DE TRAMPAS AL ENTRAR AL CAMPO ─────────────────────────────────
+function applyHazardsOnSwitchIn(pokemon, side) {
+    if (pokemon.fainted) return;
+    const hazards = side === 'player' ? playerHazards : enemyHazards;
+
+    // PÚAS TÓXICAS
+    if (hazards.toxicSpikes > 0) {
+        // ¿Volador o levitación? No toca el suelo (inmune)
+        const isGrounded = !pokemon.types.includes("VOLADOR") && AbilitiesDB[pokemon.ability]?.effect !== 'immune_ground';
+
+        if (isGrounded) {
+            // Pokémon Tipo Veneno absorbe las púas
+            if (pokemon.types.includes("VENENO")) {
+                hazards.toxicSpikes = 0;
+                addLog(`🧹 ¡${pokemon.name} absorbió las Púas Tóxicas!`, 'heal');
+            }
+            // Otros Pokémon se envenenan (si no son Acero, ni tienen estado, ni son inmunes)
+            else if (!pokemon.types.includes("ACERO")) {
+                if (!pokemon.status && !isImmuneToStatus(pokemon, 'poison') && !isImmuneToStatus(pokemon, 'badPoison')) {
+                    const tox = hazards.toxicSpikes >= 3 ? 'badPoison' : 'poison';
+                    pokemon.status = tox;
+                    addLog(`☠️ ¡${pokemon.name} fue envenenado por las púas tóxicas!`, 'damage');
+                }
+            }
+        }
+    }
+}
+
 // ─── DEBILITAMIENTO ───────────────────────────────────────────────────────────
 function handleFaint(side, callback) {
     const team = side === 'player' ? playerTeam : enemyTeam;
@@ -433,19 +461,9 @@ function handleFaint(side, callback) {
                 // Habilidad on_switch_in del rival
                 applyAbilitySwitchIn(newEnemy, playerTeam[playerActive], (msg, t) => { addLog(msg, t); if (msg) revealEnemyStat('ability', newEnemy); });
 
-                // ── PÚAS TÓXICAS DEL RIVAL ────────────────────────────────────
-                if (enemyHazards.toxicSpikes > 0 && !newEnemy.fainted) {
-                    if (newEnemy.types.includes("VENENO") && !newEnemy.types.includes("VOLADOR") && AbilitiesDB[newEnemy.ability]?.effect !== 'immune_ground') {
-                        enemyHazards.toxicSpikes = 0;
-                        addLog(`🧹 ¡${newEnemy.name} absorbió las Púas Tóxicas!`, 'heal');
-                    } else if (!newEnemy.types.includes("VOLADOR") && !newEnemy.types.includes("ACERO") && AbilitiesDB[newEnemy.ability]?.effect !== 'immune_ground') {
-                        if (!newEnemy.status && !isImmuneToStatus(newEnemy, 'poison') && !isImmuneToStatus(newEnemy, 'badPoison')) {
-                            const tox = enemyHazards.toxicSpikes >= 2 ? 'badPoison' : 'poison';
-                            newEnemy.status = tox;
-                            addLog(`☠️ ¡${newEnemy.name} fue envenenado por las púas tóxicas!`, 'damage');
-                        }
-                    }
-                }
+                // ── TRAMPAS AL ENTRAR AL CAMPO ────────────────────────────────
+                applyHazardsOnSwitchIn(newEnemy, 'enemy');
+
                 updateUI();
                 if (callback) callback();
             } else {
@@ -522,22 +540,8 @@ function switchTo(newIndex) {
     // Habilidad on_switch_in del nuevo Pokémon
     applyAbilitySwitchIn(newPoke, enemyTeam[enemyActive], (msg, t) => addLog(msg, t));
 
-    // ── PÚAS TÓXICAS ──────────────────────────────────────────────────────────
-    const mySide = playerTeam === playerTeam ? 'player' : 'enemy';
-    // Wait, switchTo only handles player switching. Let's make sure:
-    // Actually we only have playerHazards representing hazards ON player side
-    if (playerHazards.toxicSpikes > 0 && !newPoke.fainted) {
-        if (newPoke.types.includes("VENENO") && !newPoke.types.includes("VOLADOR") && AbilitiesDB[newPoke.ability]?.effect !== 'immune_ground') {
-            playerHazards.toxicSpikes = 0;
-            addLog(`🧹 ¡${newPoke.name} absorbió las Púas Tóxicas!`, 'heal');
-        } else if (!newPoke.types.includes("VOLADOR") && !newPoke.types.includes("ACERO") && AbilitiesDB[newPoke.ability]?.effect !== 'immune_ground') {
-            if (!newPoke.status && !isImmuneToStatus(newPoke, 'poison') && !isImmuneToStatus(newPoke, 'badPoison')) {
-                const tox = playerHazards.toxicSpikes >= 2 ? 'badPoison' : 'poison';
-                newPoke.status = tox;
-                addLog(`☠️ ¡${newPoke.name} fue envenenado por las púas tóxicas!`, 'damage');
-            }
-        }
-    }
+    // ── TRAMPAS AL ENTRAR AL CAMPO ────────────────────────────────────────────
+    applyHazardsOnSwitchIn(newPoke, 'player');
 
     updateUI();
     renderMoves();

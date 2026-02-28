@@ -108,7 +108,7 @@ const PokemonDB = {
         abilities: ["Magia Guard", "Magica Defensa"],
         ability: "Magia Guard",
         moves: ["Psíquico", "Foco Resplandor", "Hipnosis", "Recuperación"],
-        learnset: ["Psíquico", "Foco Resplandor", "Hipnosis", "Recuperación", "Guard Room", "Teletransporte", "Triturar", "Rowdy Tussle", "Harmful Strike", "Gravitas Clasp"],
+        learnset: ["Psíquico", "Foco Resplandor", "Hipnosis", "Recuperación", "Healing Spa", "Teletransporte", "Triturar", "Rowdy Tussle", "Harmful Strike", "Gravitas Clasp"],
         stats: { hp: 55, atk: 50, def: 45, spa: 135, spd: 95, spe: 120 },
     },
     10: {

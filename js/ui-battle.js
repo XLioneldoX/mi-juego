@@ -501,8 +501,8 @@ function calcRenderMoves(side, attacker, defender) {
         }
 
         // Usar calculateDamage unificado
-        const min = calculateDamage(attacker, defender, moveName, 0.85);
-        const max = calculateDamage(attacker, defender, moveName, 1.0);
+        const min = calculateDamage(attacker, defender, moveName, 0.85).damage;
+        const max = calculateDamage(attacker, defender, moveName, 1.0).damage;
         const eff = calculateEffectiveness(move.type, defender.types);
 
         return { moveName, move, min, max, eff, isStatus: false };
@@ -553,11 +553,11 @@ function calcRenderFooter(poke, enemy) {
 
     // Calcular mejor daño usando calculateDamage con factor 1.0 (máximo)
     const bestP = movesP.reduce((b, mv) => {
-        const d = calculateDamage(poke, enemy, mv, 1.0);
+        const d = calculateDamage(poke, enemy, mv, 1.0).damage;
         return d > b ? d : b;
     }, 0);
     const bestE = movesE.reduce((b, mv) => {
-        const d = calculateDamage(enemy, poke, mv, 1.0);
+        const d = calculateDamage(enemy, poke, mv, 1.0).damage;
         return d > b ? d : b;
     }, 0);
 

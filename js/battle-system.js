@@ -156,6 +156,7 @@ function executeAttack(attacker, defender, moveName, side, callback) {
         }
     }
 
+    const isPhysical = move.category === 'physical';
     const effectiveness = calculateEffectiveness(move.type, defender.types, move.name, move.dualType);
     const dmgResult = calculateDamage(attacker, defender, moveName);
     const dmg = dmgResult.damage;

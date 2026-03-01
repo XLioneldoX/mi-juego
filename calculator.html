@@ -1068,8 +1068,8 @@
 
         function calcDmgRange(attacker, defender, moveName) {
             if (!MovesDB[moveName]) return { min: 0, max: 0, eff: 1 };
-            const min = calculateDamage(attacker, defender, moveName, 0.85);
-            const max = calculateDamage(attacker, defender, moveName, 1.0);
+            const min = calculateDamage(attacker, defender, moveName, 0.85).damage;
+            const max = calculateDamage(attacker, defender, moveName, 1.0).damage;
             const eff = calculateEffectiveness(MovesDB[moveName].type, defender.types, moveName, MovesDB[moveName].dualType);
             return { min, max, eff };
         }

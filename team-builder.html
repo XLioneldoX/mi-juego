@@ -308,12 +308,52 @@
         .level-selector { display:flex; align-items:center; gap:6px; font-size:8.5px; color:var(--t-text-dim); margin-left:auto; }
         .level-input { background:var(--t-input-bg); border:1px solid var(--t-input-border); color:var(--t-gold); font-family:'Courier New',Courier,monospace; font-size:13px; padding:3px 6px; border-radius:3px; width:52px; text-align:center; }
 
-        /* Buscador */
-        .search-bar { padding:8px 14px; border-bottom:1px solid var(--t-border); }
-        .search-input { width:100%; background:var(--t-input-bg); border:1px solid var(--t-input-border); color:white; font-family:'Courier New',Courier,monospace; font-size:12px; padding:6px 10px; border-radius:5px; outline:none; }
+        /* Buscador + Filtros avanzados */
+        .filter-panel { padding:8px 14px 6px; border-bottom:1px solid var(--t-border); }
+        .search-input { width:100%; background:var(--t-input-bg); border:1px solid var(--t-input-border); color:white; font-family:'Courier New',Courier,monospace; font-size:12px; padding:6px 10px; border-radius:5px; outline:none; margin-bottom:5px; display:block; box-sizing:border-box; }
         .search-input::placeholder { color:var(--t-border); }
         .search-input:focus { border-color:var(--t-gold); }
-        .search-results-count { font-size:9.5px; color:var(--t-text-dim); margin-top:4px; }
+        .filter-row { display:flex; flex-wrap:wrap; gap:3px; align-items:center; margin-bottom:4px; }
+        .filter-label { font-size:6.5px; color:var(--t-text-dim); letter-spacing:1px; text-transform:uppercase; margin-right:2px; white-space:nowrap; flex-shrink:0; }
+        .type-filter-btn { font-size:6.5px; padding:2px 5px; border-radius:2px; cursor:pointer; border:1px solid transparent; opacity:0.55; transition:all .12s; color:white; font-family:'Courier New',Courier,monospace; line-height:1.4; }
+        .type-filter-btn:hover { opacity:0.9; transform:translateY(-1px); }
+        .type-filter-btn.active { opacity:1; border-color:rgba(255,255,255,0.7)!important; box-shadow:0 0 5px rgba(255,255,255,0.3); }
+        .stat-filter-select { background:var(--t-input-bg); border:1px solid var(--t-input-border); color:var(--t-text-muted); font-family:'Courier New',Courier,monospace; font-size:8px; padding:2px 5px; border-radius:3px; cursor:pointer; outline:none; }
+        .stat-filter-select:focus { border-color:var(--t-gold); }
+        .stat-filter-num { background:var(--t-input-bg); border:1px solid var(--t-input-border); color:var(--t-gold); font-family:'Courier New',Courier,monospace; font-size:8px; padding:2px 5px; border-radius:3px; width:44px; text-align:center; outline:none; }
+        .stat-filter-num:focus { border-color:var(--t-gold); }
+        .filter-clear-btn { font-size:7px; padding:2px 7px; background:transparent; border:1px solid var(--t-border); color:var(--t-text-dim); border-radius:3px; cursor:pointer; font-family:'Courier New',Courier,monospace; transition:all .12s; }
+        .filter-clear-btn:hover { border-color:var(--t-red); color:var(--t-red); }
+        .search-results-count { font-size:8px; color:var(--t-text-dim); }
+
+        /* Drag & Drop en team slots */
+        .team-slot[draggable="true"] { cursor:grab; }
+        .team-slot[draggable="true"]:active { cursor:grabbing; }
+        .team-slot.drag-over { border-color:var(--t-gold)!important; background:var(--t-gold-dim)!important; box-shadow:0 0 14px var(--t-gold-glow); transform:scale(1.12); }
+        .team-slot.dragging { opacity:0.3; transform:scale(0.9); }
+
+        /* Pokemon cards con info button */
+        .poke-card { position:relative; }
+        .poke-info-btn { position:absolute; top:3px; left:4px; font-size:11px; cursor:pointer; opacity:0; transition:opacity .15s; color:var(--t-blue); background:none; border:none; padding:0; line-height:1; z-index:2; }
+        .poke-card:hover .poke-info-btn { opacity:1; }
+        .poke-info-btn:hover { color:var(--t-gold); }
+
+        /* Modal de preview */
+        .preview-modal { position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:800; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+        .preview-modal.open { display:flex; }
+        .preview-box { background:#0d1117; border:2px solid var(--t-gold); border-radius:10px; width:460px; max-width:95vw; max-height:90vh; overflow-y:auto; padding:20px; box-shadow:0 0 50px var(--t-gold-glow); animation:modalIn .2s; }
+        .preview-header { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+        .preview-sprite { width:80px; height:80px; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(0 4px 10px rgba(0,0,0,.7)); flex-shrink:0; }
+        .preview-close { margin-left:auto; align-self:flex-start; background:transparent; border:1px solid #374151; color:var(--t-text-dim); padding:5px 10px; border-radius:4px; cursor:pointer; font-family:'Courier New',Courier,monospace; font-size:12px; transition:all .15s; }
+        .preview-close:hover { border-color:var(--t-red); color:var(--t-red); }
+        .preview-stat-row { display:flex; align-items:center; gap:8px; margin-bottom:5px; font-size:8.5px; }
+        .preview-stat-name { width:36px; color:var(--t-text-dim); text-align:right; flex-shrink:0; }
+        .preview-stat-val { width:28px; text-align:right; font-weight:bold; flex-shrink:0; }
+        .preview-bar-bg { flex:1; height:6px; background:var(--t-border); border-radius:3px; overflow:hidden; }
+        .preview-bar-fill { height:100%; border-radius:3px; transition:width .5s; }
+        .preview-section-title { font-size:7px; letter-spacing:2px; color:var(--t-text-dim); text-transform:uppercase; margin:12px 0 6px; border-top:1px solid var(--t-border); padding-top:8px; }
+        .preview-chip { display:inline-block; font-size:8px; padding:2px 8px; border-radius:3px; margin:2px; background:var(--t-input-bg); border:1px solid var(--t-border); color:var(--t-text-muted); }
+        .preview-chip.abil { border-color:rgba(165,180,252,.4); color:#a5b4fc; }
 
         /* ── THEME SWITCHER ──────────────────────────────── */
         .theme-switcher {
@@ -379,11 +419,28 @@
 
         <div class="available-section">
             <div class="section-title">POKÉMON DISPONIBLES</div>
-            <div class="search-bar">
+            <div class="filter-panel">
                 <input class="search-input" type="text" id="pokeSearch"
                     placeholder="🔍 Buscar por nombre, tipo o ID..."
                     oninput="filterPokemon(this.value)">
-                <div class="search-results-count" id="searchCount"></div>
+                <div class="filter-row" id="typeFilterRow">
+                    <span class="filter-label">Tipo:</span>
+                </div>
+                <div class="filter-row">
+                    <span class="filter-label">Stat ≥</span>
+                    <select class="stat-filter-select" id="statFilterStat" onchange="_applyAllFilters()">
+                        <option value="">— —</option>
+                        <option value="hp">HP</option>
+                        <option value="atk">ATK</option>
+                        <option value="def">DEF</option>
+                        <option value="spa">SP.ATK</option>
+                        <option value="spd">SP.DEF</option>
+                        <option value="spe">VEL</option>
+                    </select>
+                    <input class="stat-filter-num" type="number" id="statFilterMin" value="90" min="0" max="255" oninput="_applyAllFilters()">
+                    <button class="filter-clear-btn" onclick="_clearFilters()">✕ Limpiar</button>
+                    <div id="searchCount" class="search-results-count" style="margin-left:auto;"></div>
+                </div>
             </div>
             <div class="pokemon-grid" id="pokemonGrid"></div>
         </div>
@@ -462,6 +519,11 @@
     </div>
 </div>
 
+<!-- MODAL PREVIEW POKÉMON -->
+<div class="preview-modal" id="pokePreviewModal" onclick="if(event.target===this)_closePreview()">
+    <div class="preview-box" id="pokePreviewBox"><!-- contenido generado por JS --></div>
+</div>
+
 <script src="data/types.js"></script>
 <script src="data/status.js"></script>
 <script src="data/moves.js"></script>
@@ -473,7 +535,460 @@
 <script src="data/trainers.js"></script>
 <script src="js/team-builder-main.js"></script>
 
-<!-- SELECTOR DE TEMA -->
+<!-- ══════════════════════════════════════════════════════════════════
+     MEJORAS INLINE v2 — filtros, drag&drop, preview, fix habilidades
+     Se ejecuta después de team-builder-main.js
+     ══════════════════════════════════════════════════════════════════ -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+// ── 1. FILTROS AVANZADOS ──────────────────────────────────────────────────
+
+var TYPE_LIST = [
+    ['FUEGO','#dc2626'],['AGUA','#2563eb'],['PLANTA','#16a34a'],
+    ['ELÉCTRICO','#ca8a04'],['PSÍQUICO','#db2777'],['HIELO','#0891b2'],
+    ['LUCHA','#c2410c'],['VENENO','#7c3aed'],['TIERRA','#92400e'],
+    ['VOLADOR','#4f46e5'],['BICHO','#4d7c0f'],['ROCA','#a16207'],
+    ['FANTASMA','#7e22ce'],['DRAGÓN','#4338ca'],['SINIESTRO','#374151'],
+    ['ACERO','#64748b'],['HADA','#ec4899'],['NORMAL','#6b7280']
+];
+
+var typeRow = document.getElementById('typeFilterRow');
+if (typeRow) {
+    TYPE_LIST.forEach(function(pair) {
+        var t = pair[0], color = pair[1];
+        var b = document.createElement('button');
+        b.className = 'type-filter-btn';
+        b.dataset.type = t;
+        b.textContent = t.charAt(0) + t.slice(1).toLowerCase();
+        b.style.background = color;
+        b.onclick = function() { _setTypeFilter(t); };
+        typeRow.appendChild(b);
+    });
+}
+
+window._activeTypeFilter = '';
+
+window._applyAllFilters = function() {
+    var query = (document.getElementById('pokeSearch').value || '').toLowerCase().trim();
+    var statSel = document.getElementById('statFilterStat');
+    var statMin = document.getElementById('statFilterMin');
+    var statKey = statSel ? statSel.value : '';
+    var statMinVal = statMin ? (parseInt(statMin.value) || 0) : 0;
+
+    var cards = document.querySelectorAll('#pokemonGrid .poke-card');
+    var visible = 0;
+
+    cards.forEach(function(card) {
+        var id = parseInt(card.dataset.id || card.dataset.pokeid || 0);
+        var poke = (typeof PokemonDB !== 'undefined') ? PokemonDB[id] : null;
+
+        if (!poke) { visible++; return; }
+
+        var nameMatch = !query ||
+            poke.name.toLowerCase().includes(query) ||
+            String(poke.id).includes(query);
+
+        var typeMatch = !window._activeTypeFilter ||
+            poke.types.some(function(t) {
+                return t.toUpperCase() === window._activeTypeFilter.toUpperCase();
+            });
+
+        var statMatch = true;
+        if (statKey && poke.stats) {
+            statMatch = (poke.stats[statKey] || 0) >= statMinVal;
+        }
+
+        var show = nameMatch && typeMatch && statMatch;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+
+    var countEl = document.getElementById('searchCount');
+    if (countEl) {
+        var total = cards.length;
+        countEl.textContent = visible === total
+            ? total + ' Pokémon'
+            : visible + ' / ' + total;
+    }
+};
+
+window._setTypeFilter = function(t) {
+    window._activeTypeFilter = (window._activeTypeFilter === t) ? '' : t;
+    document.querySelectorAll('.type-filter-btn').forEach(function(b) {
+        b.classList.toggle('active', b.dataset.type === window._activeTypeFilter);
+    });
+    window._applyAllFilters();
+};
+
+window._clearFilters = function() {
+    window._activeTypeFilter = '';
+    document.querySelectorAll('.type-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    var si = document.getElementById('statFilterStat');
+    var sn = document.getElementById('statFilterMin');
+    var ps = document.getElementById('pokeSearch');
+    if (si) si.value = '';
+    if (sn) sn.value = '90';
+    if (ps) ps.value = '';
+    window._applyAllFilters();
+};
+
+// Sobreescribe filterPokemon para que use el sistema completo
+window.filterPokemon = function(q) { window._applyAllFilters(); };
+
+// ── 2. BOTONES DE INFO EN CARDS + observer del grid ──────────────────────
+
+function _addInfoButtons() {
+    document.querySelectorAll('#pokemonGrid .poke-card').forEach(function(card) {
+        if (card.querySelector('.poke-info-btn')) return;
+        var id = parseInt(card.dataset.id || card.dataset.pokeid || 0);
+        if (!id) return;
+        var btn = document.createElement('button');
+        btn.className = 'poke-info-btn';
+        btn.title = 'Ver estadísticas';
+        btn.textContent = 'ℹ';
+        btn.onclick = function(e) { e.stopPropagation(); _openPreview(id); };
+        card.appendChild(btn);
+    });
+}
+
+var gridObs = new MutationObserver(function() {
+    window._applyAllFilters();
+    _addInfoButtons();
+});
+var gridEl = document.getElementById('pokemonGrid');
+if (gridEl) gridObs.observe(gridEl, { childList: true });
+
+// ── 3. MODAL PREVIEW ─────────────────────────────────────────────────────
+
+var STAT_COLORS = { hp:'#ef4444', atk:'#f97316', def:'#3b82f6', spa:'#a855f7', spd:'#22c55e', spe:'#eab308' };
+var STAT_NAMES  = { hp:'HP', atk:'ATK', def:'DEF', spa:'SP.ATK', spd:'SP.DEF', spe:'VEL' };
+
+window._openPreview = function(pokeid) {
+    var poke = (typeof PokemonDB !== 'undefined') ? PokemonDB[pokeid] : null;
+    if (!poke) return;
+
+    var sprite = (typeof getSpriteUrl !== 'undefined') ? getSpriteUrl(pokeid, 'front') : '';
+    var placeholder = (typeof getPlaceholderSvg !== 'undefined') ? getPlaceholderSvg(poke.name) : '';
+
+    var typeBadges = (poke.types || []).map(function(t) {
+        return '<span class="type-badge type-' + t + '">' + t + '</span>';
+    }).join('');
+
+    var total = Object.values(poke.stats || {}).reduce(function(a,b){return a+b;}, 0);
+
+    var statBars = Object.entries(poke.stats || {}).map(function(entry) {
+        var k = entry[0], v = entry[1];
+        var pct = Math.min(100, Math.round(v / 255 * 100));
+        var color = STAT_COLORS[k] || '#64748b';
+        return '<div class="preview-stat-row">' +
+            '<div class="preview-stat-name">' + (STAT_NAMES[k]||k) + '</div>' +
+            '<div class="preview-stat-val" style="color:' + color + '">' + v + '</div>' +
+            '<div class="preview-bar-bg"><div class="preview-bar-fill" style="width:' + pct + '%;background:' + color + '"></div></div>' +
+        '</div>';
+    }).join('');
+
+    var abilities = (poke.abilities || [poke.ability]).filter(Boolean);
+    var abilChips = abilities.map(function(a) {
+        return '<span class="preview-chip abil">✨ ' + a + '</span>';
+    }).join('');
+
+    var learnset = poke.learnset || poke.moves || [];
+    var moveChips = learnset.map(function(m) {
+        return '<span class="preview-chip">' + m + '</span>';
+    }).join('');
+
+    var box = document.getElementById('pokePreviewBox');
+    box.innerHTML =
+        '<div class="preview-header">' +
+            '<img class="preview-sprite" src="' + sprite + '"' +
+                ' onerror="this.src=\'' + placeholder.replace(/'/g,"\\'") + '\'" alt="' + poke.name + '">' +
+            '<div style="flex:1;min-width:0">' +
+                '<div style="font-size:13px;margin-bottom:5px;">#' + poke.id + ' ' + poke.name + '</div>' +
+                '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:5px;">' + typeBadges + '</div>' +
+                '<span style="font-size:8px;background:rgba(251,191,36,.12);border:1px solid var(--t-gold);color:var(--t-gold);padding:2px 8px;border-radius:10px;">BST ' + total + '</span>' +
+            '</div>' +
+            '<button class="preview-close" onclick="_closePreview()">✕</button>' +
+        '</div>' +
+        '<div class="preview-stat-bars">' + statBars + '</div>' +
+        '<div class="preview-section-title">✨ Habilidades</div>' +
+        '<div style="margin-bottom:4px;">' + abilChips + '</div>' +
+        '<div class="preview-section-title">⚔️ Learnset completo (' + learnset.length + ')</div>' +
+        '<div style="line-height:1.9;">' + moveChips + '</div>';
+
+    document.getElementById('pokePreviewModal').classList.add('open');
+};
+
+window._closePreview = function() {
+    document.getElementById('pokePreviewModal').classList.remove('open');
+};
+
+// ── 4. DRAG & DROP EN TEAM SLOTS ─────────────────────────────────────────
+
+var _dragFromIdx = -1;
+
+function _makeSlotsObserver() {
+    var teamSlotsEl = document.getElementById('teamSlots');
+    if (!teamSlotsEl) return;
+
+    // Drag events delegados en el contenedor
+    teamSlotsEl.addEventListener('dragstart', function(e) {
+        var slot = e.target.closest && e.target.closest('.team-slot.filled');
+        if (!slot) return;
+        var slots = Array.from(teamSlotsEl.querySelectorAll('.team-slot'));
+        _dragFromIdx = slots.indexOf(slot);
+        slot.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', _dragFromIdx);
+    });
+
+    teamSlotsEl.addEventListener('dragend', function() {
+        teamSlotsEl.querySelectorAll('.team-slot').forEach(function(s) {
+            s.classList.remove('dragging', 'drag-over');
+        });
+        _dragFromIdx = -1;
+    });
+
+    teamSlotsEl.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        var slot = e.target.closest && e.target.closest('.team-slot');
+        teamSlotsEl.querySelectorAll('.team-slot').forEach(function(s) { s.classList.remove('drag-over'); });
+        if (slot) slot.classList.add('drag-over');
+    });
+
+    teamSlotsEl.addEventListener('dragleave', function(e) {
+        if (!teamSlotsEl.contains(e.relatedTarget)) {
+            teamSlotsEl.querySelectorAll('.team-slot').forEach(function(s) { s.classList.remove('drag-over'); });
+        }
+    });
+
+    teamSlotsEl.addEventListener('drop', function(e) {
+        e.preventDefault();
+        var slot = e.target.closest && e.target.closest('.team-slot');
+        if (!slot || _dragFromIdx === -1) return;
+        var slots = Array.from(teamSlotsEl.querySelectorAll('.team-slot'));
+        var toIdx = slots.indexOf(slot);
+        if (toIdx === -1 || toIdx === _dragFromIdx) return;
+
+        // Intenta intercambiar en el array global del equipo
+        var teamArr = window.team || window.playerTeam || window.currentTeam || null;
+        if (teamArr && Array.isArray(teamArr) && teamArr[_dragFromIdx] !== undefined) {
+            var tmp = teamArr[_dragFromIdx];
+            teamArr[_dragFromIdx] = teamArr[toIdx];
+            teamArr[toIdx] = tmp;
+            // Intenta disparar re-render
+            var renderFn = window.renderTeam || window.renderTeamSlots || window.updateTeam || window.refreshTeam;
+            if (typeof renderFn === 'function') {
+                renderFn();
+            }
+        } else {
+            // Fallback: intercambio DOM visual
+            var fromEl = slots[_dragFromIdx];
+            var toEl   = slots[toIdx];
+            var anchor = toIdx > _dragFromIdx ? toEl.nextSibling : toEl;
+            teamSlotsEl.insertBefore(fromEl, anchor);
+        }
+
+        teamSlotsEl.querySelectorAll('.team-slot').forEach(function(s) { s.classList.remove('drag-over','dragging'); });
+        _dragFromIdx = -1;
+    });
+
+    // MutationObserver para hacer draggable los slots rellenos
+    new MutationObserver(function() {
+        teamSlotsEl.querySelectorAll('.team-slot.filled').forEach(function(s) {
+            if (!s.getAttribute('draggable')) s.setAttribute('draggable', 'true');
+        });
+    }).observe(teamSlotsEl, { childList:true, subtree:true, attributes:true, attributeFilter:['class'] });
+}
+_makeSlotsObserver();
+
+// ── 5. FIX BUG HABILIDADES / OBJETOS ─────────────────────────────────────
+
+window._currentEditId   = null;
+window._currentAbility  = null;
+window._currentItem     = null;
+
+// Detecta qué Pokémon se está editando vigilando eiName
+var eiNameEl = document.getElementById('eiName');
+if (eiNameEl) {
+    new MutationObserver(function() {
+        var name = eiNameEl.textContent.trim();
+        if (!name || name === '─') return;
+        if (typeof PokemonDB === 'undefined') return;
+        for (var id in PokemonDB) {
+            if (PokemonDB[id].name.trim() === name) {
+                window._currentEditId  = parseInt(id);
+                var poke = PokemonDB[id];
+                if (!window._currentAbility) window._currentAbility = poke.ability || (poke.abilities && poke.abilities[0]) || '';
+                break;
+            }
+        }
+    }).observe(eiNameEl, { childList:true, characterData:true, subtree:true });
+}
+
+// Guarda referencia a switchTab original si existe
+var _origSwitchTab = window.switchTab || null;
+
+window.switchTab = function(tab) {
+    // Actualiza botones de tab
+    document.querySelectorAll('.ei-tab').forEach(function(t) { t.classList.remove('active'); });
+    var tabBtn = document.getElementById('tab-' + tab);
+    if (tabBtn) tabBtn.classList.add('active');
+
+    if (tab === 'ability') { _renderAbilityPanel(); return; }
+    if (tab === 'item')    { _renderItemPanel();    return; }
+
+    // El resto lo gestiona el JS original
+    if (typeof _origSwitchTab === 'function') _origSwitchTab(tab);
+};
+
+var ABILITY_DESCS = {
+    'Levitación'        : 'Inmune a movimientos de tipo Tierra.',
+    'Magia Guard'       : 'Solo recibe daño de ataques directos.',
+    'Adaptabilidad'     : 'Aumenta el bonus STAB de 1.5× a 2×.',
+    'Velocidad'         : 'Aumenta la Velocidad con sol.',
+    'Clorofila'         : 'Dobla la Velocidad en sol.',
+    'Humedad'           : 'Invoca lluvia al entrar en batalla.',
+    'Fuerza Bruta'      : 'Potencia movimientos con efecto secundario.',
+    'Peso Pluma'        : 'Mitad de daño por movimientos de peso.',
+    'Perspicacia'       : 'Ignora cambios de evasión del rival.',
+    'Impetu'            : 'Aumenta el Ataque al inicio.',
+    'Pasion'            : 'Aumenta el Atq. Especial al inicio.',
+    'Filtro'            : 'Reduce el daño superefectivo recibido.',
+    'Ilusionista'       : 'Adopta la apariencia del último aliado.',
+    'Generador Estatico': 'Puede paralizar al contacto.',
+    'Arena Volcanica'   : 'Invoca tormenta de arena al entrar.',
+    'Cuerpo Puro'       : 'Bloquea efectos secundarios recibidos.',
+    'Cuerpo Gelido'     : 'Puede congelar al contacto.',
+    'Absorber'          : 'Absorbe HP al recibir ataques del tipo.',
+    'Aislamiento'       : 'Inmune a movimientos de sonido.',
+    'Turbamulino'       : 'Puede confundir al contacto.',
+    'Excrecion'         : 'Inflinge veneno al contacto.',
+    'Excreción'         : 'Inflinge veneno al contacto.',
+    'Magica Defensa'    : 'Ignora cambios de estadística del rival.',
+    'Magia Guard'       : 'Solo recibe daño de ataques directos.',
+    'Magic Guard'       : 'Solo recibe daño de ataques directos.',
+    'Insonmio'          : 'No puede ser dormido.',
+    'Celestial Aura'    : 'Potencia movimientos de tipo Hada aliados.',
+    'Levitacion'        : 'Inmune a movimientos de tipo Tierra.',
+    'Inspiración'       : 'Sube su estadística más baja al entrar.',
+    'Inspiracion'       : 'Sube su estadística más baja al entrar.',
+    'Multiesqueleto'    : 'Aumenta la Defensa al recibir un golpe.',
+};
+
+function _renderAbilityPanel() {
+    var body = document.getElementById('eiBody');
+    if (!body) return;
+    var id   = window._currentEditId;
+    var poke = (typeof PokemonDB !== 'undefined' && id) ? PokemonDB[id] : null;
+    var abilities = poke ? (poke.abilities || [poke.ability].filter(Boolean)) : [];
+
+    if (!abilities.length) {
+        body.innerHTML = '<div style="color:var(--t-text-dim);font-size:9.5px;padding:8px 0;">Sin habilidades registradas para este Pokémon.</div>';
+        return;
+    }
+
+    var current = window._currentAbility || abilities[0];
+    body.innerHTML = '<div style="font-size:8.5px;color:var(--t-text-dim);margin-bottom:10px;">Selecciona la habilidad activa:</div>' +
+        '<div class="items-list">' +
+        abilities.map(function(a) {
+            var sel = (a === current) ? 'selected' : '';
+            var desc = ABILITY_DESCS[a] || 'Habilidad especial de este Pokémon.';
+            return '<div class="item-option ' + sel + '" onclick="_pickAbility(\'' + a.replace(/'/g,"\\'") + '\',this)">' +
+                '<div class="item-icon">✨</div>' +
+                '<div><div class="item-option-name">' + a + '</div>' +
+                '<div class="item-option-desc">' + desc + '</div></div>' +
+            '</div>';
+        }).join('') +
+        '</div>';
+}
+
+window._pickAbility = function(ability, el) {
+    window._currentAbility = ability;
+    document.querySelectorAll('#eiBody .item-option').forEach(function(e) { e.classList.remove('selected'); });
+    el.classList.add('selected');
+    // Actualiza el header del editor
+    var eiAb = document.getElementById('eiAbility');
+    if (eiAb) eiAb.textContent = '✨ ' + ability;
+    // Guarda en el miembro del equipo si es accesible
+    var arr = window.team || window.playerTeam || window.currentTeam;
+    if (arr && Array.isArray(arr) && window._currentEditId) {
+        var member = arr.find(function(m) { return m && m.id === window._currentEditId; });
+        if (member) member.ability = ability;
+    }
+};
+
+function _renderItemPanel() {
+    var body = document.getElementById('eiBody');
+    if (!body) return;
+
+    // Busca ItemsDB en distintos nombres posibles
+    var items = typeof ItemsDB !== 'undefined' ? ItemsDB :
+                typeof ItemDB  !== 'undefined' ? ItemDB  :
+                typeof ITEMS   !== 'undefined' ? ITEMS   : null;
+
+    if (!items) {
+        // Si no tenemos el DB, dejamos que el original lo gestione
+        if (typeof _origSwitchTab === 'function') {
+            // Restaura tab activo antes de llamar original
+            document.querySelectorAll('.ei-tab').forEach(function(t) { t.classList.remove('active'); });
+            var btn = document.getElementById('tab-item');
+            if (btn) btn.classList.add('active');
+            _origSwitchTab('item');
+        } else {
+            body.innerHTML = '<div style="color:var(--t-text-dim);font-size:9.5px;padding:8px 0;">Cargando objetos…</div>';
+        }
+        return;
+    }
+
+    var current = window._currentItem;
+    var itemList = Array.isArray(items) ? items : Object.values(items);
+
+    body.innerHTML = '<div style="font-size:8.5px;color:var(--t-text-dim);margin-bottom:10px;">Elige el objeto equipado:</div>' +
+        '<div class="items-list">' +
+        itemList.map(function(item) {
+            var name = item.name || item.id || String(item);
+            var desc = item.desc || item.description || item.effect || '';
+            var icon = item.icon || item.emoji || '🎒';
+            var sel  = (name === current) ? 'selected' : '';
+            return '<div class="item-option ' + sel + '" onclick="_pickItem(\'' + name.replace(/'/g,"\\'") + '\',this)">' +
+                '<div class="item-icon">' + icon + '</div>' +
+                '<div><div class="item-option-name">' + name + '</div>' +
+                '<div class="item-option-desc">' + desc + '</div></div>' +
+            '</div>';
+        }).join('') +
+        '</div>';
+}
+
+window._pickItem = function(itemName, el) {
+    window._currentItem = itemName;
+    document.querySelectorAll('#eiBody .item-option').forEach(function(e) { e.classList.remove('selected'); });
+    el.classList.add('selected');
+    var arr = window.team || window.playerTeam || window.currentTeam;
+    if (arr && Array.isArray(arr) && window._currentEditId) {
+        var member = arr.find(function(m) { return m && m.id === window._currentEditId; });
+        if (member) { member.item = itemName; member.heldItem = itemName; }
+    }
+};
+
+// Reset del editor al cerrarse para no confundir el próximo Pokémon
+var origCloseEditor = window.closeEditor;
+window.closeEditor = function() {
+    window._currentEditId  = null;
+    window._currentAbility = null;
+    window._currentItem    = null;
+    if (typeof origCloseEditor === 'function') origCloseEditor();
+};
+
+// ── 6. INIT ──────────────────────────────────────────────────────────────
+setTimeout(function() {
+    _addInfoButtons();
+    window._applyAllFilters();
+}, 300);
+
+}); // end DOMContentLoaded
+</script>
 <div class="theme-switcher">
     <div class="theme-label-mini">Tema</div>
     <div class="theme-options-mini">

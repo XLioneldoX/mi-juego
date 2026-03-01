@@ -9,9 +9,18 @@ let savedTeams = {};
 let currentEditId = null;
 let currentTab = 'moves';
 let battleLevel = 100;
+let activeTypeFilter = '';
 
 const StatColors = { hp: '#22c55e', atk: '#ef4444', def: '#3b82f6', spa: '#a855f7', spd: '#eab308', spe: '#ec4899' };
 const StatLabels = { hp: 'HP', atk: 'ATK', def: 'DEF', spa: 'SPA', spd: 'SPD', spe: 'SPE' };
+
+const TYPE_LIST = [
+    ['NORMAL', '#6b7280'], ['FUEGO', '#dc2626'], ['AGUA', '#2563eb'], ['PLANTA', '#16a34a'],
+    ['ELÉCTRICO', '#ca8a04'], ['HIELO', '#0891b2'], ['LUCHA', '#c2410c'], ['VENENO', '#7c3aed'],
+    ['TIERRA', '#92400e'], ['VOLADOR', '#4f46e5'], ['PSÍQUICO', '#db2777'], ['BICHO', '#4d7c0f'],
+    ['ROCA', '#a16207'], ['FANTASMA', '#7e22ce'], ['DRAGÓN', '#4338ca'], ['SINIESTRO', '#374151'],
+    ['ACERO', '#64748b'], ['HADA', '#ec4899']
+];
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 function init() {
@@ -21,6 +30,42 @@ function init() {
         try { playerTeam = JSON.parse(auto).map(normalizeEntry).filter(Boolean); } catch (e) { }
     }
     renderAll();
+    renderTypeFilters();
+}
+
+function renderTypeFilters() {
+    const row = document.getElementById('typeFilterRow');
+    if (!row) return;
+    row.innerHTML = '<span class="filter-label">Tipo:</span>';
+    TYPE_LIST.forEach(([t, color]) => {
+        const btn = document.createElement('button');
+        btn.className = 'type-filter-btn';
+        btn.dataset.type = t;
+        btn.style.background = color;
+        btn.textContent = t.charAt(0) + t.slice(1).toLowerCase();
+        btn.onclick = () => setTypeFilter(t);
+        row.appendChild(btn);
+    });
+}
+
+function setTypeFilter(type) {
+    if (activeTypeFilter === type) activeTypeFilter = '';
+    else activeTypeFilter = type;
+    document.querySelectorAll('.type-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.type === activeTypeFilter);
+    });
+    renderAvailable();
+}
+
+function clearAllFilters() {
+    activeTypeFilter = '';
+    document.querySelectorAll('.type-filter-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('pokeSearch').value = '';
+    document.getElementById('sortStat').value = 'id';
+    document.getElementById('sortOrder').value = 'asc';
+    document.getElementById('statFilterStat').value = '';
+    document.getElementById('statFilterMin').value = '0';
+    renderAvailable();
 }
 
 function normalizeEntry(e) {
@@ -54,15 +99,39 @@ function renderAvailable() {
     const query = document.getElementById("pokeSearch")?.value.toLowerCase().trim() || "";
     const sortStat = document.getElementById("sortStat")?.value || "id";
     const sortOrder = document.getElementById("sortOrder")?.value || "desc";
+    const minStatKey = document.getElementById("statFilterStat")?.value || "";
+    const minStatVal = parseInt(document.getElementById("statFilterMin")?.value || "0");
 
     let list = Object.values(PokemonDB);
 
-    // Filtrar por nombre
+    // 1. Filtrar por nombre / ID
     if (query) {
-        list = list.filter(p => p.name.toLowerCase().includes(query));
+        list = list.filter(p =>
+            p.name.toLowerCase().includes(query) ||
+            String(p.id).includes(query)
+        );
     }
 
-    // Ordenar
+    // 2. Filtrar por tipo
+    if (activeTypeFilter) {
+        list = list.filter(p => p.types.includes(activeTypeFilter));
+    }
+
+    // 3. Filtrar por estadísticas mínimas
+    if (minStatKey) {
+        list = list.filter(p => {
+            const val = minStatKey === 'bst' ?
+                Object.values(p.stats).reduce((a, b) => a + b, 0) :
+                p.stats[minStatKey];
+            return val >= minStatVal;
+        });
+    }
+
+    const totalResults = list.length;
+    const countEl = document.getElementById('searchCount');
+    if (countEl) countEl.textContent = `${totalResults} Pokémon`;
+
+    // 4. Ordenar
     list.sort((a, b) => {
         let valA, valB;
         if (sortStat === 'id') {
@@ -94,7 +163,7 @@ function renderAvailable() {
             <button class="poke-info-btn" title="Ver info" onclick="event.stopPropagation();openPreview(${p.id})">ℹ</button>
             <img src="${sp}" alt="${p.name}" onerror="onSpriteError(this, p.id)">
             <div class="poke-name">${p.name}</div>
-            <div style="font-size:8px; color:var(--t-gold); margin-top:2px;">BST: ${bst}</div>
+            <div style="font-size:10px; color:var(--t-gold); margin-top:2px; font-weight:bold;">BST: ${bst}</div>
             <div class="poke-types">${p.types.map(t => `<span class="type-badge ${TypeColors[t] || 'type-NORMAL'}">${t}</span>`).join('')}</div>`;
         grid.appendChild(card);
     });

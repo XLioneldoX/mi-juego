@@ -600,6 +600,54 @@
             box-shadow: 0 0 14px var(--t-gold-glow);
         }
 
+        /* FILTROS POR TIPO */
+        .type-filter-btn {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 8px;
+            font-weight: bold;
+            padding: 3px 6px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            opacity: 0.6;
+        }
+
+        .type-filter-btn:hover {
+            opacity: 1;
+            transform: translateY(-1px);
+        }
+
+        .type-filter-btn.active {
+            opacity: 1 !important;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            border-color: #fff;
+            transform: scale(1.05);
+        }
+
+        .search-results-count {
+            font-size: 9px;
+            color: var(--t-text-dim);
+            font-style: italic;
+        }
+
+        .filter-clear-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            border-radius: 4px;
+            font-size: 8px;
+            padding: 2px 6px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .filter-clear-btn:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
         .teb-slot-name {
             font-size: 13px;
             color: var(--t-text-dim);
@@ -616,15 +664,18 @@
         }
 
         /* Paneles de entrenador/salvaje */
-        .trainer-select-panel {
+        .trainer-select-panel,
+        .wild-select-panel {
             display: none;
         }
 
-        .trainer-select-panel.visible {
+        .trainer-select-panel.visible,
+        .wild-select-panel.visible {
             display: block;
         }
 
-        .trainer-grid {
+        .trainer-grid,
+        .wild-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 10px;
@@ -1862,57 +1913,54 @@
                 </div>
             </div>
 
-            <!-- Filtros -->
-            <div class="side-item" style="padding-top:10px;">
-                <div class="team-meta" style="margin-bottom:8px; display:flex; flex-direction:column; gap:8px;">
-                    <input type="text" id="pokeSearch" class="cs-cfg-select" placeholder="Buscar Pokémon..."
-                        oninput="renderAvailable()" style="width:100%;">
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; width:100%;">
-                        <select id="sortStat" class="cs-cfg-select" onchange="renderAvailable()" style="font-size:9px;">
-                            <option value="id">ORDEN: ID</option>
-                            <option value="name">ORDEN: NOMBRE</option>
-                            <option value="hp">STAT: HP</option>
-                            <option value="atk">STAT: ATK</option>
-                            <option value="def">STAT: DEF</option>
-                            <option value="spa">STAT: SPA</option>
-                            <option value="spd">STAT: SPD</option>
-                            <option value="spe">STAT: SPE</option>
-                            <option value="bst">STAT: BST</option>
-                        </select>
-                        <select id="sortOrder" class="cs-cfg-select" onchange="renderAvailable()"
-                            style="font-size:9px;">
-                            <option value="asc">ASC ↑</option>
-                            <option value="desc" selected>DESC ↓</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
             <div class="action-buttons">
-                <button class="action-btn btn-battle" id="battleBtn" onclick="goToBattle()">⚔️ ¡LUCHAR!
-                    (Trainer)</button>
+                <button class="action-btn btn-battle" onclick="goToBattle()" id="battleBtn" disabled>⚔️ BATALLA
+                    LIBRE</button>
+                <button class="action-btn btn-multi" onclick="goToOnlineBattle()">🌐 BATALLA ONLINE</button>
+                <div class="btn-row">
+                    <button class="action-btn btn-trainer" onclick="showPanel('trainer')">🎖️ ENTRENADORES</button>
+                    <button class="action-btn btn-wild" onclick="showPanel('wild')">🎲 SALVAJE</button>
+                </div>
                 <div class="btn-row">
                     <button class="action-btn btn-save" onclick="saveTeam()">💾 GUARDAR</button>
-                    <button class="action-btn btn-load" onclick="openSavedTeamsModal()">📂 CARGAR</button>
+                    <button class="action-btn btn-load" onclick="openSavedTeamsModal()">📂 MIS EQUIPOS</button>
                 </div>
                 <button class="action-btn"
-                    style="background:#1e293b; color:var(--t-gold); border:1px solid var(--t-border);"
+                    style="background:#1e293b; color:var(--t-gold); border:1px solid var(--t-border); margin-top:8px;"
                     onclick="openAnalysisModal()">📊 ANÁLISIS DEL EQUIPO</button>
-                <button class="action-btn btn-multi" onclick="goToOnlineBattle()">🌐 MULTIJUGADOR</button>
-                <div id="savedStatus">✅ Guardado en sesión</div>
+                <div id="savedStatus"></div>
             </div>
 
             <div class="available-section">
                 <div class="section-title">POKÉMON DISPONIBLES</div>
                 <div class="filter-panel">
-                    <input class="search-input" type="text" id="pokeSearch"
-                        placeholder="🔍 Buscar por nombre, tipo o ID..." oninput="filterPokemon(this.value)">
+                    <div style="display:flex; gap:8px; margin-bottom:8px;">
+                        <input class="search-input" type="text" id="pokeSearch" style="flex:1;"
+                            placeholder="🔍 Buscar por nombre, tipo o ID..." oninput="renderAvailable()">
+                        <select id="sortStat" class="cs-cfg-select" onchange="renderAvailable()"
+                            style="width:100px; font-size:10px;">
+                            <option value="id">ID</option>
+                            <option value="name">Nombre</option>
+                            <option value="hp">HP</option>
+                            <option value="atk">Ataque</option>
+                            <option value="def">Defensa</option>
+                            <option value="spa">At. Esp</option>
+                            <option value="spd">Def. Esp</option>
+                            <option value="spe">Velocidad</option>
+                            <option value="bst">BST</option>
+                        </select>
+                        <select id="sortOrder" class="cs-cfg-select" onchange="renderAvailable()"
+                            style="width:80px; font-size:10px;">
+                            <option value="asc">ASC ↑</option>
+                            <option value="desc" selected>DESC ↓</option>
+                        </select>
+                    </div>
                     <div class="filter-row" id="typeFilterRow">
                         <span class="filter-label">Tipo:</span>
                     </div>
                     <div class="filter-row">
                         <span class="filter-label">Stat ≥</span>
-                        <select class="stat-filter-select" id="statFilterStat" onchange="_applyAllFilters()">
+                        <select class="stat-filter-select" id="statFilterStat" onchange="renderAvailable()">
                             <option value="">— —</option>
                             <option value="hp">HP</option>
                             <option value="atk">ATK</option>
@@ -1920,10 +1968,11 @@
                             <option value="spa">SP.ATK</option>
                             <option value="spd">SP.DEF</option>
                             <option value="spe">VEL</option>
+                            <option value="bst">BST</option>
                         </select>
-                        <input class="stat-filter-num" type="number" id="statFilterMin" value="90" min="0" max="255"
-                            oninput="_applyAllFilters()">
-                        <button class="filter-clear-btn" onclick="_clearFilters()">✕ Limpiar</button>
+                        <input class="stat-filter-num" type="number" id="statFilterMin" value="0" min="0" max="800"
+                            oninput="renderAvailable()">
+                        <button class="filter-clear-btn" onclick="clearAllFilters()">✕ Limpiar</button>
                         <div id="searchCount" class="search-results-count" style="margin-left:auto;"></div>
                     </div>
                 </div>
@@ -2070,13 +2119,11 @@
      Se ejecuta después de team-builder-main.js
      ══════════════════════════════════════════════════════════════════ -->
     <script>
-        // Todas las mejoras (filtros, drag&drop, BST, análisis) están en team-builder-main.js
-        function openAnalysisModal() { if (window.openAnalysisModal) window.openAnalysisModal(); }
-        function closeAnalysisModal() { if (window.closeAnalysisModal) window.closeAnalysisModal(); }
-        function openPreview(id) { if (window.openPreview) window.openPreview(id); }
-        function closePreview() { if (window.closePreview) window.closePreview(); }
+        // Funciones globales (se delegan a team-builder-main.js)
+        window.onload = () => {
+            if (typeof init === 'function') init();
+        };
     </script>
-    }); // end DOMContentLoaded
     </script>
 
     <script>

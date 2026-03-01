@@ -1709,14 +1709,9 @@
 
         /* ── THEME SWITCHER ──────────────────────────────── */
         .theme-switcher {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            z-index: 9000;
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 4px;
+            align-items: center;
+            gap: 8px;
         }
 
         .theme-label-mini {
@@ -1817,6 +1812,20 @@
 
     <div class="header">
         <div class="header-title">⚔️ CONSTRUCTOR DE EQUIPO</div>
+
+        <div class="theme-switcher">
+            <div class="theme-label-mini">Tema</div>
+            <div class="theme-options-mini">
+                <button class="theme-btn-mini theme-btn-mini-default" id="tbtn-default" onclick="setTheme('default')">
+                    <span class="tdot"></span>Default</button>
+                <button class="theme-btn-mini theme-btn-mini-helodian" id="tbtn-helodian"
+                    onclick="setTheme('helodian')">
+                    <span class="tdot"></span>Helodian</button>
+                <button class="theme-btn-mini theme-btn-mini-etherdiel" id="tbtn-etherdiel"
+                    onclick="setTheme('etherdiel')"><span class="tdot"></span>Etherdiel</button>
+            </div>
+        </div>
+
         <div style="display:flex;gap:6px;"><a href="calculator.html" class="nav-btn">🧮 CALC</a><a href="index.html"
                 class="nav-btn">◀ MENÚ</a></div>
     </div>
@@ -2452,17 +2461,7 @@
 
         }); // end DOMContentLoaded
     </script>
-    <div class="theme-switcher">
-        <div class="theme-label-mini">Tema</div>
-        <div class="theme-options-mini">
-            <button class="theme-btn-mini theme-btn-mini-default" id="tbtn-default" onclick="setTheme('default')"> <span
-                    class="tdot"></span>Default</button>
-            <button class="theme-btn-mini theme-btn-mini-helodian" id="tbtn-helodian" onclick="setTheme('helodian')">
-                <span class="tdot"></span>Helodian</button>
-            <button class="theme-btn-mini theme-btn-mini-etherdiel" id="tbtn-etherdiel"
-                onclick="setTheme('etherdiel')"><span class="tdot"></span>Etherdiel</button>
-        </div>
-    </div>
+
     <script>
         function setTheme(t) {
             document.documentElement.setAttribute('data-theme', t);

@@ -375,8 +375,8 @@
 
         .pokemon-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
+            grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+            gap: 8px;
         }
 
         .poke-card {
@@ -384,10 +384,56 @@
             background: rgba(255, 255, 255, .03);
             border: 2px solid var(--t-border);
             border-radius: 7px;
-            padding: 6px 4px;
+            padding: 6px 2px;
             cursor: pointer;
             transition: all .15s;
             text-align: center;
+        }
+
+        .poke-card img {
+            max-width: 60px;
+            height: auto;
+            image-rendering: auto;
+        }
+
+        .poke-name {
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 4px;
+        }
+
+        /* COLORES OPCIONES SELECT */
+        option.opt-hp {
+            color: #22c55e;
+        }
+
+        option.opt-atk {
+            color: #ef4444;
+        }
+
+        option.opt-def {
+            color: #3b82f6;
+        }
+
+        option.opt-spa {
+            color: #a855f7;
+        }
+
+        option.opt-spd {
+            color: #eab308;
+        }
+
+        option.opt-spe {
+            color: #ec4899;
+        }
+
+        option.opt-bst {
+            color: var(--t-gold);
+            font-weight: bold;
         }
 
         .poke-info-btn {
@@ -1941,13 +1987,13 @@
                             style="width:100px; font-size:10px;">
                             <option value="id">ID</option>
                             <option value="name">Nombre</option>
-                            <option value="hp">HP</option>
-                            <option value="atk">Ataque</option>
-                            <option value="def">Defensa</option>
-                            <option value="spa">At. Esp</option>
-                            <option value="spd">Def. Esp</option>
-                            <option value="spe">Velocidad</option>
-                            <option value="bst">BST</option>
+                            <option value="hp" class="opt-hp">HP</option>
+                            <option value="atk" class="opt-atk">Ataque</option>
+                            <option value="def" class="opt-def">Defensa</option>
+                            <option value="spa" class="opt-spa">At. Esp</option>
+                            <option value="spd" class="opt-spd">Def. Esp</option>
+                            <option value="spe" class="opt-spe">Velocidad</option>
+                            <option value="bst" class="opt-bst">BST</option>
                         </select>
                         <select id="sortOrder" class="cs-cfg-select" onchange="renderAvailable()"
                             style="width:80px; font-size:10px;">
@@ -1962,13 +2008,13 @@
                         <span class="filter-label">Stat ≥</span>
                         <select class="stat-filter-select" id="statFilterStat" onchange="renderAvailable()">
                             <option value="">— —</option>
-                            <option value="hp">HP</option>
-                            <option value="atk">ATK</option>
-                            <option value="def">DEF</option>
-                            <option value="spa">SP.ATK</option>
-                            <option value="spd">SP.DEF</option>
-                            <option value="spe">VEL</option>
-                            <option value="bst">BST</option>
+                            <option value="hp" class="opt-hp">HP</option>
+                            <option value="atk" class="opt-atk">ATK</option>
+                            <option value="def" class="opt-def">DEF</option>
+                            <option value="spa" class="opt-spa">SP.ATK</option>
+                            <option value="spd" class="opt-spd">SP.DEF</option>
+                            <option value="spe" class="opt-spe">VEL</option>
+                            <option value="bst" class="opt-bst">BST</option>
                         </select>
                         <input class="stat-filter-num" type="number" id="statFilterMin" value="0" min="0" max="800"
                             oninput="renderAvailable()">

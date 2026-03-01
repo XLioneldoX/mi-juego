@@ -255,19 +255,46 @@ function showFullTeam() {
 // ═══════════════════════════════════════════════════════════════════════════
 
 let calcInited = false;
+let calcState = {
+    P: { moves: [] },
+    E: { moves: [] }
+};
 
 function openCalcModal() {
+    const player = playerTeam[playerActive];
+    const enemy = enemyTeam[enemyActive];
+
+    // Al abrir, inicializar el estado del modal con los datos reales del combate si es la primera vez o si han cambiado los pokes
+    if (!calcInited || calcState.playerID !== player.id || calcState.enemyID !== enemy.id) {
+        calcState = {
+            playerID: player.id,
+            enemyID: enemy.id,
+            P: {
+                moves: [...player.moves],
+                evs: { ...player.evs }
+            },
+            E: {
+                moves: [...enemy.moves],
+                evs: { ...enemy.evs }
+            }
+        };
+    }
+
     document.getElementById('calcModal').classList.add('open');
     if (!calcInited) { initCalcModal(); calcInited = true; }
-    else calcRecalc();
+    else {
+        // Asegurar que los sliders reflejen el estado (por si se abrieron antes)
+        ['P', 'E'].forEach(side => renderEVSliders(side));
+        calcRecalc();
+    }
 }
 function closeCalcModal() {
     document.getElementById('calcModal').classList.remove('open');
 }
 
 function initCalcModal() {
-    // Poblar naturalezas e ítems en ambos lados
     ['P', 'E'].forEach(side => {
+        // Naturalezas e ítems
         const natSel = document.getElementById(`calc${side}Nature`);
         const itmSel = document.getElementById(`calc${side}Item`);
         natSel.innerHTML = '';
@@ -280,7 +307,70 @@ function initCalcModal() {
             const o = document.createElement('option');
             o.value = it.name; o.textContent = it.name; itmSel.appendChild(o);
         });
+
+        // Inicializar sliders de EVs
+        renderEVSliders(side);
     });
+
+    // Cerrar resultados de búsqueda al hacer click fuera
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.cs-search-box')) {
+            document.querySelectorAll('.cs-search-results').forEach(r => r.style.display = 'none');
+        }
+    });
+
+    calcRecalc();
+}
+
+function renderEVSliders(side) {
+    const cont = document.getElementById(`calc${side}EVs`);
+    if (!cont) return;
+    const stats = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
+    const evs = calcState[side].evs;
+
+    cont.innerHTML = stats.map(s => `
+        <div class="calc-ev-row">
+            <div class="calc-ev-label">${s.toUpperCase()}</div>
+            <input type="range" class="calc-ev-slider" min="0" max="252" step="4" 
+                   value="${evs[s] || 0}" oninput="updateModalEV('${side}', '${s}', this.value)">
+            <div class="calc-ev-val" id="val-ev-${side}-${s}">${evs[s] || 0}</div>
+        </div>
+    `).join('');
+}
+
+function updateModalEV(side, stat, val) {
+    calcState[side].evs[stat] = parseInt(val);
+    document.getElementById(`val-ev-${side}-${stat}`).textContent = val;
+    calcRecalc();
+}
+
+function calcSearchMoves(side) {
+    const input = document.getElementById(`calc${side}Search`);
+    const results = document.getElementById(`calc${side}Results`);
+    const query = input.value.toLowerCase().trim();
+    if (!query) { results.style.display = 'none'; return; }
+
+    const matches = Object.keys(MovesDB)
+        .filter(m => m.toLowerCase().includes(query))
+        .slice(0, 10);
+
+    if (matches.length === 0) { results.style.display = 'none'; return; }
+
+    results.innerHTML = matches.map(m => `<div onclick="assignModalMove('${side}', '${m}')">${m}</div>`).join('');
+    results.style.display = 'block';
+}
+
+function assignModalMove(side, moveName) {
+    if (calcState[side].moves.includes(moveName)) return;
+    if (calcState[side].moves.length >= 4) calcState[side].moves.shift();
+    calcState[side].moves.push(moveName);
+    document.getElementById(`calc${side}Search`).value = '';
+    document.getElementById(`calc${side}Results`).style.display = 'none';
+    calcRecalc();
+}
+
+function removeModalMove(side, idx) {
+    calcState[side].moves.splice(idx, 1);
     calcRecalc();
 }
 
@@ -321,21 +411,41 @@ function calcRecalc() {
         spe: parseInt(document.getElementById('calcESpeBoost')?.value || 0)
     };
 
-    const pCalc = calcMakePoke(player, pNat, pItm, pBoosts);
-    const eCalc = calcMakePoke(enemy, eNat, eItm, eBoosts);
+    const pCalc = calcMakePoke(player, pNat, pItm, pBoosts, calcState.P.evs, calcState.P.moves);
+    const eCalc = calcMakePoke(enemy, eNat, eItm, eBoosts, calcState.E.evs, calcState.E.moves);
 
     calcRenderCard('Player', pCalc, 'back');
     calcRenderCard('Enemy', eCalc, 'front');
+    calcRenderMoveSlots('P');
+    calcRenderMoveSlots('E');
     calcRenderMoves('Player', pCalc, eCalc);
     calcRenderMoves('Enemy', eCalc, pCalc);
     calcRenderFooter(pCalc, eCalc);
 }
 
-function calcMakePoke(base, nature, item, manualBoosts) {
-    const evs = base.evs || { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 };
+function calcRenderMoveSlots(side) {
+    const cont = document.getElementById(`calc${side}MovesSlots`);
+    if (!cont) return;
+    const moves = calcState[side].moves;
+
+    let html = '';
+    for (let i = 0; i < 4; i++) {
+        if (moves[i]) {
+            html += `<div class="cs-move-slot">
+                <span>${moves[i]}</span>
+                <span class="cs-remove-move" onclick="removeModalMove('${side}', ${i})">×</span>
+            </div>`;
+        } else {
+            html += `<div class="cs-move-slot empty">Vacío</div>`;
+        }
+    }
+    cont.innerHTML = html;
+}
+
+function calcMakePoke(base, nature, item, manualBoosts, evs, moves) {
     const level = base.level || 100;
     const stats = buildStats(PokemonDB[base.id]?.stats || base.stats, evs, level, nature);
-    return { ...base, stats, nature, item, currentHp: base.currentHp, manualBoosts };
+    return { ...base, stats, nature, item, currentHp: base.currentHp, manualBoosts, evs, moves };
 }
 
 function calcRenderCard(side, pokemon, spriteDir) {

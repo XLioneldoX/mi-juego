@@ -1474,6 +1474,106 @@
             color: var(--t-gold);
         }
 
+        /* Nuevos estilos para EVs y Moves en el Modal */
+        .calc-ev-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .calc-ev-label {
+            font-size: 11px;
+            color: #64748b;
+            width: 30px;
+        }
+
+        .calc-ev-slider {
+            flex: 1;
+            height: 4px;
+            background: #1e293b;
+            border-radius: 2px;
+            accent-color: var(--t-gold);
+        }
+
+        .calc-ev-val {
+            font-size: 11px;
+            color: var(--t-gold);
+            width: 30px;
+            text-align: right;
+        }
+
+        .cs-moves-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .cs-move-slot {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--t-border);
+            border-radius: 4px;
+            padding: 4px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+        }
+
+        .cs-move-slot.empty {
+            color: #475569;
+            border-style: dashed;
+        }
+
+        .cs-remove-move {
+            color: #ef4444;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 2px 4px;
+        }
+
+        .cs-search-box {
+            margin-top: 8px;
+            position: relative;
+        }
+
+        .cs-search-input {
+            width: 100%;
+            background: #111827;
+            border: 1px solid var(--t-border);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: inherit;
+        }
+
+        .cs-search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #0d1117;
+            border: 1px solid var(--t-gold);
+            border-radius: 4px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+
+        .cs-search-results div {
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 11px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .cs-search-results div:hover {
+            background: #1e293b;
+        }
+
         /* Calculadora */
         .calc-modal {
             position: fixed;
@@ -2135,11 +2235,19 @@
                     <div class="cs-poke-row" id="calcPlayerCard">
                         <div style="font-size:6px;color:#334155;flex:1;text-align:center;">Cargando...</div>
                     </div>
-                    <div class="cs-config" id="calcPlayerConfig">
+                    <div class="cs-config" id="calcPlayerConfig"
+                        style="overflow-y:auto; max-height: 250px; padding-bottom: 10px;">
                         <div class="cs-cfg-row"><span class="cs-cfg-label">Naturaleza</span><select
                                 class="cs-cfg-select" id="calcPNature" onchange="calcRecalc()"></select></div>
                         <div class="cs-cfg-row"><span class="cs-cfg-label">Objeto</span><select class="cs-cfg-select"
                                 id="calcPItem" onchange="calcRecalc()"></select></div>
+
+                        <div style="margin: 8px 0; font-size: 10px; color: var(--t-gold);">ESTADÍSTICAS (EVs)</div>
+                        <div id="calcPEVs">
+                            <!-- Inyectado por JS: sliders de HP, ATK, DEF, SPA, SPD, SPE -->
+                        </div>
+
+                        <div style="margin: 8px 0; font-size: 10px; color: var(--t-gold);">BOOSTS (ETAPAS)</div>
                         <div class="boost-row"><span class="boost-label">ATK boost</span><select class="boost-select"
                                 id="calcPAtkBoost" onchange="calcRecalc()">
                                 <option value="-6">-6</option>
@@ -2221,6 +2329,19 @@
                                 <option value="6">+6</option>
                             </select></div>
                     </div>
+                    <div style="padding: 0 12px;">
+                        <hr style="border:0; border-top:1px solid var(--t-border);">
+                    </div>
+                    <div class="cs-moves-area" style="padding: 8px 12px; flex-shrink: 0;">
+                        <div style="font-size: 10px; color: var(--t-gold); margin-bottom: 4px;">MOVIMIENTOS
+                            SELECCIONADOS</div>
+                        <div class="cs-moves-grid" id="calcPMovesSlots"></div>
+                        <div class="cs-search-box">
+                            <input type="text" class="cs-search-input" id="calcPSearch"
+                                placeholder="Buscar movimiento..." oninput="calcSearchMoves('P')">
+                            <div class="cs-search-results" id="calcPResults"></div>
+                        </div>
+                    </div>
                     <div class="cs-moves" id="calcPlayerMoves"></div>
                 </div>
                 <div class="calc-side" id="calcEnemy">
@@ -2228,11 +2349,19 @@
                     <div class="cs-poke-row" id="calcEnemyCard">
                         <div style="font-size:6px;color:#334155;flex:1;text-align:center;">Cargando...</div>
                     </div>
-                    <div class="cs-config" id="calcEnemyConfig">
+                    <div class="cs-config" id="calcEnemyConfig"
+                        style="overflow-y:auto; max-height: 250px; padding-bottom: 10px;">
                         <div class="cs-cfg-row"><span class="cs-cfg-label">Naturaleza</span><select
                                 class="cs-cfg-select" id="calcENature" onchange="calcRecalc()"></select></div>
                         <div class="cs-cfg-row"><span class="cs-cfg-label">Objeto</span><select class="cs-cfg-select"
                                 id="calcEItem" onchange="calcRecalc()"></select></div>
+
+                        <div style="margin: 8px 0; font-size: 10px; color: var(--t-gold);">ESTADÍSTICAS (EVs)</div>
+                        <div id="calcEEVs">
+                            <!-- Inyectado por JS -->
+                        </div>
+
+                        <div style="margin: 8px 0; font-size: 10px; color: var(--t-gold);">BOOSTS (ETAPAS)</div>
                         <div class="boost-row"><span class="boost-label">ATK boost</span><select class="boost-select"
                                 id="calcEAtkBoost" onchange="calcRecalc()">
                                 <option value="-6">-6</option>
@@ -2314,13 +2443,27 @@
                                 <option value="6">+6</option>
                             </select></div>
                     </div>
+                    <div style="padding: 0 12px;">
+                        <hr style="border:0; border-top:1px solid var(--t-border);">
+                    </div>
+                    <div class="cs-moves-area" style="padding: 8px 12px; flex-shrink: 0;">
+                        <div style="font-size: 10px; color: var(--t-gold); margin-bottom: 4px;">MOVIMIENTOS
+                            SELECCIONADOS</div>
+                        <div class="cs-moves-grid" id="calcEMovesSlots"></div>
+                        <div class="cs-search-box">
+                            <input type="text" class="cs-search-input" id="calcESearch"
+                                placeholder="Buscar movimiento..." oninput="calcSearchMoves('E')">
+                            <div class="cs-search-results" id="calcEResults"></div>
+                        </div>
+                    </div>
                     <div class="cs-moves" id="calcEnemyMoves"></div>
                 </div>
             </div>
-            <div class="calc-footer" id="calcFooter">
-                <span style="color:#475569;">Selecciona los Pokémon para ver el análisis</span>
-            </div>
         </div>
+        <div class="calc-footer" id="calcFooter">
+            <span style="color:#475569;">Selecciona los Pokémon para ver el análisis</span>
+        </div>
+    </div>
     </div>
 
     <div class="move-tooltip" id="moveTooltip" style="display:none;"></div>

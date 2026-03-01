@@ -350,11 +350,23 @@ function calcSearchMoves(side) {
     const query = input.value.toLowerCase().trim();
     if (!query) { results.style.display = 'none'; return; }
 
+    // Obtener el ID del pokemon actual para buscar su learnset
+    const pokeID = calcState[`${side === 'P' ? 'playerID' : 'enemyID'}`];
+    const learnset = PokemonDB[pokeID]?.learnset || [];
+
     const matches = Object.keys(MovesDB)
-        .filter(m => m.toLowerCase().includes(query))
+        .filter(m => {
+            const isMatch = m.toLowerCase().includes(query);
+            const inLearnset = learnset.includes(m);
+            return isMatch && inLearnset;
+        })
         .slice(0, 10);
 
-    if (matches.length === 0) { results.style.display = 'none'; return; }
+    if (matches.length === 0) {
+        results.innerHTML = '<div style="color:#64748b; font-style:italic;">No hay coincidencias en el learnset</div>';
+        results.style.display = 'block';
+        return;
+    }
 
     results.innerHTML = matches.map(m => `<div onclick="assignModalMove('${side}', '${m}')">${m}</div>`).join('');
     results.style.display = 'block';

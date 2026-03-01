@@ -1645,7 +1645,8 @@
         .calc-side {
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow-y: auto;
+            max-height: 100%;
         }
 
         .calc-side+.calc-side {
@@ -2459,9 +2460,9 @@
                     <div class="cs-moves" id="calcEnemyMoves"></div>
                 </div>
             </div>
-        </div>
-        <div class="calc-footer" id="calcFooter">
-            <span style="color:#475569;">Selecciona los Pokémon para ver el análisis</span>
+            <div class="calc-footer" id="calcFooter">
+                <span style="color:#475569;">Selecciona los Pokémon para ver el análisis</span>
+            </div>
         </div>
     </div>
     </div>

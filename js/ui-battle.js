@@ -305,9 +305,24 @@ function calcRecalc() {
     if (pItmEl && !calcInited) pItmEl.value = player.item;
     if (eItmEl && !calcInited) eItmEl.value = enemy.item;
 
-    // Clonar Pokémon con overrides
-    const pCalc = calcMakePoke(player, pNat, pItm);
-    const eCalc = calcMakePoke(enemy, eNat, eItm);
+    // Clonar Pokémon con overrides y leer boosts del modal
+    const pBoosts = {
+        atk: parseInt(document.getElementById('calcPAtkBoost')?.value || 0),
+        def: parseInt(document.getElementById('calcPDefBoost')?.value || 0),
+        spa: parseInt(document.getElementById('calcPSpaBoost')?.value || 0),
+        spd: parseInt(document.getElementById('calcPSpdBoost')?.value || 0),
+        spe: parseInt(document.getElementById('calcPSpeBoost')?.value || 0)
+    };
+    const eBoosts = {
+        atk: parseInt(document.getElementById('calcEAtkBoost')?.value || 0),
+        def: parseInt(document.getElementById('calcEDefBoost')?.value || 0),
+        spa: parseInt(document.getElementById('calcESpaBoost')?.value || 0),
+        spd: parseInt(document.getElementById('calcESpdBoost')?.value || 0),
+        spe: parseInt(document.getElementById('calcESpeBoost')?.value || 0)
+    };
+
+    const pCalc = calcMakePoke(player, pNat, pItm, pBoosts);
+    const eCalc = calcMakePoke(enemy, eNat, eItm, eBoosts);
 
     calcRenderCard('Player', pCalc, 'back');
     calcRenderCard('Enemy', eCalc, 'front');
@@ -316,18 +331,11 @@ function calcRecalc() {
     calcRenderFooter(pCalc, eCalc);
 }
 
-function calcMakePoke(base, nature, item) {
-    // Recalcular stats con la naturaleza del modal
-    const nat = getNatureMultipliers(nature);
-    const evs = base.evs || {};
+function calcMakePoke(base, nature, item, manualBoosts) {
+    const evs = base.evs || { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 };
     const level = base.level || 100;
-    const stats = buildStats(
-        // base.stats ya tiene EVs+naturaleza aplicados; necesitamos los stats base
-        // Usamos PokemonDB para las stats base
-        PokemonDB[base.id]?.stats || base.stats,
-        evs, level, nature
-    );
-    return { ...base, stats, nature, item, currentHp: base.currentHp };
+    const stats = buildStats(PokemonDB[base.id]?.stats || base.stats, evs, level, nature);
+    return { ...base, stats, nature, item, currentHp: base.currentHp, manualBoosts };
 }
 
 function calcRenderCard(side, pokemon, spriteDir) {
@@ -360,25 +368,21 @@ function calcRenderCard(side, pokemon, spriteDir) {
 function calcRenderMoves(side, attacker, defender) {
     const cont = document.getElementById(`calc${side}Moves`);
     if (!cont) return;
-    const base = PokemonDB[attacker.id];
-    const moves = base?.learnset || base?.moves || attacker.moves || [];
+
+    // Limitar a los 4 movimientos actuales del Pokémon
+    const moves = attacker.moves || [];
 
     const results = moves.map(moveName => {
         const move = getMoveInfo(moveName);
         if (!move.power || move.category === 'status') {
             return { moveName, move, min: 0, max: 0, eff: 1, isStatus: true };
         }
-        // Leer boosts del modal
-        const isFisMove = (getMoveInfo(moveName).category === 'physical');
-        const rawAtkB = isFisMove
-            ? (document.getElementById(side === 'Player' ? 'calcPAtkBoost' : 'calcEAtkBoost')?.value || 0)
-            : (document.getElementById(side === 'Player' ? 'calcPSpaBoost' : 'calcESpaBoost')?.value || 0);
-        const rawDefB = isFisMove
-            ? (document.getElementById(side === 'Player' ? 'calcEDefBoost' : 'calcPDefBoost')?.value || 0)
-            : (document.getElementById(side === 'Player' ? 'calcESpdBoost' : 'calcPSpdBoost')?.value || 0);
-        const min = calcDmgDet(attacker, defender, moveName, 0.85, rawAtkB, rawDefB);
-        const max = calcDmgDet(attacker, defender, moveName, 1.0, rawAtkB, rawDefB);
+
+        // Usar calculateDamage unificado
+        const min = calculateDamage(attacker, defender, moveName, 0.85);
+        const max = calculateDamage(attacker, defender, moveName, 1.0);
         const eff = calculateEffectiveness(move.type, defender.types);
+
         return { moveName, move, min, max, eff, isStatus: false };
     }).sort((a, b) => b.max - a.max);
 
@@ -422,10 +426,19 @@ function calcRenderFooter(poke, enemy) {
     if (!footer) return;
     const base = PokemonDB[poke.id];
     const baseE = PokemonDB[enemy.id];
-    const movesP = base?.learnset || base?.moves || poke.moves || [];
-    const movesE = baseE?.learnset || baseE?.moves || enemy.moves || [];
-    const bestP = movesP.reduce((b, mv) => { const d = calcDmgDet(poke, enemy, mv, 1.0); return d > b ? d : b; }, 0);
-    const bestE = movesE.reduce((b, mv) => { const d = calcDmgDet(enemy, poke, mv, 1.0); return d > b ? d : b; }, 0);
+    const movesP = base?.moves || poke.moves || [];
+    const movesE = baseE?.moves || enemy.moves || [];
+
+    // Calcular mejor daño usando calculateDamage con factor 1.0 (máximo)
+    const bestP = movesP.reduce((b, mv) => {
+        const d = calculateDamage(poke, enemy, mv, 1.0);
+        return d > b ? d : b;
+    }, 0);
+    const bestE = movesE.reduce((b, mv) => {
+        const d = calculateDamage(enemy, poke, mv, 1.0);
+        return d > b ? d : b;
+    }, 0);
+
     const pctP = Math.round((bestP / enemy.stats.hp) * 100);
     const pctE = Math.round((bestE / poke.stats.hp) * 100);
 
@@ -440,44 +453,5 @@ function calcRenderFooter(poke, enemy) {
         <span style="color:#64748b;">🔴 ${enemy.name} daño máx: <b style="color:#fbbf24;">${pctE}%</b></span>`;
 }
 
-// Multiplicador de boost por nivel (+1=×1.5, +2=×2 ... -1=×0.67 ...)
-function boostMult(lvl) {
-    lvl = parseInt(lvl) || 0;
-    if (lvl === 0) return 1;
-    if (lvl > 0) return (2 + lvl) / 2;
-    return 2 / (2 - lvl);
-}
-
-// Cálculo determinista de daño (sin factor aleatorio)
-// atkBoost/defBoost: nivel de boost (-6 a +6) leídos del modal si existen
-function calcDmgDet(attacker, defender, moveName, factor, atkBoost, defBoost) {
-    const move = getMoveInfo(moveName);
-    if (!move.power || move.category === 'status') return 0;
-    const isFis = move.category === 'physical';
-    const aStats = getModifiedStats(attacker);
-    const dStats = getModifiedStats(defender);
-    // Aplicar boost manual del modal
-    const aBoostLvl = atkBoost !== undefined ? atkBoost : 0;
-    const dBoostLvl = defBoost !== undefined ? defBoost : 0;
-    const atk = (isFis ? aStats.atk : aStats.spa) * boostMult(aBoostLvl);
-    const def = (isFis ? dStats.def : dStats.spd) * boostMult(dBoostLvl);
-    const lvl = attacker.level || 100;
-    let dmg = Math.floor(Math.floor(Math.floor(2 * lvl / 5 + 2) * move.power * atk / def) / 50) + 2;
-    const stab = attacker.types.includes(move.type) ? 1.5 : 1;
-    const eff = calculateEffectiveness(move.type, defender.types);
-    const atkAb = AbilitiesDB[attacker.ability];
-    if (atkAb?.trigger === 'on_attack') {
-        if (atkAb.effect === 'boost_type_atk' && move.type === atkAb.boostedType) dmg *= atkAb.value;
-        if (atkAb.effect === 'crit_boost' || atkAb.effect === 'brute_force') dmg *= atkAb.value;
-    }
-    dmg *= stab * eff;
-    dmg *= getItemTypeBoost(attacker, move.type);
-    dmg *= (getItemStatBoost(attacker).damage || 1);
-    const defAb = AbilitiesDB[defender.ability];
-    if (defAb?.trigger === 'on_hit') {
-        if (defAb.effect === 'reduce_physical_dmg' && isFis) dmg *= defAb.value;
-        if (defAb.effect === 'reduce_special_dmg' && !isFis) dmg *= defAb.value;
-    }
-    if (attacker.status === 'burn' && isFis) dmg *= 0.5;
-    return Math.max(1, Math.floor(dmg * factor));
-}
+// El cálculo se hace directamente con calculateDamage de battle-engine.js
+// que ya soporta randomFactor y manualBoosts.

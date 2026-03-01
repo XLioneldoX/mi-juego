@@ -132,7 +132,7 @@ function isImmuneByAbility(defender, moveType) {
 }
 
 // ─── CÁLCULO DE DAÑO — FÓRMULA OFICIAL GEN 5+ ────────────────────────────────
-function calculateDamage(attacker, defender, moveName) {
+function calculateDamage(attacker, defender, moveName, randomFactor = null) {
     const move = getMoveInfo(moveName);
     if (!move.power || move.category === 'status') return 0;
 
@@ -145,8 +145,13 @@ function calculateDamage(attacker, defender, moveName) {
     const isPhysical = move.category === 'physical';
     const aStats = getModifiedStats(attacker);
     const dStats = getModifiedStats(defender);
-    const atk = isPhysical ? aStats.atk : aStats.spa;
-    const def = isPhysical ? dStats.def : dStats.spd;
+
+    // Si se pasan boosts manuales (para la calculadora), se aplican aquí
+    const aBoostLvl = attacker.manualBoosts ? (isPhysical ? attacker.manualBoosts.atk : attacker.manualBoosts.spa) : 0;
+    const dBoostLvl = defender.manualBoosts ? (isPhysical ? defender.manualBoosts.def : defender.manualBoosts.spd) : 0;
+
+    const atk = (isPhysical ? aStats.atk : aStats.spa) * (aBoostLvl !== 0 ? getStatBoostMultiplier(aBoostLvl) : 1);
+    const def = (isPhysical ? dStats.def : dStats.spd) * (dBoostLvl !== 0 ? getStatBoostMultiplier(dBoostLvl) : 1);
     const lvl = attacker.level || 100;
 
     // Fórmula base oficial
@@ -169,7 +174,7 @@ function calculateDamage(attacker, defender, moveName) {
                 break;
             case 'boost_type_low_hp':
                 if (moveType === atkAb.boostedType &&
-                    (attacker.currentHp / attacker.stats.hp) <= (atkAb.threshold || 0.33))
+                    (attacker.currentHp / (attacker.stats.hp || 1)) <= (atkAb.threshold || 0.33))
                     dmg *= atkAb.value;
                 break;
             case 'boost_contact_moves':
@@ -207,7 +212,11 @@ function calculateDamage(attacker, defender, moveName) {
         dmg *= 0.5;
 
     // ── Factor aleatorio (85–100%) ────────────────────────────────────────
-    dmg *= (0.85 + Math.random() * 0.15);
+    if (randomFactor !== null) {
+        dmg *= randomFactor;
+    } else {
+        dmg *= (0.85 + Math.random() * 0.15);
+    }
 
     return Math.max(1, Math.floor(dmg));
 }

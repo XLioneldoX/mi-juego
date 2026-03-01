@@ -50,16 +50,51 @@ function renderAvailable() {
     const grid = document.getElementById('pokemonGrid');
     if (!grid) return;
     grid.innerHTML = '';
-    Object.values(PokemonDB).forEach(p => {
+
+    const query = document.getElementById("pokeSearch")?.value.toLowerCase().trim() || "";
+    const sortStat = document.getElementById("sortStat")?.value || "id";
+    const sortOrder = document.getElementById("sortOrder")?.value || "desc";
+
+    let list = Object.values(PokemonDB);
+
+    // Filtrar por nombre
+    if (query) {
+        list = list.filter(p => p.name.toLowerCase().includes(query));
+    }
+
+    // Ordenar
+    list.sort((a, b) => {
+        let valA, valB;
+        if (sortStat === 'id') {
+            valA = a.id; valB = b.id;
+        } else if (sortStat === 'name') {
+            valA = a.name.toLowerCase(); valB = b.name.toLowerCase();
+        } else if (sortStat === 'bst') {
+            valA = Object.values(a.stats).reduce((sum, s) => sum + s, 0);
+            valB = Object.values(b.stats).reduce((sum, s) => sum + s, 0);
+        } else {
+            valA = a.stats[sortStat];
+            valB = b.stats[sortStat];
+        }
+
+        if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+        if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    list.forEach(p => {
         const inTeam = playerTeam.some(t => t.id === p.id);
+        const bst = Object.values(p.stats).reduce((sum, s) => sum + s, 0);
         const card = document.createElement('div');
         card.className = `poke-card${inTeam ? ' in-team' : ''}`;
-        card.dataset.id = p.id; // added dataset id for search and info buttons
+        card.dataset.id = p.id;
         card.onclick = () => inTeam ? null : addToTeam(p.id);
         const sp = getSpriteUrl(p.id, 'front');
         card.innerHTML = `
+            <button class="poke-info-btn" title="Ver info" onclick="event.stopPropagation();openPreview(${p.id})">ℹ</button>
             <img src="${sp}" alt="${p.name}" onerror="onSpriteError(this, p.id)">
             <div class="poke-name">${p.name}</div>
+            <div style="font-size:8px; color:var(--t-gold); margin-top:2px;">BST: ${bst}</div>
             <div class="poke-types">${p.types.map(t => `<span class="type-badge ${TypeColors[t] || 'type-NORMAL'}">${t}</span>`).join('')}</div>`;
         grid.appendChild(card);
     });
@@ -71,12 +106,20 @@ function renderTeamSlots() {
     c.innerHTML = '';
     for (let i = 0; i < 6; i++) {
         const slot = document.createElement('div');
+        slot.draggable = i < playerTeam.length;
         if (i < playerTeam.length) {
             const e = playerTeam[i];
             const p = PokemonDB[e.id];
             const nat = NaturesDB[e.nature];
             slot.className = `team-slot filled${currentEditId === i ? ' editing' : ''}`;
             slot.onclick = () => openEditor(i);
+            slot.ondragstart = (ev) => ev.dataTransfer.setData('text/plain', i);
+            slot.ondragover = (ev) => ev.preventDefault();
+            slot.ondrop = (ev) => {
+                ev.preventDefault();
+                const fromIdx = parseInt(ev.dataTransfer.getData('text/plain'));
+                reorderTeam(fromIdx, i);
+            };
             slot.innerHTML = `
                 <img src="${getSpriteUrl(e.id, 'front')}" onerror="onSpriteError(this, e.id)">
                 <div class="slot-remove" onclick="event.stopPropagation();removeFromTeam(${i})">×</div>
@@ -85,6 +128,12 @@ function renderTeamSlots() {
         } else {
             slot.className = 'team-slot';
             slot.innerHTML = '<div class="slot-empty-icon">+</div>';
+            slot.ondragover = (ev) => ev.preventDefault();
+            slot.ondrop = (ev) => {
+                ev.preventDefault();
+                const fromIdx = parseInt(ev.dataTransfer.getData('text/plain'));
+                reorderTeam(fromIdx, Math.min(playerTeam.length - 1, i));
+            };
         }
         c.appendChild(slot);
     }
@@ -101,13 +150,37 @@ function renderTebSlots() {
     if (!bar || !wrap) return;
     if (!playerTeam.length) { bar.classList.remove('visible'); return; }
     bar.classList.add('visible');
-    wrap.innerHTML = playerTeam.map((e, i) => {
+    wrap.innerHTML = '';
+    playerTeam.forEach((e, i) => {
         const p = PokemonDB[e.id];
-        return `<div class="teb-slot${currentEditId === i ? ' active' : ''}" onclick="openEditor(${i})">
+        const slot = document.createElement('div');
+        slot.className = `teb-slot${currentEditId === i ? ' active' : ''}`;
+        slot.draggable = true;
+        slot.onclick = () => openEditor(i);
+        slot.ondragstart = (ev) => ev.dataTransfer.setData('text/plain', i);
+        slot.ondragover = (ev) => ev.preventDefault();
+        slot.ondrop = (ev) => {
+            ev.preventDefault();
+            const fromIdx = parseInt(ev.dataTransfer.getData('text/plain'));
+            reorderTeam(fromIdx, i);
+        };
+        slot.innerHTML = `
             <img src="${getSpriteUrl(e.id, 'front')}" alt="${p.name}" onerror="onSpriteError(this, e.id)">
             <div class="teb-slot-name">${p.name}</div>
-        </div>`;
-    }).join('');
+        `;
+        wrap.appendChild(slot);
+    });
+}
+
+function reorderTeam(fromIdx, toIdx) {
+    if (fromIdx === toIdx) return;
+    const item = playerTeam.splice(fromIdx, 1)[0];
+    playerTeam.splice(toIdx, 0, item);
+    // Cambiar el currentEditId si es necesario
+    if (currentEditId === fromIdx) currentEditId = toIdx;
+    else if (fromIdx < currentEditId && toIdx >= currentEditId) currentEditId--;
+    else if (fromIdx > currentEditId && toIdx <= currentEditId) currentEditId++;
+    renderAll();
 }
 
 // ─── AÑADIR / QUITAR DEL EQUIPO ───────────────────────────────────────────────
@@ -639,6 +712,142 @@ function checkSaved() {
         el.style.color = '#22c55e';
         el.textContent = `✅ ${d.length} en sesión`;
     } catch { el.style.color = '#ef4444'; el.textContent = '❌ Error'; }
+}
+
+// ─── ANÁLISIS DEL EQUIPO ──────────────────────────────────────────────────────
+function openAnalysisModal() {
+    if (!playerTeam.length) { showToast('⚠️ Equipo vacío'); return; }
+    renderTeamAnalysis();
+    document.getElementById('teamAnalysisModal')?.classList.add('open');
+}
+
+function closeAnalysisModal() {
+    document.getElementById('teamAnalysisModal')?.classList.remove('open');
+}
+
+function renderTeamAnalysis() {
+    const defCont = document.getElementById('analysisDefTable');
+    const offCont = document.getElementById('analysisOffTable');
+    if (!defCont || !offCont) return;
+
+    const types = Object.keys(TypeColors);
+
+    // ANÁLISIS DEFENSIVO
+    const defResults = {};
+    types.forEach(type => {
+        defResults[type] = { weak: 0, res: 0, neut: 0 };
+    });
+
+    playerTeam.forEach(e => {
+        const p = PokemonDB[e.id];
+        if (!p) return;
+        types.forEach(atkT => {
+            let mult = 1;
+            p.types.forEach(defT => {
+                const row = TypeChart[atkT] || {};
+                mult *= (row[defT] !== undefined ? row[defT] : 1);
+            });
+            if (mult > 1) defResults[atkT].weak++;
+            else if (mult < 1) defResults[atkT].res++;
+            else defResults[atkT].neut++;
+        });
+    });
+
+    defCont.innerHTML = `<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:10px;">
+        ${types.map(t => {
+        const r = defResults[t];
+        const score = r.res - r.weak;
+        const scoreCol = score > 0 ? '#22c55e' : (score < 0 ? '#ef4444' : '#64748b');
+        return `<div style="background:var(--t-panel2); border:1px solid var(--t-border); border-radius:6px; padding:8px;">
+                <div class="type-badge ${TypeColors[t]}" style="width:100%; text-align:center; font-size:10px; margin-bottom:5px;">${t}</div>
+                <div style="display:flex; justify-content:space-between; font-size:9px;">
+                    <span style="color:#ef4444;">Debil: ${r.weak}</span>
+                    <span style="color:#22c55e;">Res: ${r.res}</span>
+                </div>
+                <div style="margin-top:5px; text-align:center; font-weight:bold; color:${scoreCol}">${score > 0 ? '+' : ''}${score}</div>
+            </div>`;
+    }).join('')}
+    </div>`;
+
+    // ANÁLISIS OFENSIVO (Cobertura)
+    const teamMoveTypes = new Set();
+    playerTeam.forEach(e => {
+        e.moves.forEach(mv => {
+            const mInfo = getMoveInfo(mv);
+            if (mInfo && mInfo.category !== 'status') teamMoveTypes.add(mInfo.type);
+        });
+    });
+
+    offCont.innerHTML = `<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:10px;">
+        ${types.map(t => {
+        const hasMove = teamMoveTypes.has(t);
+        return `<div style="background:var(--t-panel2); border:1px solid ${hasMove ? 'var(--t-green)' : 'var(--t-border)'}; border-radius:6px; padding:8px; opacity: ${hasMove ? 1 : 0.4}">
+                <div class="type-badge ${TypeColors[t]}" style="width:100%; text-align:center; font-size:10px; margin-bottom:5px;">${t}</div>
+                <div style="text-align:center; font-size:9px; color:${hasMove ? 'var(--t-green)' : '#64748b'}">
+                    ${hasMove ? '✅ CUBIERTO' : '❌ SIN COBERTURA'}
+                </div>
+            </div>`;
+    }).join('')}
+    </div>`;
+}
+
+// ─── POKÉMON PREVIEW ─────────────────────────────────────────────────────────
+function openPreview(pokeid) {
+    const poke = PokemonDB[pokeid];
+    if (!poke) return;
+
+    const sprite = getSpriteUrl(pokeid, 'front');
+    const bst = Object.values(poke.stats).reduce((a, b) => a + b, 0);
+    const typeBadges = poke.types.map(t => `<span class="type-badge ${TypeColors[t]}">${t}</span>`).join('');
+
+    const statRows = Object.entries(poke.stats).map(([k, v]) => {
+        const pct = Math.round((v / 255) * 100);
+        return `<div style="margin-bottom:8px;">
+            <div style="display:flex; justify-content:space-between; font-size:10px; margin-bottom:2px;">
+                <span>${k.toUpperCase()}</span>
+                <b style="color:var(--t-gold);">${v}</b>
+            </div>
+            <div style="height:4px; background:rgba(255,255,255,.05); border-radius:2px; overflow:hidden;">
+                <div style="width:${pct}%; height:100%; background:var(--t-gold);"></div>
+            </div>
+        </div>`;
+    }).join('');
+
+    const box = document.getElementById('pokePreviewBox');
+    if (!box) return;
+
+    box.innerHTML = `
+        <div style="padding:20px;">
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+                <img src="${sprite}" style="width:80px; height:80px; image-rendering:pixelated;">
+                <div>
+                    <div style="font-size:16px; color:var(--t-gold);">#${poke.id} ${poke.name}</div>
+                    <div style="display:flex; gap:5px; margin:5px 0;">${typeBadges}</div>
+                    <div style="font-size:10px; color:#64748b;">Base Stat Total: <b style="color:white;">${bst}</b></div>
+                </div>
+                <button onclick="closePreview()" style="margin-left:auto; background:transparent; border:none; color:#64748b; font-size:18px; cursor:pointer;">✕</button>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                <div>
+                    <div style="font-size:10px; color:var(--t-gold); margin-bottom:10px;">📊 ESTADÍSTICAS BASE</div>
+                    ${statRows}
+                </div>
+                <div>
+                    <div style="font-size:10px; color:var(--t-gold); margin-bottom:10px;">⚔️ MOVIMIENTOS</div>
+                    <div style="max-height:200px; overflow-y:auto; display:flex; flex-wrap:wrap; gap:4px;">
+                        ${(poke.learnset || poke.moves).map(m => `<span style="font-size:9px; background:rgba(255,255,255,.03); padding:2px 6px; border-radius:4px; border:1px solid var(--t-border);">${m}</span>`).join('')}
+                    </div>
+                </div>
+            </div>
+            <button onclick="closePreview(); addToTeam(${pokeid})" style="width:100%; margin-top:20px; padding:10px; background:var(--t-gold); color:#000; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">AÑADIR AL EQUIPO</button>
+        </div>
+    `;
+
+    document.getElementById('pokePreviewModal').classList.add('open');
+}
+
+function closePreview() {
+    document.getElementById('pokePreviewModal')?.classList.remove('open');
 }
 
 init();

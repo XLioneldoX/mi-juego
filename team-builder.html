@@ -1,1010 +1,2476 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Kanto Showdown - Constructor de Equipo</title>
     <!-- Aplica tema ANTES de renderizar -->
-    <script>(function(){var t=localStorage.getItem('prostarTheme')||'default';document.documentElement.setAttribute('data-theme',t);})();</script>
+    <script>(function () { var t = localStorage.getItem('prostarTheme') || 'default'; document.documentElement.setAttribute('data-theme', t); })();</script>
     <style>
         /* ══════════════════════════════════════════════
            SISTEMA DE TEMAS
            ══════════════════════════════════════════════ */
         :root {
-            --t-bg:         #0a0a1a;
-            --t-panel:      #0f172a;
-            --t-panel2:     #060612;
-            --t-border:     #1e293b;
-            --t-border2:    #0f172a;
-            --t-gold:       #fbbf24;
-            --t-gold-dim:   rgba(251,191,36,0.05);
-            --t-gold-glow:  rgba(251,191,36,0.5);
-            --t-red:        #ef4444;
-            --t-green:      #22c55e;
-            --t-blue:       #3b82f6;
-            --t-text:       white;
+            --t-bg: #0a0a1a;
+            --t-panel: #0f172a;
+            --t-panel2: #060612;
+            --t-border: #1e293b;
+            --t-border2: #0f172a;
+            --t-gold: #fbbf24;
+            --t-gold-dim: rgba(251, 191, 36, 0.05);
+            --t-gold-glow: rgba(251, 191, 36, 0.5);
+            --t-red: #ef4444;
+            --t-green: #22c55e;
+            --t-blue: #3b82f6;
+            --t-text: white;
             --t-text-muted: #94a3b8;
-            --t-text-dim:   #64748b;
-            --t-header-g1:  #0f172a;
-            --t-header-g2:  #1e1b4b;
-            --t-btn-battle: linear-gradient(135deg,#f59e0b,#ef4444);
+            --t-text-dim: #64748b;
+            --t-header-g1: #0f172a;
+            --t-header-g2: #1e1b4b;
+            --t-btn-battle: linear-gradient(135deg, #f59e0b, #ef4444);
             --t-btn-battle-shadow: #b45309;
-            --t-btn-multi:  linear-gradient(135deg,#1e1b4b,#1e3a5f);
+            --t-btn-multi: linear-gradient(135deg, #1e1b4b, #1e3a5f);
             --t-btn-multi-border: #0891b2;
-            --t-btn-multi-color:  #67e8f9;
-            --t-input-bg:   #111827;
-            --t-input-border:#334155;
+            --t-btn-multi-color: #67e8f9;
+            --t-input-bg: #111827;
+            --t-input-border: #334155;
         }
 
         [data-theme="helodian"] {
-            --t-bg:         #06000a;
-            --t-panel:      #0d0010;
-            --t-panel2:     #080010;
-            --t-border:     #2d0020;
-            --t-border2:    #180010;
-            --t-gold:       #f59e0b;
-            --t-gold-dim:   rgba(245,158,11,0.05);
-            --t-gold-glow:  rgba(239,68,68,0.5);
-            --t-red:        #ef4444;
-            --t-green:      #22c55e;
-            --t-blue:       #dc2626;
-            --t-text:       white;
+            --t-bg: #06000a;
+            --t-panel: #0d0010;
+            --t-panel2: #080010;
+            --t-border: #2d0020;
+            --t-border2: #180010;
+            --t-gold: #f59e0b;
+            --t-gold-dim: rgba(245, 158, 11, 0.05);
+            --t-gold-glow: rgba(239, 68, 68, 0.5);
+            --t-red: #ef4444;
+            --t-green: #22c55e;
+            --t-blue: #dc2626;
+            --t-text: white;
             --t-text-muted: #94a3b8;
-            --t-text-dim:   #6b7280;
-            --t-header-g1:  #180008;
-            --t-header-g2:  #3b0018;
-            --t-btn-battle: linear-gradient(135deg,#7f1d1d,#b45309,#ef4444);
+            --t-text-dim: #6b7280;
+            --t-header-g1: #180008;
+            --t-header-g2: #3b0018;
+            --t-btn-battle: linear-gradient(135deg, #7f1d1d, #b45309, #ef4444);
             --t-btn-battle-shadow: #7f1d1d;
-            --t-btn-multi:  linear-gradient(135deg,#1a0010,#2d0018);
+            --t-btn-multi: linear-gradient(135deg, #1a0010, #2d0018);
             --t-btn-multi-border: #8b0030;
-            --t-btn-multi-color:  #fca5a5;
-            --t-input-bg:   #140008;
-            --t-input-border:#2d0018;
+            --t-btn-multi-color: #fca5a5;
+            --t-input-bg: #140008;
+            --t-input-border: #2d0018;
         }
 
         [data-theme="etherdiel"] {
-            --t-bg:         #020a1a;
-            --t-panel:      #050f20;
-            --t-panel2:     #030c18;
-            --t-border:     #1e3a5f;
-            --t-border2:    #0d1f35;
-            --t-gold:       #38bdf8;
-            --t-gold-dim:   rgba(56,189,248,0.05);
-            --t-gold-glow:  rgba(56,189,248,0.5);
-            --t-red:        #f87171;
-            --t-green:      #34d399;
-            --t-blue:       #3b82f6;
-            --t-text:       white;
+            --t-bg: #020a1a;
+            --t-panel: #050f20;
+            --t-panel2: #030c18;
+            --t-border: #1e3a5f;
+            --t-border2: #0d1f35;
+            --t-gold: #38bdf8;
+            --t-gold-dim: rgba(56, 189, 248, 0.05);
+            --t-gold-glow: rgba(56, 189, 248, 0.5);
+            --t-red: #f87171;
+            --t-green: #34d399;
+            --t-blue: #3b82f6;
+            --t-text: white;
             --t-text-muted: #94a3b8;
-            --t-text-dim:   #64748b;
-            --t-header-g1:  #050f20;
-            --t-header-g2:  #0a1f40;
-            --t-btn-battle: linear-gradient(135deg,#1d4ed8,#38bdf8);
+            --t-text-dim: #64748b;
+            --t-header-g1: #050f20;
+            --t-header-g2: #0a1f40;
+            --t-btn-battle: linear-gradient(135deg, #1d4ed8, #38bdf8);
             --t-btn-battle-shadow: #1e3a8a;
-            --t-btn-multi:  linear-gradient(135deg,#0a1f40,#0d2850);
+            --t-btn-multi: linear-gradient(135deg, #0a1f40, #0d2850);
             --t-btn-multi-border: #38bdf8;
-            --t-btn-multi-color:  #bae6fd;
-            --t-input-bg:   #060f20;
-            --t-input-border:#1e3a5f;
+            --t-btn-multi-color: #bae6fd;
+            --t-input-bg: #060f20;
+            --t-input-border: #1e3a5f;
         }
 
         /* ══════════════════════════════════════════════
            ESTILOS PRINCIPALES
            ══════════════════════════════════════════════ */
-        * { margin:0; padding:0; box-sizing:border-box; }
-        :root { --bg:var(--t-bg); --panel:var(--t-panel); --border:var(--t-border); --gold:var(--t-gold); --red:var(--t-red); --green:var(--t-green); --blue:var(--t-blue); }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        body { font-family:'Courier New',Courier,monospace; background:var(--t-bg); color:var(--t-text); height:100vh; overflow:hidden; font-size:13px; }
-        body::after { content:''; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.015) 2px,rgba(0,0,0,.015) 4px); z-index:9999; }
+        :root {
+            --bg: var(--t-bg);
+            --panel: var(--t-panel);
+            --border: var(--t-border);
+            --gold: var(--t-gold);
+            --red: var(--t-red);
+            --green: var(--t-green);
+            --blue: var(--t-blue);
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background: var(--t-bg);
+            color: var(--t-text);
+            height: 100vh;
+            overflow: hidden;
+            font-size: 13px;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, .015) 2px, rgba(0, 0, 0, .015) 4px);
+            z-index: 9999;
+        }
 
         /* ── HEADER ───────────────────────────────────────────── */
-        .header { background:linear-gradient(90deg,var(--t-header-g1),var(--t-header-g2),var(--t-header-g1)); border-bottom:2px solid var(--t-gold); padding:.75rem 1.5rem; display:flex; align-items:center; justify-content:space-between; height:52px; }
-        .header-title { font-size:13px; color:var(--t-gold); text-shadow:0 0 20px var(--t-gold-glow); }
-        .nav-btn { padding:.4rem .8rem; background:transparent; border:1px solid var(--t-border); color:var(--t-text-dim); font-family:'Courier New',Courier,monospace; font-size:13px; cursor:pointer; border-radius:4px; text-decoration:none; transition:all .15s; }
-        .nav-btn:hover { border-color:var(--t-gold); color:var(--t-gold); }
+        .header {
+            background: linear-gradient(90deg, var(--t-header-g1), var(--t-header-g2), var(--t-header-g1));
+            border-bottom: 2px solid var(--t-gold);
+            padding: .75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 52px;
+        }
+
+        .header-title {
+            font-size: 13px;
+            color: var(--t-gold);
+            text-shadow: 0 0 20px var(--t-gold-glow);
+        }
+
+        .nav-btn {
+            padding: .4rem .8rem;
+            background: transparent;
+            border: 1px solid var(--t-border);
+            color: var(--t-text-dim);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all .15s;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--t-gold);
+            color: var(--t-gold);
+        }
 
         /* ── LAYOUT ───────────────────────────────────────────── */
-        .layout { display:grid; grid-template-columns:380px 1fr; height:calc(100vh - 52px); overflow:hidden; }
+        .layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            height: calc(100vh - 52px);
+            overflow: hidden;
+        }
 
         /* ── PANEL IZQUIERDO ──────────────────────────────────── */
-        .left-panel { background:var(--t-panel2); border-right:2px solid var(--t-border); display:flex; flex-direction:column; overflow:hidden; }
+        .left-panel {
+            background: var(--t-panel2);
+            border-right: 2px solid var(--t-border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
         /* Equipo */
-        .team-section { padding:12px 14px 8px; border-bottom:1px solid var(--t-border); }
-        .section-title { font-size:13px; color:var(--t-gold); letter-spacing:1px; margin-bottom:8px; }
-        .team-slots { display:flex; gap:5px; margin-bottom:6px; }
-        .team-slot { position:relative; width:52px; height:52px; background:rgba(255,255,255,.02); border:2px solid var(--t-border); border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .15s; overflow:hidden; }
-        .team-slot.filled:hover { border-color:var(--t-gold); transform:translateY(-2px); }
-        .team-slot.editing { border-color:var(--t-gold)!important; box-shadow:0 0 10px var(--t-gold-glow); }
-        .team-slot img { width:46px; height:46px; object-fit:contain; image-rendering:pixelated; }
-        .slot-empty-icon { font-size:20px; color:var(--t-border); }
-        .slot-remove { position:absolute; top:1px; right:2px; font-size:13px; color:var(--t-red); cursor:pointer; opacity:0; transition:opacity .15s; line-height:1; }
-        .team-slot:hover .slot-remove { opacity:1; }
-        .slot-nature-badge { position:absolute; bottom:0; left:0; right:0; font-size:4.5px; padding:1px 2px; text-align:center; }
-        .slot-item-dot { position:absolute; top:2px; left:2px; width:5px; height:5px; border-radius:50%; background:var(--t-gold); }
-        .team-meta { display:flex; justify-content:space-between; align-items:center; font-size:8.5px; color:var(--t-text-dim); }
-        #minWarning { color:var(--t-red); }
+        .team-section {
+            padding: 12px 14px 8px;
+            border-bottom: 1px solid var(--t-border);
+        }
+
+        .section-title {
+            font-size: 13px;
+            color: var(--t-gold);
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .team-slots {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 6px;
+        }
+
+        .team-slot {
+            position: relative;
+            width: 52px;
+            height: 52px;
+            background: rgba(255, 255, 255, .02);
+            border: 2px solid var(--t-border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all .15s;
+            overflow: hidden;
+        }
+
+        .team-slot.filled:hover {
+            border-color: var(--t-gold);
+            transform: translateY(-2px);
+        }
+
+        .team-slot.editing {
+            border-color: var(--t-gold) !important;
+            box-shadow: 0 0 10px var(--t-gold-glow);
+        }
+
+        .team-slot img {
+            width: 46px;
+            height: 46px;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        .slot-empty-icon {
+            font-size: 20px;
+            color: var(--t-border);
+        }
+
+        .slot-remove {
+            position: absolute;
+            top: 1px;
+            right: 2px;
+            font-size: 13px;
+            color: var(--t-red);
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity .15s;
+            line-height: 1;
+        }
+
+        .team-slot:hover .slot-remove {
+            opacity: 1;
+        }
+
+        .slot-nature-badge {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            font-size: 4.5px;
+            padding: 1px 2px;
+            text-align: center;
+        }
+
+        .slot-item-dot {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--t-gold);
+        }
+
+        .team-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 8.5px;
+            color: var(--t-text-dim);
+        }
+
+        #minWarning {
+            color: var(--t-red);
+        }
 
         /* Botones */
-        .action-buttons { padding:10px 14px; border-bottom:1px solid var(--t-border); display:flex; flex-direction:column; gap:6px; }
-        .action-btn { width:100%; padding:8px; border:none; border-radius:5px; font-family:'Courier New',Courier,monospace; font-size:12px; cursor:pointer; transition:all .15s; }
-        .action-btn:hover { filter:brightness(1.1); }
-        .action-btn:disabled { opacity:.4; cursor:not-allowed; filter:none; }
-        .btn-battle { background:var(--t-btn-battle); color:#1a1a2e; font-size:13px; box-shadow:0 3px 0 var(--t-btn-battle-shadow); }
-        .btn-row { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-        .btn-save    { background:#166534; color:#4ade80; font-size:13px; }
-        .btn-load    { background:var(--t-panel); color:var(--t-gold); border:1px solid var(--t-border); font-size:13px; }
-        .btn-trainer { background:#4c1d95; color:#c4b5fd; font-size:13px; }
-        .btn-wild    { background:#164e63; color:#67e8f9; font-size:13px; }
-        .btn-multi   { background:var(--t-btn-multi); color:var(--t-btn-multi-color); border:2px solid var(--t-btn-multi-border); font-size:13px; }
-        #savedStatus { font-size:12px; color:var(--t-border); text-align:center; padding:3px; border:1px solid var(--t-border); border-radius:3px; }
+        .action-buttons {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--t-border);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .action-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .action-btn:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+            filter: none;
+        }
+
+        .btn-battle {
+            background: var(--t-btn-battle);
+            color: #1a1a2e;
+            font-size: 13px;
+            box-shadow: 0 3px 0 var(--t-btn-battle-shadow);
+        }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .btn-save {
+            background: #166534;
+            color: #4ade80;
+            font-size: 13px;
+        }
+
+        .btn-load {
+            background: var(--t-panel);
+            color: var(--t-gold);
+            border: 1px solid var(--t-border);
+            font-size: 13px;
+        }
+
+        .btn-trainer {
+            background: #4c1d95;
+            color: #c4b5fd;
+            font-size: 13px;
+        }
+
+        .btn-wild {
+            background: #164e63;
+            color: #67e8f9;
+            font-size: 13px;
+        }
+
+        .btn-multi {
+            background: var(--t-btn-multi);
+            color: var(--t-btn-multi-color);
+            border: 2px solid var(--t-btn-multi-border);
+            font-size: 13px;
+        }
+
+        #savedStatus {
+            font-size: 12px;
+            color: var(--t-border);
+            text-align: center;
+            padding: 3px;
+            border: 1px solid var(--t-border);
+            border-radius: 3px;
+        }
 
         /* Pokémon disponibles */
-        .available-section { flex:1; overflow-y:auto; padding:10px 14px; }
-        .pokemon-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
-        .poke-card { background:rgba(255,255,255,.03); border:2px solid var(--t-border); border-radius:7px; padding:6px 4px; cursor:pointer; transition:all .15s; text-align:center; }
-        .poke-card:hover:not(.in-team) { border-color:var(--t-gold); background:var(--t-gold-dim); transform:translateY(-2px); }
-        .poke-card.in-team { border-color:var(--t-green); background:rgba(34,197,94,.06); opacity:.55; cursor:not-allowed; }
-        .poke-card img { width:52px; height:52px; object-fit:contain; image-rendering:pixelated; }
-        .poke-name { font-size:9.5px; color:var(--t-text-muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .poke-types { display:flex; gap:2px; justify-content:center; margin-top:3px; flex-wrap:wrap; }
-        .type-badge { font-size:13px; padding:1px 4px; border-radius:2px; }
+        .available-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 14px;
+        }
 
-        .type-FUEGO,.type-FIRE{background:#dc2626;} .type-AGUA,.type-WATER{background:#2563eb;} .type-PLANTA{background:#16a34a;}
-        .type-ELECTRICO,.type-ELÉCTRICO{background:#ca8a04;color:#1a1a2e;} .type-FANTASMA{background:#7e22ce;} .type-TIERRA{background:#92400e;}
-        .type-NORMAL{background:#6b7280;} .type-PSÍQUICO,.type-PSIQUICO{background:#db2777;} .type-LUCHA{background:#c2410c;}
-        .type-VOLADOR{background:#4f46e5;} .type-VENENO{background:#7c3aed;} .type-HIELO{background:#0891b2;}
-        .type-ROCA{background:#a16207;} .type-DRAGÓN,.type-DRAGON{background:#4338ca;} .type-SINIESTRO{background:#1f2937;border:1px solid #374151;}
-        .type-ACERO{background:#64748b;} .type-BICHO{background:#4d7c0f;} .type-HADA{background:#f472b6;color:#1a1a2e;}
+        .pokemon-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
 
-        ::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-thumb{background:var(--t-border);border-radius:2px;}
+        .poke-card {
+            background: rgba(255, 255, 255, .03);
+            border: 2px solid var(--t-border);
+            border-radius: 7px;
+            padding: 6px 4px;
+            cursor: pointer;
+            transition: all .15s;
+            text-align: center;
+        }
+
+        .poke-card:hover:not(.in-team) {
+            border-color: var(--t-gold);
+            background: var(--t-gold-dim);
+            transform: translateY(-2px);
+        }
+
+        .poke-card.in-team {
+            border-color: var(--t-green);
+            background: rgba(34, 197, 94, .06);
+            opacity: .55;
+            cursor: not-allowed;
+        }
+
+        .poke-card img {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        .poke-name {
+            font-size: 9.5px;
+            color: var(--t-text-muted);
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .poke-types {
+            display: flex;
+            gap: 2px;
+            justify-content: center;
+            margin-top: 3px;
+            flex-wrap: wrap;
+        }
+
+        .type-badge {
+            font-size: 13px;
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+
+        .type-FUEGO,
+        .type-FIRE {
+            background: #dc2626;
+        }
+
+        .type-AGUA,
+        .type-WATER {
+            background: #2563eb;
+        }
+
+        .type-PLANTA {
+            background: #16a34a;
+        }
+
+        .type-ELECTRICO,
+        .type-ELÉCTRICO {
+            background: #ca8a04;
+            color: #1a1a2e;
+        }
+
+        .type-FANTASMA {
+            background: #7e22ce;
+        }
+
+        .type-TIERRA {
+            background: #92400e;
+        }
+
+        .type-NORMAL {
+            background: #6b7280;
+        }
+
+        .type-PSÍQUICO,
+        .type-PSIQUICO {
+            background: #db2777;
+        }
+
+        .type-LUCHA {
+            background: #c2410c;
+        }
+
+        .type-VOLADOR {
+            background: #4f46e5;
+        }
+
+        .type-VENENO {
+            background: #7c3aed;
+        }
+
+        .type-HIELO {
+            background: #0891b2;
+        }
+
+        .type-ROCA {
+            background: #a16207;
+        }
+
+        .type-DRAGÓN,
+        .type-DRAGON {
+            background: #4338ca;
+        }
+
+        .type-SINIESTRO {
+            background: #1f2937;
+            border: 1px solid #374151;
+        }
+
+        .type-ACERO {
+            background: #64748b;
+        }
+
+        .type-BICHO {
+            background: #4d7c0f;
+        }
+
+        .type-HADA {
+            background: #f472b6;
+            color: #1a1a2e;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--t-border);
+            border-radius: 2px;
+        }
 
         /* ── PANEL DERECHO ────────────────────────────────────── */
-        .right-panel { background:var(--t-bg); overflow-y:auto; padding:1.5rem; display:flex; flex-direction:column; gap:14px; }
+        .right-panel {
+            background: var(--t-bg);
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
 
-        .team-editor-bar { display:none; }
-        .team-editor-bar.visible { display:block; }
-        .teb-title { font-size:13px; color:var(--t-gold); margin-bottom:8px; }
-        .teb-slots { display:flex; gap:8px; flex-wrap:wrap; }
-        .teb-slot { position:relative; cursor:pointer; transition:all .15s; }
-        .teb-slot img { width:64px; height:64px; object-fit:contain; image-rendering:pixelated; border:2px solid var(--t-border); border-radius:8px; background:rgba(255,255,255,.02); }
-        .teb-slot:hover img { border-color:var(--t-gold); }
-        .teb-slot.active img { border-color:var(--t-gold); box-shadow:0 0 14px var(--t-gold-glow); }
-        .teb-slot-name { font-size:13px; color:var(--t-text-dim); text-align:center; margin-top:3px; }
-        .teb-slot.active .teb-slot-name { color:var(--t-gold); }
+        .team-editor-bar {
+            display: none;
+        }
+
+        .team-editor-bar.visible {
+            display: block;
+        }
+
+        .teb-title {
+            font-size: 13px;
+            color: var(--t-gold);
+            margin-bottom: 8px;
+        }
+
+        .teb-slots {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .teb-slot {
+            position: relative;
+            cursor: pointer;
+            transition: all .15s;
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .teb-slot img {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            image-rendering: pixelated;
+            border: 2px solid var(--t-border);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, .02);
+            flex-shrink: 0;
+        }
+
+        .teb-slot:hover img {
+            border-color: var(--t-gold);
+        }
+
+        .teb-slot.active img {
+            border-color: var(--t-gold);
+            box-shadow: 0 0 14px var(--t-gold-glow);
+        }
+
+        .teb-slot-name {
+            font-size: 13px;
+            color: var(--t-text-dim);
+            text-align: center;
+            margin-top: 5px;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .teb-slot.active .teb-slot-name {
+            color: var(--t-gold);
+        }
 
         /* Paneles de entrenador/salvaje */
-        .trainer-select-panel { display:none; }
-        .trainer-select-panel.visible { display:block; }
-        .trainer-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; }
-        .trainer-card { background:var(--t-panel); border:2px solid var(--t-border); border-radius:8px; padding:14px 12px; cursor:pointer; transition:all .15s; text-align:center; }
-        .trainer-card:hover { transform:translateY(-3px); box-shadow:0 6px 20px rgba(0,0,0,.5); border-color:var(--t-gold); }
-        .trainer-avatar { font-size:32px; margin-bottom:8px; }
-        .trainer-name { font-size:13px; margin-bottom:4px; }
-        .trainer-title { font-size:9.5px; color:var(--t-text-dim); margin-bottom:6px; line-height:1.6; }
-        .trainer-team-preview { display:flex; justify-content:center; gap:3px; flex-wrap:wrap; }
-        .trainer-team-preview img { width:24px; height:24px; image-rendering:pixelated; }
+        .trainer-select-panel {
+            display: none;
+        }
 
-        .wild-select-panel { display:none; }
-        .wild-select-panel.visible { display:block; }
-        .wild-grid { display:flex; flex-direction:column; gap:10px; max-width:500px; }
-        .wild-card { background:var(--t-panel); border:2px solid var(--t-border); border-radius:8px; padding:16px; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:14px; }
-        .wild-card:hover { border-color:var(--t-gold); transform:translateY(-2px); }
-        .wild-icon { font-size:28px; }
-        .wc-title { font-size:13px; margin-bottom:5px; }
-        .wc-desc  { font-size:8.5px; color:var(--t-text-dim); line-height:1.7; }
+        .trainer-select-panel.visible {
+            display: block;
+        }
 
-        .right-placeholder { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; color:var(--t-border); gap:12px; }
-        .right-placeholder .ph-icon { font-size:64px; }
-        .right-placeholder .ph-text { font-size:12px; text-align:center; line-height:2.2; }
+        .trainer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 10px;
+        }
+
+        .trainer-card {
+            background: var(--t-panel);
+            border: 2px solid var(--t-border);
+            border-radius: 8px;
+            padding: 14px 12px;
+            cursor: pointer;
+            transition: all .15s;
+            text-align: center;
+        }
+
+        .trainer-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .5);
+            border-color: var(--t-gold);
+        }
+
+        .trainer-avatar {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .trainer-name {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .trainer-title {
+            font-size: 9.5px;
+            color: var(--t-text-dim);
+            margin-bottom: 6px;
+            line-height: 1.6;
+        }
+
+        .trainer-team-preview {
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+            flex-wrap: wrap;
+        }
+
+        .trainer-team-preview img {
+            width: 24px;
+            height: 24px;
+            image-rendering: pixelated;
+        }
+
+        .wild-select-panel {
+            display: none;
+        }
+
+        .wild-select-panel.visible {
+            display: block;
+        }
+
+        .wild-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 500px;
+        }
+
+        .wild-card {
+            background: var(--t-panel);
+            border: 2px solid var(--t-border);
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all .15s;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .wild-card:hover {
+            border-color: var(--t-gold);
+            transform: translateY(-2px);
+        }
+
+        .wild-icon {
+            font-size: 28px;
+        }
+
+        .wc-title {
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .wc-desc {
+            font-size: 8.5px;
+            color: var(--t-text-dim);
+            line-height: 1.7;
+        }
+
+        .right-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            color: var(--t-border);
+            gap: 12px;
+        }
+
+        .right-placeholder .ph-icon {
+            font-size: 64px;
+        }
+
+        .right-placeholder .ph-text {
+            font-size: 12px;
+            text-align: center;
+            line-height: 2.2;
+        }
 
         /* Toast */
-        .toast { position:fixed; bottom:2rem; right:2rem; background:var(--t-panel); border:2px solid var(--t-gold); color:var(--t-gold); padding:.6rem 1.2rem; border-radius:4px; font-size:12px; z-index:1000; animation:toastIn .3s; }
-        @keyframes toastIn { from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--t-panel);
+            border: 2px solid var(--t-gold);
+            color: var(--t-gold);
+            padding: .6rem 1.2rem;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 1000;
+            animation: toastIn .3s;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         /* ── EDITOR MODAL / INLINE ────────────────────────────── */
-        .editor-modal { position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:500; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
-        .editor-modal.open { display:flex; }
-        .editor-modal-box { background:#0d1117; border:2px solid var(--t-gold); border-radius:10px; width:700px; max-width:96vw; max-height:92vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 0 60px var(--t-gold-glow); animation:modalIn .2s; }
-        @keyframes modalIn { from{opacity:0;transform:scale(.95) translateY(-10px);}to{opacity:1;transform:scale(1) translateY(0);} }
+        .editor-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .88);
+            z-index: 500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
 
-        .em-header { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:linear-gradient(90deg,var(--t-header-g1),var(--t-header-g2),var(--t-header-g1)); border-bottom:2px solid var(--t-border); flex-shrink:0; }
-        .em-header-left { display:flex; align-items:center; gap:12px; }
-        .em-header-sprite { width:60px; height:60px; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
-        .em-header-name  { font-size:12px; margin-bottom:4px; }
-        .em-header-types { display:flex; gap:4px; margin-bottom:3px; }
-        .em-header-ability { font-size:12px; color:#a5b4fc; }
-        .em-close-btn { background:transparent; border:1px solid #374151; color:var(--t-text-dim); padding:5px 10px; border-radius:4px; cursor:pointer; font-family:'Courier New',Courier,monospace; font-size:12px; transition:all .15s; }
-        .em-close-btn:hover { border-color:var(--t-red); color:var(--t-red); }
+        .editor-modal.open {
+            display: flex;
+        }
 
-        .em-tabs { display:flex; background:var(--t-panel2); border-bottom:2px solid var(--t-border); flex-shrink:0; }
-        .em-tab { flex:1; padding:9px 4px; background:transparent; border:none; border-bottom:3px solid transparent; color:#475569; font-family:'Courier New',Courier,monospace; font-size:8.5px; cursor:pointer; transition:all .15s; }
-        .em-tab:hover { color:var(--t-text-muted); }
-        .em-tab.active { color:var(--t-gold); border-bottom-color:var(--t-gold); }
+        .editor-modal-box {
+            background: #0d1117;
+            border: 2px solid var(--t-gold);
+            border-radius: 10px;
+            width: 700px;
+            max-width: 96vw;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 60px var(--t-gold-glow);
+            animation: modalIn .2s;
+        }
 
-        .em-body { flex:1; overflow-y:auto; padding:14px 16px; }
-        .em-footer { padding:10px 16px; border-top:2px solid var(--t-border); background:var(--t-panel2); flex-shrink:0; }
-        .em-save-btn { width:100%; padding:9px; background:var(--t-btn-battle); border:none; border-radius:5px; color:#0a0a0a; font-family:'Courier New',Courier,monospace; font-size:12px; cursor:pointer; transition:all .15s; }
-        .em-save-btn:hover { filter:brightness(1.1); }
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(.95) translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .em-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: linear-gradient(90deg, var(--t-header-g1), var(--t-header-g2), var(--t-header-g1));
+            border-bottom: 2px solid var(--t-border);
+            flex-shrink: 0;
+        }
+
+        .em-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .em-header-sprite {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            image-rendering: pixelated;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .6));
+        }
+
+        .em-header-name {
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .em-header-types {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 3px;
+        }
+
+        .em-header-ability {
+            font-size: 12px;
+            color: #a5b4fc;
+        }
+
+        .em-close-btn {
+            background: transparent;
+            border: 1px solid #374151;
+            color: var(--t-text-dim);
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            transition: all .15s;
+        }
+
+        .em-close-btn:hover {
+            border-color: var(--t-red);
+            color: var(--t-red);
+        }
+
+        .em-tabs {
+            display: flex;
+            background: var(--t-panel2);
+            border-bottom: 2px solid var(--t-border);
+            flex-shrink: 0;
+        }
+
+        .em-tab {
+            flex: 1;
+            padding: 9px 4px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #475569;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 8.5px;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .em-tab:hover {
+            color: var(--t-text-muted);
+        }
+
+        .em-tab.active {
+            color: var(--t-gold);
+            border-bottom-color: var(--t-gold);
+        }
+
+        .em-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 16px;
+        }
+
+        .em-footer {
+            padding: 10px 16px;
+            border-top: 2px solid var(--t-border);
+            background: var(--t-panel2);
+            flex-shrink: 0;
+        }
+
+        .em-save-btn {
+            width: 100%;
+            padding: 9px;
+            background: var(--t-btn-battle);
+            border: none;
+            border-radius: 5px;
+            color: #0a0a0a;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .em-save-btn:hover {
+            filter: brightness(1.1);
+        }
 
         /* Movimientos */
-        .moves-count-badge { display:inline-block; font-size:13px; padding:2px 8px; border-radius:12px; margin-bottom:8px; }
-        .moves-count-ok   { background:rgba(34,197,94,.15); color:#22c55e; border:1px solid #22c55e; }
-        .moves-count-warn { background:rgba(251,191,36,.15); color:#fbbf24; border:1px solid #fbbf24; }
-        .moves-grid { display:grid; grid-template-columns:1fr 1fr; gap:5px; }
-        .move-option { background:var(--t-input-bg); border:2px solid var(--t-border); border-radius:5px; padding:7px; cursor:pointer; transition:all .15s; opacity:.7; }
-        .move-option:hover { border-color:#475569; opacity:1; }
-        .move-option.selected { border-color:var(--t-gold); opacity:1; background:var(--t-panel); }
-        .mo-name { font-size:13px; color:white; margin-bottom:3px; }
-        .mo-meta { font-size:12px; color:var(--t-text-dim); }
-        .mo-desc { font-size:9.5px; color:#475569; line-height:1.4; margin-top:2px; }
+        .moves-count-badge {
+            display: inline-block;
+            font-size: 13px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
 
-        .mv-FUEGO{border-left:3px solid #ef4444;} .mv-AGUA{border-left:3px solid #3b82f6;} .mv-PLANTA{border-left:3px solid #22c55e;}
-        .mv-ELECTRICO,.mv-ELÉCTRICO{border-left:3px solid #eab308;} .mv-PSIQUICO,.mv-PSÍQUICO{border-left:3px solid #ec4899;}
-        .mv-HIELO{border-left:3px solid #67e8f9;} .mv-DRAGON,.mv-DRAGÓN{border-left:3px solid #6366f1;} .mv-ACERO{border-left:3px solid #94a3b8;}
-        .mv-LUCHA{border-left:3px solid #f97316;} .mv-VENENO{border-left:3px solid #a855f7;} .mv-TIERRA{border-left:3px solid #92400e;}
-        .mv-VOLADOR{border-left:3px solid #7dd3fc;} .mv-FANTASMA{border-left:3px solid #7c3aed;} .mv-ROCA{border-left:3px solid #a8a29e;}
-        .mv-NORMAL{border-left:3px solid #64748b;} .mv-SINIESTRO{border-left:3px solid #374151;} .mv-BICHO{border-left:3px solid #84cc16;} .mv-HADA{border-left:3px solid #f472b6;}
+        .moves-count-ok {
+            background: rgba(34, 197, 94, .15);
+            color: #22c55e;
+            border: 1px solid #22c55e;
+        }
+
+        .moves-count-warn {
+            background: rgba(251, 191, 36, .15);
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+        }
+
+        .moves-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+
+        .move-option {
+            background: var(--t-input-bg);
+            border: 2px solid var(--t-border);
+            border-radius: 5px;
+            padding: 7px;
+            cursor: pointer;
+            transition: all .15s;
+            opacity: .7;
+        }
+
+        .move-option:hover {
+            border-color: #475569;
+            opacity: 1;
+        }
+
+        .move-option.selected {
+            border-color: var(--t-gold);
+            opacity: 1;
+            background: var(--t-panel);
+        }
+
+        .mo-name {
+            font-size: 13px;
+            color: white;
+            margin-bottom: 3px;
+        }
+
+        .mo-meta {
+            font-size: 12px;
+            color: var(--t-text-dim);
+        }
+
+        .mo-desc {
+            font-size: 9.5px;
+            color: #475569;
+            line-height: 1.4;
+            margin-top: 2px;
+        }
+
+        .mv-FUEGO {
+            border-left: 3px solid #ef4444;
+        }
+
+        .mv-AGUA {
+            border-left: 3px solid #3b82f6;
+        }
+
+        .mv-PLANTA {
+            border-left: 3px solid #22c55e;
+        }
+
+        .mv-ELECTRICO,
+        .mv-ELÉCTRICO {
+            border-left: 3px solid #eab308;
+        }
+
+        .mv-PSIQUICO,
+        .mv-PSÍQUICO {
+            border-left: 3px solid #ec4899;
+        }
+
+        .mv-HIELO {
+            border-left: 3px solid #67e8f9;
+        }
+
+        .mv-DRAGON,
+        .mv-DRAGÓN {
+            border-left: 3px solid #6366f1;
+        }
+
+        .mv-ACERO {
+            border-left: 3px solid #94a3b8;
+        }
+
+        .mv-LUCHA {
+            border-left: 3px solid #f97316;
+        }
+
+        .mv-VENENO {
+            border-left: 3px solid #a855f7;
+        }
+
+        .mv-TIERRA {
+            border-left: 3px solid #92400e;
+        }
+
+        .mv-VOLADOR {
+            border-left: 3px solid #7dd3fc;
+        }
+
+        .mv-FANTASMA {
+            border-left: 3px solid #7c3aed;
+        }
+
+        .mv-ROCA {
+            border-left: 3px solid #a8a29e;
+        }
+
+        .mv-NORMAL {
+            border-left: 3px solid #64748b;
+        }
+
+        .mv-SINIESTRO {
+            border-left: 3px solid #374151;
+        }
+
+        .mv-BICHO {
+            border-left: 3px solid #84cc16;
+        }
+
+        .mv-HADA {
+            border-left: 3px solid #f472b6;
+        }
 
         /* Naturaleza + EVs */
-        .nature-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(115px,1fr)); gap:4px; margin-bottom:12px; }
-        .nature-option { padding:6px 8px; background:var(--t-input-bg); border:2px solid var(--t-border); border-radius:5px; cursor:pointer; transition:all .15s; font-size:8.5px; }
-        .nature-option:hover { border-color:#334155; }
-        .nature-option.selected { border-color:var(--t-gold); background:var(--t-panel); color:var(--t-gold); }
+        .nature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .nature-option {
+            padding: 6px 8px;
+            background: var(--t-input-bg);
+            border: 2px solid var(--t-border);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all .15s;
+            font-size: 8.5px;
+        }
+
+        .nature-option:hover {
+            border-color: #334155;
+        }
+
+        .nature-option.selected {
+            border-color: var(--t-gold);
+            background: var(--t-panel);
+            color: var(--t-gold);
+        }
 
         /* Objetos */
-        .items-list { display:flex; flex-direction:column; gap:5px; }
-        .item-option { display:flex; align-items:center; gap:10px; background:var(--t-input-bg); border:2px solid var(--t-border); border-radius:6px; padding:8px 10px; cursor:pointer; transition:all .15s; }
-        .item-option:hover { border-color:#334155; }
-        .item-option.selected { border-color:var(--t-gold); background:var(--t-panel); }
-        .item-icon { font-size:18px; flex-shrink:0; }
-        .item-option-name { font-size:13px; color:white; margin-bottom:3px; }
-        .item-option-desc { font-size:12px; color:var(--t-text-dim); line-height:1.5; }
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .item-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--t-input-bg);
+            border: 2px solid var(--t-border);
+            border-radius: 6px;
+            padding: 8px 10px;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .item-option:hover {
+            border-color: #334155;
+        }
+
+        .item-option.selected {
+            border-color: var(--t-gold);
+            background: var(--t-panel);
+        }
+
+        .item-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .item-option-name {
+            font-size: 13px;
+            color: white;
+            margin-bottom: 3px;
+        }
+
+        .item-option-desc {
+            font-size: 12px;
+            color: var(--t-text-dim);
+            line-height: 1.5;
+        }
 
         /* EVs */
-        .evs-total { font-size:8.5px; margin-bottom:8px; }
-        .evs-total.ok { color:#22c55e; } .evs-total.over { color:#ef4444; }
-        .stat-row { margin-bottom:9px; }
-        .stat-label-row { display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px; }
-        .stat-controls { display:flex; align-items:center; gap:4px; }
-        .stat-btn { background:var(--t-border); border:1px solid var(--t-border2); color:white; padding:2px 7px; font-size:13px; cursor:pointer; border-radius:3px; }
-        .stat-btn:hover { background:var(--t-input-border); }
-        input[type=range].stat-slider { accent-color:var(--t-gold); height:4px; cursor:pointer; flex:1; }
-        .stat-bar-bg   { height:3px; background:var(--t-border); border-radius:2px; margin:3px 0 2px; overflow:hidden; }
-        .stat-bar-fill { height:100%; border-radius:2px; transition:width .2s; }
-        .stat-evs { font-size:9.5px; color:#475569; }
-        .editor-hint { font-size:9.5px; color:var(--t-border); margin-top:8px; line-height:1.8; }
-        .editor-hint code { color:#7dd3fc; }
+        .evs-total {
+            font-size: 8.5px;
+            margin-bottom: 8px;
+        }
+
+        .evs-total.ok {
+            color: #22c55e;
+        }
+
+        .evs-total.over {
+            color: #ef4444;
+        }
+
+        .stat-row {
+            margin-bottom: 9px;
+        }
+
+        .stat-label-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .stat-controls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-btn {
+            background: var(--t-border);
+            border: 1px solid var(--t-border2);
+            color: white;
+            padding: 2px 7px;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .stat-btn:hover {
+            background: var(--t-input-border);
+        }
+
+        input[type=range].stat-slider {
+            accent-color: var(--t-gold);
+            height: 4px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .stat-bar-bg {
+            height: 3px;
+            background: var(--t-border);
+            border-radius: 2px;
+            margin: 3px 0 2px;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width .2s;
+        }
+
+        .stat-evs {
+            font-size: 9.5px;
+            color: #475569;
+        }
+
+        .editor-hint {
+            font-size: 9.5px;
+            color: var(--t-border);
+            margin-top: 8px;
+            line-height: 1.8;
+        }
+
+        .editor-hint code {
+            color: #7dd3fc;
+        }
 
         /* Mis equipos */
-        .saved-team-row { display:flex; align-items:center; gap:10px; padding:10px; background:var(--t-panel); border:1px solid var(--t-border); border-radius:6px; margin-bottom:6px; }
-        .saved-team-sprites { display:flex; gap:2px; }
-        .saved-team-sprites img { width:30px; height:30px; image-rendering:pixelated; }
-        .saved-team-name { flex:1; font-size:12px; color:white; }
-        .saved-team-actions { display:flex; gap:5px; }
-        .stm-btn { padding:4px 8px; border:none; border-radius:3px; font-family:'Courier New',Courier,monospace; font-size:12px; cursor:pointer; }
-        .stm-btn.load { background:#166534; color:#4ade80; }
-        .stm-btn.del  { background:#7f1d1d; color:#fca5a5; }
+        .saved-team-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--t-panel);
+            border: 1px solid var(--t-border);
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+
+        .saved-team-sprites {
+            display: flex;
+            gap: 2px;
+        }
+
+        .saved-team-sprites img {
+            width: 30px;
+            height: 30px;
+            image-rendering: pixelated;
+        }
+
+        .saved-team-name {
+            flex: 1;
+            font-size: 12px;
+            color: white;
+        }
+
+        .saved-team-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .stm-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .stm-btn.load {
+            background: #166534;
+            color: #4ade80;
+        }
+
+        .stm-btn.del {
+            background: #7f1d1d;
+            color: #fca5a5;
+        }
 
         /* Editor inline */
-        .editor-inline { display:none; max-height:calc(100vh - 52px - 110px); }
-        .editor-inline.visible { display:flex; flex-direction:column; gap:0; overflow:hidden; }
-        .ei-header { display:flex; align-items:center; gap:12px; padding:14px 16px; background:linear-gradient(90deg,var(--t-header-g1),var(--t-header-g2),var(--t-header-g1)); border-bottom:2px solid var(--t-border); flex-shrink:0; }
-        .ei-sprite { width:56px; height:56px; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
-        .ei-name  { font-size:13px; margin-bottom:4px; }
-        .ei-types { display:flex; gap:4px; margin-bottom:3px; }
-        .ei-ability-text { font-size:12px; color:#a5b4fc; }
-        .ei-close { margin-left:auto; background:transparent; border:1px solid #374151; color:var(--t-text-dim); padding:4px 9px; border-radius:4px; cursor:pointer; font-family:'Courier New',Courier,monospace; font-size:12px; transition:all .15s; }
-        .ei-close:hover { border-color:var(--t-red); color:var(--t-red); }
-        .ei-tabs { display:flex; background:var(--t-panel2); border-bottom:2px solid var(--t-border); flex-shrink:0; }
-        .ei-tab { flex:1; padding:8px 4px; background:transparent; border:none; border-bottom:3px solid transparent; color:#475569; font-family:'Courier New',Courier,monospace; font-size:12px; cursor:pointer; transition:all .15s; }
-        .ei-tab:hover { color:var(--t-text-muted); }
-        .ei-tab.active { color:var(--t-gold); border-bottom-color:var(--t-gold); }
-        .ei-body { flex:1; overflow-y:auto; padding:14px 16px; min-height:0; }
-        .ei-footer { padding:10px 16px; border-top:2px solid var(--t-border); background:var(--t-panel2); flex-shrink:0; }
-        .ei-save-btn { width:100%; padding:8px; background:var(--t-btn-battle); border:none; border-radius:5px; color:#0a0a0a; font-family:'Courier New',Courier,monospace; font-size:12px; cursor:pointer; transition:all .15s; }
-        .ei-save-btn:hover { filter:brightness(1.1); }
+        .editor-inline {
+            display: none;
+            max-height: calc(100vh - 52px - 110px);
+        }
 
-        .level-selector { display:flex; align-items:center; gap:6px; font-size:8.5px; color:var(--t-text-dim); margin-left:auto; }
-        .level-input { background:var(--t-input-bg); border:1px solid var(--t-input-border); color:var(--t-gold); font-family:'Courier New',Courier,monospace; font-size:13px; padding:3px 6px; border-radius:3px; width:52px; text-align:center; }
+        .editor-inline.visible {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            overflow: hidden;
+        }
+
+        .ei-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: linear-gradient(90deg, var(--t-header-g1), var(--t-header-g2), var(--t-header-g1));
+            border-bottom: 2px solid var(--t-border);
+            flex-shrink: 0;
+        }
+
+        .ei-sprite {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            image-rendering: pixelated;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .6));
+        }
+
+        .ei-name {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .ei-types {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 3px;
+        }
+
+        .ei-ability-text {
+            font-size: 12px;
+            color: #a5b4fc;
+        }
+
+        .ei-close {
+            margin-left: auto;
+            background: transparent;
+            border: 1px solid #374151;
+            color: var(--t-text-dim);
+            padding: 4px 9px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            transition: all .15s;
+        }
+
+        .ei-close:hover {
+            border-color: var(--t-red);
+            color: var(--t-red);
+        }
+
+        .ei-tabs {
+            display: flex;
+            background: var(--t-panel2);
+            border-bottom: 2px solid var(--t-border);
+            flex-shrink: 0;
+        }
+
+        .ei-tab {
+            flex: 1;
+            padding: 8px 4px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #475569;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .ei-tab:hover {
+            color: var(--t-text-muted);
+        }
+
+        .ei-tab.active {
+            color: var(--t-gold);
+            border-bottom-color: var(--t-gold);
+        }
+
+        .ei-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 16px;
+            min-height: 0;
+        }
+
+        .ei-footer {
+            padding: 10px 16px;
+            border-top: 2px solid var(--t-border);
+            background: var(--t-panel2);
+            flex-shrink: 0;
+        }
+
+        .ei-save-btn {
+            width: 100%;
+            padding: 8px;
+            background: var(--t-btn-battle);
+            border: none;
+            border-radius: 5px;
+            color: #0a0a0a;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .ei-save-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .level-selector {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 8.5px;
+            color: var(--t-text-dim);
+            margin-left: auto;
+        }
+
+        .level-input {
+            background: var(--t-input-bg);
+            border: 1px solid var(--t-input-border);
+            color: var(--t-gold);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            padding: 3px 6px;
+            border-radius: 3px;
+            width: 52px;
+            text-align: center;
+        }
 
         /* Buscador + Filtros avanzados */
-        .filter-panel { padding:8px 14px 6px; border-bottom:1px solid var(--t-border); }
-        .search-input { width:100%; background:var(--t-input-bg); border:1px solid var(--t-input-border); color:white; font-family:'Courier New',Courier,monospace; font-size:12px; padding:6px 10px; border-radius:5px; outline:none; margin-bottom:5px; display:block; box-sizing:border-box; }
-        .search-input::placeholder { color:var(--t-border); }
-        .search-input:focus { border-color:var(--t-gold); }
-        .filter-row { display:flex; flex-wrap:wrap; gap:3px; align-items:center; margin-bottom:4px; }
-        .filter-label { font-size:6.5px; color:var(--t-text-dim); letter-spacing:1px; text-transform:uppercase; margin-right:2px; white-space:nowrap; flex-shrink:0; }
-        .type-filter-btn { font-size:6.5px; padding:2px 5px; border-radius:2px; cursor:pointer; border:1px solid transparent; opacity:0.55; transition:all .12s; color:white; font-family:'Courier New',Courier,monospace; line-height:1.4; }
-        .type-filter-btn:hover { opacity:0.9; transform:translateY(-1px); }
-        .type-filter-btn.active { opacity:1; border-color:rgba(255,255,255,0.7)!important; box-shadow:0 0 5px rgba(255,255,255,0.3); }
-        .stat-filter-select { background:var(--t-input-bg); border:1px solid var(--t-input-border); color:var(--t-text-muted); font-family:'Courier New',Courier,monospace; font-size:8px; padding:2px 5px; border-radius:3px; cursor:pointer; outline:none; }
-        .stat-filter-select:focus { border-color:var(--t-gold); }
-        .stat-filter-num { background:var(--t-input-bg); border:1px solid var(--t-input-border); color:var(--t-gold); font-family:'Courier New',Courier,monospace; font-size:8px; padding:2px 5px; border-radius:3px; width:44px; text-align:center; outline:none; }
-        .stat-filter-num:focus { border-color:var(--t-gold); }
-        .filter-clear-btn { font-size:7px; padding:2px 7px; background:transparent; border:1px solid var(--t-border); color:var(--t-text-dim); border-radius:3px; cursor:pointer; font-family:'Courier New',Courier,monospace; transition:all .12s; }
-        .filter-clear-btn:hover { border-color:var(--t-red); color:var(--t-red); }
-        .search-results-count { font-size:8px; color:var(--t-text-dim); }
+        .filter-panel {
+            padding: 8px 14px 6px;
+            border-bottom: 1px solid var(--t-border);
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--t-input-bg);
+            border: 1px solid var(--t-input-border);
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 5px;
+            outline: none;
+            margin-bottom: 5px;
+            display: block;
+            box-sizing: border-box;
+        }
+
+        .search-input::placeholder {
+            color: var(--t-border);
+        }
+
+        .search-input:focus {
+            border-color: var(--t-gold);
+        }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .filter-label {
+            font-size: 6.5px;
+            color: var(--t-text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-right: 2px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .type-filter-btn {
+            font-size: 6.5px;
+            padding: 2px 5px;
+            border-radius: 2px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            opacity: 0.55;
+            transition: all .12s;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1.4;
+        }
+
+        .type-filter-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .type-filter-btn.active {
+            opacity: 1;
+            border-color: rgba(255, 255, 255, 0.7) !important;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+
+        .stat-filter-select {
+            background: var(--t-input-bg);
+            border: 1px solid var(--t-input-border);
+            color: var(--t-text-muted);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 8px;
+            padding: 2px 5px;
+            border-radius: 3px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .stat-filter-select:focus {
+            border-color: var(--t-gold);
+        }
+
+        .stat-filter-num {
+            background: var(--t-input-bg);
+            border: 1px solid var(--t-input-border);
+            color: var(--t-gold);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 8px;
+            padding: 2px 5px;
+            border-radius: 3px;
+            width: 44px;
+            text-align: center;
+            outline: none;
+        }
+
+        .stat-filter-num:focus {
+            border-color: var(--t-gold);
+        }
+
+        .filter-clear-btn {
+            font-size: 7px;
+            padding: 2px 7px;
+            background: transparent;
+            border: 1px solid var(--t-border);
+            color: var(--t-text-dim);
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            transition: all .12s;
+        }
+
+        .filter-clear-btn:hover {
+            border-color: var(--t-red);
+            color: var(--t-red);
+        }
+
+        .search-results-count {
+            font-size: 8px;
+            color: var(--t-text-dim);
+        }
 
         /* Drag & Drop en team slots */
-        .team-slot[draggable="true"] { cursor:grab; }
-        .team-slot[draggable="true"]:active { cursor:grabbing; }
-        .team-slot.drag-over { border-color:var(--t-gold)!important; background:var(--t-gold-dim)!important; box-shadow:0 0 14px var(--t-gold-glow); transform:scale(1.12); }
-        .team-slot.dragging { opacity:0.3; transform:scale(0.9); }
+        .team-slot[draggable="true"] {
+            cursor: grab;
+        }
+
+        .team-slot[draggable="true"]:active {
+            cursor: grabbing;
+        }
+
+        .team-slot.drag-over {
+            border-color: var(--t-gold) !important;
+            background: var(--t-gold-dim) !important;
+            box-shadow: 0 0 14px var(--t-gold-glow);
+            transform: scale(1.12);
+        }
+
+        .team-slot.dragging {
+            opacity: 0.3;
+            transform: scale(0.9);
+        }
 
         /* Pokemon cards con info button */
-        .poke-card { position:relative; }
-        .poke-info-btn { position:absolute; top:3px; left:4px; font-size:11px; cursor:pointer; opacity:0; transition:opacity .15s; color:var(--t-blue); background:none; border:none; padding:0; line-height:1; z-index:2; }
-        .poke-card:hover .poke-info-btn { opacity:1; }
-        .poke-info-btn:hover { color:var(--t-gold); }
+        .poke-card {
+            position: relative;
+        }
+
+        .poke-info-btn {
+            position: absolute;
+            top: 3px;
+            left: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity .15s;
+            color: var(--t-blue);
+            background: none;
+            border: none;
+            padding: 0;
+            line-height: 1;
+            z-index: 2;
+        }
+
+        .poke-card:hover .poke-info-btn {
+            opacity: 1;
+        }
+
+        .poke-info-btn:hover {
+            color: var(--t-gold);
+        }
 
         /* Modal de preview */
-        .preview-modal { position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:800; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
-        .preview-modal.open { display:flex; }
-        .preview-box { background:#0d1117; border:2px solid var(--t-gold); border-radius:10px; width:460px; max-width:95vw; max-height:90vh; overflow-y:auto; padding:20px; box-shadow:0 0 50px var(--t-gold-glow); animation:modalIn .2s; }
-        .preview-header { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
-        .preview-sprite { width:80px; height:80px; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(0 4px 10px rgba(0,0,0,.7)); flex-shrink:0; }
-        .preview-close { margin-left:auto; align-self:flex-start; background:transparent; border:1px solid #374151; color:var(--t-text-dim); padding:5px 10px; border-radius:4px; cursor:pointer; font-family:'Courier New',Courier,monospace; font-size:12px; transition:all .15s; }
-        .preview-close:hover { border-color:var(--t-red); color:var(--t-red); }
-        .preview-stat-row { display:flex; align-items:center; gap:8px; margin-bottom:5px; font-size:8.5px; }
-        .preview-stat-name { width:36px; color:var(--t-text-dim); text-align:right; flex-shrink:0; }
-        .preview-stat-val { width:28px; text-align:right; font-weight:bold; flex-shrink:0; }
-        .preview-bar-bg { flex:1; height:6px; background:var(--t-border); border-radius:3px; overflow:hidden; }
-        .preview-bar-fill { height:100%; border-radius:3px; transition:width .5s; }
-        .preview-section-title { font-size:7px; letter-spacing:2px; color:var(--t-text-dim); text-transform:uppercase; margin:12px 0 6px; border-top:1px solid var(--t-border); padding-top:8px; }
-        .preview-chip { display:inline-block; font-size:8px; padding:2px 8px; border-radius:3px; margin:2px; background:var(--t-input-bg); border:1px solid var(--t-border); color:var(--t-text-muted); }
-        .preview-chip.abil { border-color:rgba(165,180,252,.4); color:#a5b4fc; }
+        .preview-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .88);
+            z-index: 800;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .preview-modal.open {
+            display: flex;
+        }
+
+        .preview-box {
+            background: #0d1117;
+            border: 2px solid var(--t-gold);
+            border-radius: 10px;
+            width: 460px;
+            max-width: 95vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 0 50px var(--t-gold-glow);
+            animation: modalIn .2s;
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .preview-sprite {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            image-rendering: pixelated;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .7));
+            flex-shrink: 0;
+        }
+
+        .preview-close {
+            margin-left: auto;
+            align-self: flex-start;
+            background: transparent;
+            border: 1px solid #374151;
+            color: var(--t-text-dim);
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            transition: all .15s;
+        }
+
+        .preview-close:hover {
+            border-color: var(--t-red);
+            color: var(--t-red);
+        }
+
+        .preview-stat-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+            font-size: 8.5px;
+        }
+
+        .preview-stat-name {
+            width: 36px;
+            color: var(--t-text-dim);
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .preview-stat-val {
+            width: 28px;
+            text-align: right;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .preview-bar-bg {
+            flex: 1;
+            height: 6px;
+            background: var(--t-border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .preview-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width .5s;
+        }
+
+        .preview-section-title {
+            font-size: 7px;
+            letter-spacing: 2px;
+            color: var(--t-text-dim);
+            text-transform: uppercase;
+            margin: 12px 0 6px;
+            border-top: 1px solid var(--t-border);
+            padding-top: 8px;
+        }
+
+        .preview-chip {
+            display: inline-block;
+            font-size: 8px;
+            padding: 2px 8px;
+            border-radius: 3px;
+            margin: 2px;
+            background: var(--t-input-bg);
+            border: 1px solid var(--t-border);
+            color: var(--t-text-muted);
+        }
+
+        .preview-chip.abil {
+            border-color: rgba(165, 180, 252, .4);
+            color: #a5b4fc;
+        }
 
         /* ── THEME SWITCHER ──────────────────────────────── */
         .theme-switcher {
-            position:fixed; bottom:1rem; right:1rem; z-index:9000;
-            display:flex; flex-direction:column; align-items:flex-end; gap:4px;
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 9000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
         }
-        .theme-label-mini { font-size:6px;letter-spacing:2px;color:#475569;text-transform:uppercase; }
-        .theme-options-mini { display:flex; gap:4px; }
+
+        .theme-label-mini {
+            font-size: 6px;
+            letter-spacing: 2px;
+            color: #475569;
+            text-transform: uppercase;
+        }
+
+        .theme-options-mini {
+            display: flex;
+            gap: 4px;
+        }
+
         .theme-btn-mini {
-            display:flex; align-items:center; gap:4px;
-            padding:4px 8px; border-radius:3px;
-            font-family:'Courier New',Courier,monospace; font-size:6px;
-            cursor:pointer; border:1px solid transparent; transition:all 0.2s;
-            text-transform:uppercase; letter-spacing:1px; opacity:0.6;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 6px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
         }
-        .theme-btn-mini:hover, .theme-btn-mini.active { opacity:1; }
-        .theme-btn-mini-default  { background:rgba(10,10,26,0.9); color:#fbbf24; border-color:#334155; }
-        .theme-btn-mini-default:hover,  [data-theme="default"]  .theme-btn-mini-default  { border-color:#fbbf24; box-shadow:0 0 8px rgba(251,191,36,0.3); }
-        .theme-btn-mini-helodian { background:rgba(15,0,10,0.9); color:#ef4444; border-color:#3a0010; }
-        .theme-btn-mini-helodian:hover, [data-theme="helodian"] .theme-btn-mini-helodian { border-color:#ef4444; box-shadow:0 0 8px rgba(239,68,68,0.3); }
-        .theme-btn-mini-etherdiel{ background:rgba(2,10,26,0.9); color:#38bdf8; border-color:#1e3a5f; }
-        .theme-btn-mini-etherdiel:hover,[data-theme="etherdiel"] .theme-btn-mini-etherdiel { border-color:#38bdf8; box-shadow:0 0 8px rgba(56,189,248,0.3); }
-        .tdot { width:6px;height:6px;border-radius:50%; }
-        .theme-btn-mini-default  .tdot { background:radial-gradient(#fbbf24,#ef4444); }
-        .theme-btn-mini-helodian .tdot { background:radial-gradient(#fbbf24,#dc2626); }
-        .theme-btn-mini-etherdiel .tdot { background:radial-gradient(#eab308,#38bdf8); }
-        .theme-btn-mini.active::after { content:'✓'; margin-left:2px; }
+
+        .theme-btn-mini:hover,
+        .theme-btn-mini.active {
+            opacity: 1;
+        }
+
+        .theme-btn-mini-default {
+            background: rgba(10, 10, 26, 0.9);
+            color: #fbbf24;
+            border-color: #334155;
+        }
+
+        .theme-btn-mini-default:hover,
+        [data-theme="default"] .theme-btn-mini-default {
+            border-color: #fbbf24;
+            box-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+        }
+
+        .theme-btn-mini-helodian {
+            background: rgba(15, 0, 10, 0.9);
+            color: #ef4444;
+            border-color: #3a0010;
+        }
+
+        .theme-btn-mini-helodian:hover,
+        [data-theme="helodian"] .theme-btn-mini-helodian {
+            border-color: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+        }
+
+        .theme-btn-mini-etherdiel {
+            background: rgba(2, 10, 26, 0.9);
+            color: #38bdf8;
+            border-color: #1e3a5f;
+        }
+
+        .theme-btn-mini-etherdiel:hover,
+        [data-theme="etherdiel"] .theme-btn-mini-etherdiel {
+            border-color: #38bdf8;
+            box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+        }
+
+        .tdot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .theme-btn-mini-default .tdot {
+            background: radial-gradient(#fbbf24, #ef4444);
+        }
+
+        .theme-btn-mini-helodian .tdot {
+            background: radial-gradient(#fbbf24, #dc2626);
+        }
+
+        .theme-btn-mini-etherdiel .tdot {
+            background: radial-gradient(#eab308, #38bdf8);
+        }
+
+        .theme-btn-mini.active::after {
+            content: '✓';
+            margin-left: 2px;
+        }
     </style>
 </head>
+
 <body>
 
-<div class="header">
-    <div class="header-title">⚔️ CONSTRUCTOR DE EQUIPO</div>
-    <div style="display:flex;gap:6px;"><a href="calculator.html" class="nav-btn">🧮 CALC</a><a href="index.html" class="nav-btn">◀ MENÚ</a></div>
-</div>
+    <div class="header">
+        <div class="header-title">⚔️ CONSTRUCTOR DE EQUIPO</div>
+        <div style="display:flex;gap:6px;"><a href="calculator.html" class="nav-btn">🧮 CALC</a><a href="index.html"
+                class="nav-btn">◀ MENÚ</a></div>
+    </div>
 
-<div class="layout">
+    <div class="layout">
 
-    <!-- COL IZQUIERDA -->
-    <div class="left-panel">
-        <div class="team-section">
-            <div class="section-title">TU EQUIPO <span style="color:var(--t-border);font-size:6px;">— clic para editar</span></div>
-            <div class="team-slots" id="teamSlots"></div>
-            <div class="team-meta">
-                <span>Seleccionados: <span id="teamCount">0</span>/6</span>
-                <span id="minWarning"></span>
+        <!-- COL IZQUIERDA -->
+        <div class="left-panel">
+            <div class="team-section">
+                <div class="section-title">TU EQUIPO <span style="color:var(--t-border);font-size:6px;">— clic para
+                        editar</span></div>
+                <div class="team-slots" id="teamSlots"></div>
+                <div class="team-meta">
+                    <span>Seleccionados: <span id="teamCount">0</span>/6</span>
+                    <span id="minWarning"></span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn btn-battle" onclick="goToBattle()" id="battleBtn" disabled>⚔️ BATALLA
+                    LIBRE</button>
+                <button class="action-btn btn-multi" onclick="goToOnlineBattle()">🌐 BATALLA ONLINE</button>
+                <div class="btn-row">
+                    <button class="action-btn btn-trainer" onclick="showPanel('trainer')">🎖️ ENTRENADORES</button>
+                    <button class="action-btn btn-wild" onclick="showPanel('wild')">🎲 SALVAJE</button>
+                </div>
+                <div class="btn-row">
+                    <button class="action-btn btn-save" onclick="saveTeam()">💾 GUARDAR</button>
+                    <button class="action-btn btn-load" onclick="openSavedTeamsModal()">📂 MIS EQUIPOS</button>
+                </div>
+                <div id="savedStatus"></div>
+            </div>
+
+            <div class="available-section">
+                <div class="section-title">POKÉMON DISPONIBLES</div>
+                <div class="filter-panel">
+                    <input class="search-input" type="text" id="pokeSearch"
+                        placeholder="🔍 Buscar por nombre, tipo o ID..." oninput="filterPokemon(this.value)">
+                    <div class="filter-row" id="typeFilterRow">
+                        <span class="filter-label">Tipo:</span>
+                    </div>
+                    <div class="filter-row">
+                        <span class="filter-label">Stat ≥</span>
+                        <select class="stat-filter-select" id="statFilterStat" onchange="_applyAllFilters()">
+                            <option value="">— —</option>
+                            <option value="hp">HP</option>
+                            <option value="atk">ATK</option>
+                            <option value="def">DEF</option>
+                            <option value="spa">SP.ATK</option>
+                            <option value="spd">SP.DEF</option>
+                            <option value="spe">VEL</option>
+                        </select>
+                        <input class="stat-filter-num" type="number" id="statFilterMin" value="90" min="0" max="255"
+                            oninput="_applyAllFilters()">
+                        <button class="filter-clear-btn" onclick="_clearFilters()">✕ Limpiar</button>
+                        <div id="searchCount" class="search-results-count" style="margin-left:auto;"></div>
+                    </div>
+                </div>
+                <div class="pokemon-grid" id="pokemonGrid"></div>
             </div>
         </div>
 
-        <div class="action-buttons">
-            <button class="action-btn btn-battle" onclick="goToBattle()" id="battleBtn" disabled>⚔️ BATALLA LIBRE</button>
-            <button class="action-btn btn-multi"  onclick="goToOnlineBattle()">🌐 BATALLA ONLINE</button>
-            <div class="btn-row">
-                <button class="action-btn btn-trainer" onclick="showPanel('trainer')">🎖️ ENTRENADORES</button>
-                <button class="action-btn btn-wild"    onclick="showPanel('wild')">🎲 SALVAJE</button>
-            </div>
-            <div class="btn-row">
-                <button class="action-btn btn-save" onclick="saveTeam()">💾 GUARDAR</button>
-                <button class="action-btn btn-load" onclick="openSavedTeamsModal()">📂 MIS EQUIPOS</button>
-            </div>
-            <div id="savedStatus"></div>
-        </div>
+        <!-- COL DERECHA -->
+        <div class="right-panel" id="rightPanel" style="display:flex;flex-direction:column;overflow:hidden;padding:0;">
 
-        <div class="available-section">
-            <div class="section-title">POKÉMON DISPONIBLES</div>
-            <div class="filter-panel">
-                <input class="search-input" type="text" id="pokeSearch"
-                    placeholder="🔍 Buscar por nombre, tipo o ID..."
-                    oninput="filterPokemon(this.value)">
-                <div class="filter-row" id="typeFilterRow">
-                    <span class="filter-label">Tipo:</span>
-                </div>
-                <div class="filter-row">
-                    <span class="filter-label">Stat ≥</span>
-                    <select class="stat-filter-select" id="statFilterStat" onchange="_applyAllFilters()">
-                        <option value="">— —</option>
-                        <option value="hp">HP</option>
-                        <option value="atk">ATK</option>
-                        <option value="def">DEF</option>
-                        <option value="spa">SP.ATK</option>
-                        <option value="spd">SP.DEF</option>
-                        <option value="spe">VEL</option>
-                    </select>
-                    <input class="stat-filter-num" type="number" id="statFilterMin" value="90" min="0" max="255" oninput="_applyAllFilters()">
-                    <button class="filter-clear-btn" onclick="_clearFilters()">✕ Limpiar</button>
-                    <div id="searchCount" class="search-results-count" style="margin-left:auto;"></div>
+            <div class="team-editor-bar" id="teamEditorBar"
+                style="padding:10px 14px;border-bottom:1px solid var(--t-border);flex-shrink:0;">
+                <div class="teb-title">✏️ SELECCIONA UN POKÉMON PARA EDITAR</div>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">
+                    <div class="teb-slots" id="tebSlots"></div>
+                    <div class="level-selector">
+                        Lvl <input class="level-input" type="number" id="levelInput" value="100" min="1" max="100"
+                            onchange="onLevelChange(this.value)">
+                    </div>
                 </div>
             </div>
-            <div class="pokemon-grid" id="pokemonGrid"></div>
+
+            <div class="editor-inline" id="editorInline">
+                <div class="ei-header">
+                    <img class="ei-sprite" id="eiSprite" src="">
+                    <div>
+                        <div class="ei-name" id="eiName">─</div>
+                        <div class="ei-types" id="eiTypes"></div>
+                        <div class="ei-ability-text" id="eiAbility"></div>
+                    </div>
+                    <button class="ei-close" onclick="closeEditor()">✕</button>
+                </div>
+                <div class="ei-tabs">
+                    <button class="ei-tab" id="tab-summary" onclick="switchTab('summary')">📋 Info</button>
+                    <button class="ei-tab active" id="tab-moves" onclick="switchTab('moves')">⚔️ Movs</button>
+                    <button class="ei-tab" id="tab-nature" onclick="switchTab('nature')">🌿 Nat+EVs</button>
+                    <button class="ei-tab" id="tab-ability" onclick="switchTab('ability')">✨ Hab</button>
+                    <button class="ei-tab" id="tab-item" onclick="switchTab('item')">🎒 Objeto</button>
+                </div>
+                <div class="ei-body" id="eiBody"></div>
+                <div class="ei-footer">
+                    <button class="ei-save-btn" onclick="saveEditorChanges()">✅ GUARDAR CAMBIOS</button>
+                </div>
+            </div>
+
+            <div id="modePanels"
+                style="flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:14px;">
+                <div class="trainer-select-panel" id="trainerPanel">
+                    <div class="section-title" style="margin-bottom:12px;">🎖️ ELIGE ENTRENADOR RIVAL</div>
+                    <div class="trainer-grid" id="trainerGrid"></div>
+                </div>
+                <div class="wild-select-panel" id="wildPanel">
+                    <div class="section-title" style="margin-bottom:12px;">🎲 MODO POKÉMON SALVAJE <span
+                            style="font-size:6px;color:var(--t-text-dim);">(ambos equipos aleatorios)</span></div>
+                    <div class="wild-grid">
+                        <div class="wild-card" onclick="goToWild('normal')">
+                            <div class="wild-icon">🌿</div>
+                            <div>
+                                <div class="wc-title">NORMAL</div>
+                                <div class="wc-desc">EVs modestos, objetos básicos. Tú y el rival tienen equipos
+                                    aleatorios justos.</div>
+                            </div>
+                        </div>
+                        <div class="wild-card" onclick="goToWild('hard')">
+                            <div class="wild-icon">🔥</div>
+                            <div>
+                                <div class="wc-title">DIFÍCIL</div>
+                                <div class="wc-desc">EVs optimizados, objetos competitivos. Prepárate para sufrir.</div>
+                            </div>
+                        </div>
+                        <div class="wild-card" onclick="goToWild('chaos')">
+                            <div class="wild-icon">💀</div>
+                            <div>
+                                <div class="wc-title">CAOS TOTAL</div>
+                                <div class="wc-desc">Stats exageradas, combos locos. ¡Buena suerte!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-placeholder" id="rightPlaceholder" style="flex:1;">
+                    <div class="ph-icon">🎮</div>
+                    <div class="ph-text">Añade Pokémon a tu equipo<br>y haz clic en ellos para editar</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- COL DERECHA -->
-    <div class="right-panel" id="rightPanel" style="display:flex;flex-direction:column;overflow:hidden;padding:0;">
-
-        <div class="team-editor-bar" id="teamEditorBar" style="padding:10px 14px;border-bottom:1px solid var(--t-border);flex-shrink:0;">
-            <div class="teb-title">✏️ SELECCIONA UN POKÉMON PARA EDITAR</div>
-            <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">
-                <div class="teb-slots" id="tebSlots"></div>
-                <div class="level-selector">
-                    Lvl <input class="level-input" type="number" id="levelInput" value="100" min="1" max="100" onchange="onLevelChange(this.value)">
+    <!-- MODAL MIS EQUIPOS -->
+    <div class="editor-modal" id="savedTeamsModal">
+        <div class="editor-modal-box" style="max-width:560px;">
+            <div class="em-header">
+                <div class="em-header-left">
+                    <div style="font-size:28px;margin-right:4px;">📂</div>
+                    <div class="em-header-name">MIS EQUIPOS GUARDADOS</div>
                 </div>
+                <button class="em-close-btn" onclick="closeSavedTeamsModal()">✕</button>
             </div>
-        </div>
-
-        <div class="editor-inline" id="editorInline">
-            <div class="ei-header">
-                <img class="ei-sprite" id="eiSprite" src="">
-                <div>
-                    <div class="ei-name" id="eiName">─</div>
-                    <div class="ei-types" id="eiTypes"></div>
-                    <div class="ei-ability-text" id="eiAbility"></div>
-                </div>
-                <button class="ei-close" onclick="closeEditor()">✕</button>
-            </div>
-            <div class="ei-tabs">
-                <button class="ei-tab"        id="tab-summary" onclick="switchTab('summary')">📋 Info</button>
-                <button class="ei-tab active" id="tab-moves"   onclick="switchTab('moves')">⚔️ Movs</button>
-                <button class="ei-tab"        id="tab-nature"  onclick="switchTab('nature')">🌿 Nat+EVs</button>
-                <button class="ei-tab"        id="tab-ability" onclick="switchTab('ability')">✨ Hab</button>
-                <button class="ei-tab"        id="tab-item"    onclick="switchTab('item')">🎒 Objeto</button>
-            </div>
-            <div class="ei-body" id="eiBody"></div>
-            <div class="ei-footer">
-                <button class="ei-save-btn" onclick="saveEditorChanges()">✅ GUARDAR CAMBIOS</button>
-            </div>
-        </div>
-
-        <div id="modePanels" style="flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:14px;">
-            <div class="trainer-select-panel" id="trainerPanel">
-                <div class="section-title" style="margin-bottom:12px;">🎖️ ELIGE ENTRENADOR RIVAL</div>
-                <div class="trainer-grid" id="trainerGrid"></div>
-            </div>
-            <div class="wild-select-panel" id="wildPanel">
-                <div class="section-title" style="margin-bottom:12px;">🎲 MODO POKÉMON SALVAJE <span style="font-size:6px;color:var(--t-text-dim);">(ambos equipos aleatorios)</span></div>
-                <div class="wild-grid">
-                    <div class="wild-card" onclick="goToWild('normal')"><div class="wild-icon">🌿</div><div><div class="wc-title">NORMAL</div><div class="wc-desc">EVs modestos, objetos básicos. Tú y el rival tienen equipos aleatorios justos.</div></div></div>
-                    <div class="wild-card" onclick="goToWild('hard')"><div class="wild-icon">🔥</div><div><div class="wc-title">DIFÍCIL</div><div class="wc-desc">EVs optimizados, objetos competitivos. Prepárate para sufrir.</div></div></div>
-                    <div class="wild-card" onclick="goToWild('chaos')"><div class="wild-icon">💀</div><div><div class="wc-title">CAOS TOTAL</div><div class="wc-desc">Stats exageradas, combos locos. ¡Buena suerte!</div></div></div>
-                </div>
-            </div>
-            <div class="right-placeholder" id="rightPlaceholder" style="flex:1;">
-                <div class="ph-icon">🎮</div>
-                <div class="ph-text">Añade Pokémon a tu equipo<br>y haz clic en ellos para editar</div>
+            <div class="em-body" style="padding:14px;">
+                <div id="savedTeamsList"></div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- MODAL MIS EQUIPOS -->
-<div class="editor-modal" id="savedTeamsModal">
-    <div class="editor-modal-box" style="max-width:560px;">
-        <div class="em-header">
-            <div class="em-header-left">
-                <div style="font-size:28px;margin-right:4px;">📂</div>
-                <div class="em-header-name">MIS EQUIPOS GUARDADOS</div>
-            </div>
-            <button class="em-close-btn" onclick="closeSavedTeamsModal()">✕</button>
-        </div>
-        <div class="em-body" style="padding:14px;">
-            <div id="savedTeamsList"></div>
-        </div>
+    <!-- MODAL PREVIEW POKÉMON -->
+    <div class="preview-modal" id="pokePreviewModal" onclick="if(event.target===this)_closePreview()">
+        <div class="preview-box" id="pokePreviewBox"><!-- contenido generado por JS --></div>
     </div>
-</div>
 
-<!-- MODAL PREVIEW POKÉMON -->
-<div class="preview-modal" id="pokePreviewModal" onclick="if(event.target===this)_closePreview()">
-    <div class="preview-box" id="pokePreviewBox"><!-- contenido generado por JS --></div>
-</div>
+    <script src="data/types.js"></script>
+    <script src="data/status.js"></script>
+    <script src="data/moves.js"></script>
+    <script src="data/items.js"></script>
+    <script src="data/natures.js"></script>
+    <script src="data/abilities.js"></script>
+    <script src="data/sprites.js"></script>
+    <script src="data/pokemon.js"></script>
+    <script src="data/trainers.js"></script>
+    <script src="js/team-builder-main.js"></script>
 
-<script src="data/types.js"></script>
-<script src="data/status.js"></script>
-<script src="data/moves.js"></script>
-<script src="data/items.js"></script>
-<script src="data/natures.js"></script>
-<script src="data/abilities.js"></script>
-<script src="data/sprites.js"></script>
-<script src="data/pokemon.js"></script>
-<script src="data/trainers.js"></script>
-<script src="js/team-builder-main.js"></script>
-
-<!-- ══════════════════════════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════════════════════════
      MEJORAS INLINE v2 — filtros, drag&drop, preview, fix habilidades
      Se ejecuta después de team-builder-main.js
      ══════════════════════════════════════════════════════════════════ -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
 
-// ── 1. FILTROS AVANZADOS ──────────────────────────────────────────────────
+            // ── 1. FILTROS AVANZADOS ──────────────────────────────────────────────────
 
-var TYPE_LIST = [
-    ['FUEGO','#dc2626'],['AGUA','#2563eb'],['PLANTA','#16a34a'],
-    ['ELÉCTRICO','#ca8a04'],['PSÍQUICO','#db2777'],['HIELO','#0891b2'],
-    ['LUCHA','#c2410c'],['VENENO','#7c3aed'],['TIERRA','#92400e'],
-    ['VOLADOR','#4f46e5'],['BICHO','#4d7c0f'],['ROCA','#a16207'],
-    ['FANTASMA','#7e22ce'],['DRAGÓN','#4338ca'],['SINIESTRO','#374151'],
-    ['ACERO','#64748b'],['HADA','#ec4899'],['NORMAL','#6b7280']
-];
+            var TYPE_LIST = [
+                ['FUEGO', '#dc2626'], ['AGUA', '#2563eb'], ['PLANTA', '#16a34a'],
+                ['ELÉCTRICO', '#ca8a04'], ['PSÍQUICO', '#db2777'], ['HIELO', '#0891b2'],
+                ['LUCHA', '#c2410c'], ['VENENO', '#7c3aed'], ['TIERRA', '#92400e'],
+                ['VOLADOR', '#4f46e5'], ['BICHO', '#4d7c0f'], ['ROCA', '#a16207'],
+                ['FANTASMA', '#7e22ce'], ['DRAGÓN', '#4338ca'], ['SINIESTRO', '#374151'],
+                ['ACERO', '#64748b'], ['HADA', '#ec4899'], ['NORMAL', '#6b7280']
+            ];
 
-var typeRow = document.getElementById('typeFilterRow');
-if (typeRow) {
-    TYPE_LIST.forEach(function(pair) {
-        var t = pair[0], color = pair[1];
-        var b = document.createElement('button');
-        b.className = 'type-filter-btn';
-        b.dataset.type = t;
-        b.textContent = t.charAt(0) + t.slice(1).toLowerCase();
-        b.style.background = color;
-        b.onclick = function() { _setTypeFilter(t); };
-        typeRow.appendChild(b);
-    });
-}
+            var typeRow = document.getElementById('typeFilterRow');
+            if (typeRow) {
+                TYPE_LIST.forEach(function (pair) {
+                    var t = pair[0], color = pair[1];
+                    var b = document.createElement('button');
+                    b.className = 'type-filter-btn';
+                    b.dataset.type = t;
+                    b.textContent = t.charAt(0) + t.slice(1).toLowerCase();
+                    b.style.background = color;
+                    b.onclick = function () { _setTypeFilter(t); };
+                    typeRow.appendChild(b);
+                });
+            }
 
-window._activeTypeFilter = '';
+            window._activeTypeFilter = '';
 
-window._applyAllFilters = function() {
-    var query = (document.getElementById('pokeSearch').value || '').toLowerCase().trim();
-    var statSel = document.getElementById('statFilterStat');
-    var statMin = document.getElementById('statFilterMin');
-    var statKey = statSel ? statSel.value : '';
-    var statMinVal = statMin ? (parseInt(statMin.value) || 0) : 0;
+            window._applyAllFilters = function () {
+                var query = (document.getElementById('pokeSearch').value || '').toLowerCase().trim();
+                var statSel = document.getElementById('statFilterStat');
+                var statMin = document.getElementById('statFilterMin');
+                var statKey = statSel ? statSel.value : '';
+                var statMinVal = statMin ? (parseInt(statMin.value) || 0) : 0;
 
-    var cards = document.querySelectorAll('#pokemonGrid .poke-card');
-    var visible = 0;
+                var cards = document.querySelectorAll('#pokemonGrid .poke-card');
+                var visible = 0;
 
-    cards.forEach(function(card) {
-        var id = parseInt(card.dataset.id || card.dataset.pokeid || 0);
-        var poke = (typeof PokemonDB !== 'undefined') ? PokemonDB[id] : null;
+                cards.forEach(function (card) {
+                    var id = parseInt(card.dataset.id || card.dataset.pokeid || 0);
+                    var poke = (typeof PokemonDB !== 'undefined') ? PokemonDB[id] : null;
 
-        if (!poke) { visible++; return; }
+                    if (!poke) { visible++; return; }
 
-        var nameMatch = !query ||
-            poke.name.toLowerCase().includes(query) ||
-            String(poke.id).includes(query);
+                    var nameMatch = !query ||
+                        poke.name.toLowerCase().includes(query) ||
+                        String(poke.id).includes(query);
 
-        var typeMatch = !window._activeTypeFilter ||
-            poke.types.some(function(t) {
-                return t.toUpperCase() === window._activeTypeFilter.toUpperCase();
+                    var typeMatch = !window._activeTypeFilter ||
+                        poke.types.some(function (t) {
+                            return t.toUpperCase() === window._activeTypeFilter.toUpperCase();
+                        });
+
+                    var statMatch = true;
+                    if (statKey && poke.stats) {
+                        statMatch = (poke.stats[statKey] || 0) >= statMinVal;
+                    }
+
+                    var show = nameMatch && typeMatch && statMatch;
+                    card.style.display = show ? '' : 'none';
+                    if (show) visible++;
+                });
+
+                var countEl = document.getElementById('searchCount');
+                if (countEl) {
+                    var total = cards.length;
+                    countEl.textContent = visible === total
+                        ? total + ' Pokémon'
+                        : visible + ' / ' + total;
+                }
+            };
+
+            window._setTypeFilter = function (t) {
+                window._activeTypeFilter = (window._activeTypeFilter === t) ? '' : t;
+                document.querySelectorAll('.type-filter-btn').forEach(function (b) {
+                    b.classList.toggle('active', b.dataset.type === window._activeTypeFilter);
+                });
+                window._applyAllFilters();
+            };
+
+            window._clearFilters = function () {
+                window._activeTypeFilter = '';
+                document.querySelectorAll('.type-filter-btn').forEach(function (b) { b.classList.remove('active'); });
+                var si = document.getElementById('statFilterStat');
+                var sn = document.getElementById('statFilterMin');
+                var ps = document.getElementById('pokeSearch');
+                if (si) si.value = '';
+                if (sn) sn.value = '90';
+                if (ps) ps.value = '';
+                window._applyAllFilters();
+            };
+
+            // Sobreescribe filterPokemon para que use el sistema completo
+            window.filterPokemon = function (q) { window._applyAllFilters(); };
+
+            // ── 2. BOTONES DE INFO EN CARDS + observer del grid ──────────────────────
+
+            function _addInfoButtons() {
+                document.querySelectorAll('#pokemonGrid .poke-card').forEach(function (card) {
+                    if (card.querySelector('.poke-info-btn')) return;
+                    var id = parseInt(card.dataset.id || card.dataset.pokeid || 0);
+                    if (!id) return;
+                    var btn = document.createElement('button');
+                    btn.className = 'poke-info-btn';
+                    btn.title = 'Ver estadísticas';
+                    btn.textContent = 'ℹ';
+                    btn.onclick = function (e) { e.stopPropagation(); _openPreview(id); };
+                    card.appendChild(btn);
+                });
+            }
+
+            var gridObs = new MutationObserver(function () {
+                window._applyAllFilters();
+                _addInfoButtons();
             });
+            var gridEl = document.getElementById('pokemonGrid');
+            if (gridEl) gridObs.observe(gridEl, { childList: true });
 
-        var statMatch = true;
-        if (statKey && poke.stats) {
-            statMatch = (poke.stats[statKey] || 0) >= statMinVal;
-        }
+            // ── 3. MODAL PREVIEW ─────────────────────────────────────────────────────
 
-        var show = nameMatch && typeMatch && statMatch;
-        card.style.display = show ? '' : 'none';
-        if (show) visible++;
-    });
+            var STAT_COLORS = { hp: '#ef4444', atk: '#f97316', def: '#3b82f6', spa: '#a855f7', spd: '#22c55e', spe: '#eab308' };
+            var STAT_NAMES = { hp: 'HP', atk: 'ATK', def: 'DEF', spa: 'SP.ATK', spd: 'SP.DEF', spe: 'VEL' };
 
-    var countEl = document.getElementById('searchCount');
-    if (countEl) {
-        var total = cards.length;
-        countEl.textContent = visible === total
-            ? total + ' Pokémon'
-            : visible + ' / ' + total;
-    }
-};
+            window._openPreview = function (pokeid) {
+                var poke = (typeof PokemonDB !== 'undefined') ? PokemonDB[pokeid] : null;
+                if (!poke) return;
 
-window._setTypeFilter = function(t) {
-    window._activeTypeFilter = (window._activeTypeFilter === t) ? '' : t;
-    document.querySelectorAll('.type-filter-btn').forEach(function(b) {
-        b.classList.toggle('active', b.dataset.type === window._activeTypeFilter);
-    });
-    window._applyAllFilters();
-};
+                var sprite = (typeof getSpriteUrl !== 'undefined') ? getSpriteUrl(pokeid, 'front') : '';
+                var placeholder = (typeof getPlaceholderSvg !== 'undefined') ? getPlaceholderSvg(poke.name) : '';
 
-window._clearFilters = function() {
-    window._activeTypeFilter = '';
-    document.querySelectorAll('.type-filter-btn').forEach(function(b) { b.classList.remove('active'); });
-    var si = document.getElementById('statFilterStat');
-    var sn = document.getElementById('statFilterMin');
-    var ps = document.getElementById('pokeSearch');
-    if (si) si.value = '';
-    if (sn) sn.value = '90';
-    if (ps) ps.value = '';
-    window._applyAllFilters();
-};
+                var typeBadges = (poke.types || []).map(function (t) {
+                    return '<span class="type-badge type-' + t + '">' + t + '</span>';
+                }).join('');
 
-// Sobreescribe filterPokemon para que use el sistema completo
-window.filterPokemon = function(q) { window._applyAllFilters(); };
+                var total = Object.values(poke.stats || {}).reduce(function (a, b) { return a + b; }, 0);
 
-// ── 2. BOTONES DE INFO EN CARDS + observer del grid ──────────────────────
+                var statBars = Object.entries(poke.stats || {}).map(function (entry) {
+                    var k = entry[0], v = entry[1];
+                    var pct = Math.min(100, Math.round(v / 255 * 100));
+                    var color = STAT_COLORS[k] || '#64748b';
+                    return '<div class="preview-stat-row">' +
+                        '<div class="preview-stat-name">' + (STAT_NAMES[k] || k) + '</div>' +
+                        '<div class="preview-stat-val" style="color:' + color + '">' + v + '</div>' +
+                        '<div class="preview-bar-bg"><div class="preview-bar-fill" style="width:' + pct + '%;background:' + color + '"></div></div>' +
+                        '</div>';
+                }).join('');
 
-function _addInfoButtons() {
-    document.querySelectorAll('#pokemonGrid .poke-card').forEach(function(card) {
-        if (card.querySelector('.poke-info-btn')) return;
-        var id = parseInt(card.dataset.id || card.dataset.pokeid || 0);
-        if (!id) return;
-        var btn = document.createElement('button');
-        btn.className = 'poke-info-btn';
-        btn.title = 'Ver estadísticas';
-        btn.textContent = 'ℹ';
-        btn.onclick = function(e) { e.stopPropagation(); _openPreview(id); };
-        card.appendChild(btn);
-    });
-}
+                var abilities = (poke.abilities || [poke.ability]).filter(Boolean);
+                var abilChips = abilities.map(function (a) {
+                    return '<span class="preview-chip abil">✨ ' + a + '</span>';
+                }).join('');
 
-var gridObs = new MutationObserver(function() {
-    window._applyAllFilters();
-    _addInfoButtons();
-});
-var gridEl = document.getElementById('pokemonGrid');
-if (gridEl) gridObs.observe(gridEl, { childList: true });
+                var learnset = poke.learnset || poke.moves || [];
+                var moveChips = learnset.map(function (m) {
+                    return '<span class="preview-chip">' + m + '</span>';
+                }).join('');
 
-// ── 3. MODAL PREVIEW ─────────────────────────────────────────────────────
+                var box = document.getElementById('pokePreviewBox');
+                box.innerHTML =
+                    '<div class="preview-header">' +
+                    '<img class="preview-sprite" src="' + sprite + '"' +
+                    ' onerror="this.src=\'' + placeholder.replace(/'/g, "\\'") + '\'" alt="' + poke.name + '">' +
+                    '<div style="flex:1;min-width:0">' +
+                    '<div style="font-size:13px;margin-bottom:5px;">#' + poke.id + ' ' + poke.name + '</div>' +
+                    '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:5px;">' + typeBadges + '</div>' +
+                    '<span style="font-size:8px;background:rgba(251,191,36,.12);border:1px solid var(--t-gold);color:var(--t-gold);padding:2px 8px;border-radius:10px;">BST ' + total + '</span>' +
+                    '</div>' +
+                    '<button class="preview-close" onclick="_closePreview()">✕</button>' +
+                    '</div>' +
+                    '<div class="preview-stat-bars">' + statBars + '</div>' +
+                    '<div class="preview-section-title">✨ Habilidades</div>' +
+                    '<div style="margin-bottom:4px;">' + abilChips + '</div>' +
+                    '<div class="preview-section-title">⚔️ Learnset completo (' + learnset.length + ')</div>' +
+                    '<div style="line-height:1.9;">' + moveChips + '</div>';
 
-var STAT_COLORS = { hp:'#ef4444', atk:'#f97316', def:'#3b82f6', spa:'#a855f7', spd:'#22c55e', spe:'#eab308' };
-var STAT_NAMES  = { hp:'HP', atk:'ATK', def:'DEF', spa:'SP.ATK', spd:'SP.DEF', spe:'VEL' };
+                document.getElementById('pokePreviewModal').classList.add('open');
+            };
 
-window._openPreview = function(pokeid) {
-    var poke = (typeof PokemonDB !== 'undefined') ? PokemonDB[pokeid] : null;
-    if (!poke) return;
+            window._closePreview = function () {
+                document.getElementById('pokePreviewModal').classList.remove('open');
+            };
 
-    var sprite = (typeof getSpriteUrl !== 'undefined') ? getSpriteUrl(pokeid, 'front') : '';
-    var placeholder = (typeof getPlaceholderSvg !== 'undefined') ? getPlaceholderSvg(poke.name) : '';
+            // ── 4. DRAG & DROP EN TEAM SLOTS ─────────────────────────────────────────
 
-    var typeBadges = (poke.types || []).map(function(t) {
-        return '<span class="type-badge type-' + t + '">' + t + '</span>';
-    }).join('');
+            var _dragFromIdx = -1;
 
-    var total = Object.values(poke.stats || {}).reduce(function(a,b){return a+b;}, 0);
+            function _makeSlotsObserver() {
+                var teamSlotsEl = document.getElementById('teamSlots');
+                if (!teamSlotsEl) return;
 
-    var statBars = Object.entries(poke.stats || {}).map(function(entry) {
-        var k = entry[0], v = entry[1];
-        var pct = Math.min(100, Math.round(v / 255 * 100));
-        var color = STAT_COLORS[k] || '#64748b';
-        return '<div class="preview-stat-row">' +
-            '<div class="preview-stat-name">' + (STAT_NAMES[k]||k) + '</div>' +
-            '<div class="preview-stat-val" style="color:' + color + '">' + v + '</div>' +
-            '<div class="preview-bar-bg"><div class="preview-bar-fill" style="width:' + pct + '%;background:' + color + '"></div></div>' +
-        '</div>';
-    }).join('');
+                // Drag events delegados en el contenedor
+                teamSlotsEl.addEventListener('dragstart', function (e) {
+                    var slot = e.target.closest && e.target.closest('.team-slot.filled');
+                    if (!slot) return;
+                    var slots = Array.from(teamSlotsEl.querySelectorAll('.team-slot'));
+                    _dragFromIdx = slots.indexOf(slot);
+                    slot.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', _dragFromIdx);
+                });
 
-    var abilities = (poke.abilities || [poke.ability]).filter(Boolean);
-    var abilChips = abilities.map(function(a) {
-        return '<span class="preview-chip abil">✨ ' + a + '</span>';
-    }).join('');
+                teamSlotsEl.addEventListener('dragend', function () {
+                    teamSlotsEl.querySelectorAll('.team-slot').forEach(function (s) {
+                        s.classList.remove('dragging', 'drag-over');
+                    });
+                    _dragFromIdx = -1;
+                });
 
-    var learnset = poke.learnset || poke.moves || [];
-    var moveChips = learnset.map(function(m) {
-        return '<span class="preview-chip">' + m + '</span>';
-    }).join('');
+                teamSlotsEl.addEventListener('dragover', function (e) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    var slot = e.target.closest && e.target.closest('.team-slot');
+                    teamSlotsEl.querySelectorAll('.team-slot').forEach(function (s) { s.classList.remove('drag-over'); });
+                    if (slot) slot.classList.add('drag-over');
+                });
 
-    var box = document.getElementById('pokePreviewBox');
-    box.innerHTML =
-        '<div class="preview-header">' +
-            '<img class="preview-sprite" src="' + sprite + '"' +
-                ' onerror="this.src=\'' + placeholder.replace(/'/g,"\\'") + '\'" alt="' + poke.name + '">' +
-            '<div style="flex:1;min-width:0">' +
-                '<div style="font-size:13px;margin-bottom:5px;">#' + poke.id + ' ' + poke.name + '</div>' +
-                '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:5px;">' + typeBadges + '</div>' +
-                '<span style="font-size:8px;background:rgba(251,191,36,.12);border:1px solid var(--t-gold);color:var(--t-gold);padding:2px 8px;border-radius:10px;">BST ' + total + '</span>' +
-            '</div>' +
-            '<button class="preview-close" onclick="_closePreview()">✕</button>' +
-        '</div>' +
-        '<div class="preview-stat-bars">' + statBars + '</div>' +
-        '<div class="preview-section-title">✨ Habilidades</div>' +
-        '<div style="margin-bottom:4px;">' + abilChips + '</div>' +
-        '<div class="preview-section-title">⚔️ Learnset completo (' + learnset.length + ')</div>' +
-        '<div style="line-height:1.9;">' + moveChips + '</div>';
+                teamSlotsEl.addEventListener('dragleave', function (e) {
+                    if (!teamSlotsEl.contains(e.relatedTarget)) {
+                        teamSlotsEl.querySelectorAll('.team-slot').forEach(function (s) { s.classList.remove('drag-over'); });
+                    }
+                });
 
-    document.getElementById('pokePreviewModal').classList.add('open');
-};
+                teamSlotsEl.addEventListener('drop', function (e) {
+                    e.preventDefault();
+                    var slot = e.target.closest && e.target.closest('.team-slot');
+                    if (!slot || _dragFromIdx === -1) return;
+                    var slots = Array.from(teamSlotsEl.querySelectorAll('.team-slot'));
+                    var toIdx = slots.indexOf(slot);
+                    if (toIdx === -1 || toIdx === _dragFromIdx) return;
 
-window._closePreview = function() {
-    document.getElementById('pokePreviewModal').classList.remove('open');
-};
+                    // Intercambiar en el array global del equipo
+                    if (typeof playerTeam !== 'undefined' && Array.isArray(playerTeam) && playerTeam[_dragFromIdx] !== undefined) {
+                        var tmp = playerTeam[_dragFromIdx];
+                        playerTeam[_dragFromIdx] = playerTeam[toIdx];
+                        playerTeam[toIdx] = tmp;
 
-// ── 4. DRAG & DROP EN TEAM SLOTS ─────────────────────────────────────────
+                        // Actualizar el índice de edición si estábamos editando un Pokémon desplazado
+                        if (typeof currentEditId !== 'undefined' && currentEditId !== null) {
+                            if (currentEditId === _dragFromIdx) {
+                                currentEditId = toIdx;
+                            } else if (currentEditId === toIdx) {
+                                currentEditId = _dragFromIdx;
+                            }
+                        }
 
-var _dragFromIdx = -1;
+                        if (typeof renderAll === 'function') {
+                            renderAll();
+                        }
+                    } else {
+                        // Fallback: intercambio DOM visual
+                        var fromEl = slots[_dragFromIdx];
+                        var toEl = slots[toIdx];
+                        var anchor = toIdx > _dragFromIdx ? toEl.nextSibling : toEl;
+                        teamSlotsEl.insertBefore(fromEl, anchor);
+                    }
 
-function _makeSlotsObserver() {
-    var teamSlotsEl = document.getElementById('teamSlots');
-    if (!teamSlotsEl) return;
+                    teamSlotsEl.querySelectorAll('.team-slot').forEach(function (s) { s.classList.remove('drag-over', 'dragging'); });
+                    _dragFromIdx = -1;
+                });
 
-    // Drag events delegados en el contenedor
-    teamSlotsEl.addEventListener('dragstart', function(e) {
-        var slot = e.target.closest && e.target.closest('.team-slot.filled');
-        if (!slot) return;
-        var slots = Array.from(teamSlotsEl.querySelectorAll('.team-slot'));
-        _dragFromIdx = slots.indexOf(slot);
-        slot.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', _dragFromIdx);
-    });
-
-    teamSlotsEl.addEventListener('dragend', function() {
-        teamSlotsEl.querySelectorAll('.team-slot').forEach(function(s) {
-            s.classList.remove('dragging', 'drag-over');
-        });
-        _dragFromIdx = -1;
-    });
-
-    teamSlotsEl.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        var slot = e.target.closest && e.target.closest('.team-slot');
-        teamSlotsEl.querySelectorAll('.team-slot').forEach(function(s) { s.classList.remove('drag-over'); });
-        if (slot) slot.classList.add('drag-over');
-    });
-
-    teamSlotsEl.addEventListener('dragleave', function(e) {
-        if (!teamSlotsEl.contains(e.relatedTarget)) {
-            teamSlotsEl.querySelectorAll('.team-slot').forEach(function(s) { s.classList.remove('drag-over'); });
-        }
-    });
-
-    teamSlotsEl.addEventListener('drop', function(e) {
-        e.preventDefault();
-        var slot = e.target.closest && e.target.closest('.team-slot');
-        if (!slot || _dragFromIdx === -1) return;
-        var slots = Array.from(teamSlotsEl.querySelectorAll('.team-slot'));
-        var toIdx = slots.indexOf(slot);
-        if (toIdx === -1 || toIdx === _dragFromIdx) return;
-
-        // Intenta intercambiar en el array global del equipo
-        var teamArr = window.team || window.playerTeam || window.currentTeam || null;
-        if (teamArr && Array.isArray(teamArr) && teamArr[_dragFromIdx] !== undefined) {
-            var tmp = teamArr[_dragFromIdx];
-            teamArr[_dragFromIdx] = teamArr[toIdx];
-            teamArr[toIdx] = tmp;
-            // Intenta disparar re-render
-            var renderFn = window.renderTeam || window.renderTeamSlots || window.updateTeam || window.refreshTeam;
-            if (typeof renderFn === 'function') {
-                renderFn();
+                // MutationObserver para hacer draggable los slots rellenos
+                new MutationObserver(function () {
+                    teamSlotsEl.querySelectorAll('.team-slot.filled').forEach(function (s) {
+                        if (!s.getAttribute('draggable')) s.setAttribute('draggable', 'true');
+                    });
+                }).observe(teamSlotsEl, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
             }
-        } else {
-            // Fallback: intercambio DOM visual
-            var fromEl = slots[_dragFromIdx];
-            var toEl   = slots[toIdx];
-            var anchor = toIdx > _dragFromIdx ? toEl.nextSibling : toEl;
-            teamSlotsEl.insertBefore(fromEl, anchor);
-        }
+            _makeSlotsObserver();
 
-        teamSlotsEl.querySelectorAll('.team-slot').forEach(function(s) { s.classList.remove('drag-over','dragging'); });
-        _dragFromIdx = -1;
-    });
+            // ── 5. FIX BUG HABILIDADES / OBJETOS ─────────────────────────────────────
 
-    // MutationObserver para hacer draggable los slots rellenos
-    new MutationObserver(function() {
-        teamSlotsEl.querySelectorAll('.team-slot.filled').forEach(function(s) {
-            if (!s.getAttribute('draggable')) s.setAttribute('draggable', 'true');
-        });
-    }).observe(teamSlotsEl, { childList:true, subtree:true, attributes:true, attributeFilter:['class'] });
-}
-_makeSlotsObserver();
+            window._currentEditId = null;
+            window._currentAbility = null;
+            window._currentItem = null;
 
-// ── 5. FIX BUG HABILIDADES / OBJETOS ─────────────────────────────────────
-
-window._currentEditId   = null;
-window._currentAbility  = null;
-window._currentItem     = null;
-
-// Detecta qué Pokémon se está editando vigilando eiName
-var eiNameEl = document.getElementById('eiName');
-if (eiNameEl) {
-    new MutationObserver(function() {
-        var name = eiNameEl.textContent.trim();
-        if (!name || name === '─') return;
-        if (typeof PokemonDB === 'undefined') return;
-        for (var id in PokemonDB) {
-            if (PokemonDB[id].name.trim() === name) {
-                window._currentEditId  = parseInt(id);
-                var poke = PokemonDB[id];
-                if (!window._currentAbility) window._currentAbility = poke.ability || (poke.abilities && poke.abilities[0]) || '';
-                break;
+            // Detecta qué Pokémon se está editando vigilando eiName
+            var eiNameEl = document.getElementById('eiName');
+            if (eiNameEl) {
+                new MutationObserver(function () {
+                    var name = eiNameEl.textContent.trim();
+                    if (!name || name === '─') return;
+                    if (typeof PokemonDB === 'undefined') return;
+                    for (var id in PokemonDB) {
+                        if (PokemonDB[id].name.trim() === name) {
+                            window._currentEditId = parseInt(id);
+                            var poke = PokemonDB[id];
+                            if (!window._currentAbility) window._currentAbility = poke.ability || (poke.abilities && poke.abilities[0]) || '';
+                            break;
+                        }
+                    }
+                }).observe(eiNameEl, { childList: true, characterData: true, subtree: true });
             }
-        }
-    }).observe(eiNameEl, { childList:true, characterData:true, subtree:true });
-}
 
-// Guarda referencia a switchTab original si existe
-var _origSwitchTab = window.switchTab || null;
+            // Guarda referencia a switchTab original si existe
+            var _origSwitchTab = window.switchTab || null;
 
-window.switchTab = function(tab) {
-    // Actualiza botones de tab
-    document.querySelectorAll('.ei-tab').forEach(function(t) { t.classList.remove('active'); });
-    var tabBtn = document.getElementById('tab-' + tab);
-    if (tabBtn) tabBtn.classList.add('active');
+            window.switchTab = function (tab) {
+                // Actualiza botones de tab
+                document.querySelectorAll('.ei-tab').forEach(function (t) { t.classList.remove('active'); });
+                var tabBtn = document.getElementById('tab-' + tab);
+                if (tabBtn) tabBtn.classList.add('active');
 
-    if (tab === 'ability') { _renderAbilityPanel(); return; }
-    if (tab === 'item')    { _renderItemPanel();    return; }
+                if (tab === 'ability') { _renderAbilityPanel(); return; }
+                if (tab === 'item') { _renderItemPanel(); return; }
 
-    // El resto lo gestiona el JS original
-    if (typeof _origSwitchTab === 'function') _origSwitchTab(tab);
-};
+                // El resto lo gestiona el JS original
+                if (typeof _origSwitchTab === 'function') _origSwitchTab(tab);
+            };
 
-var ABILITY_DESCS = {
-    'Levitación'        : 'Inmune a movimientos de tipo Tierra.',
-    'Magia Guard'       : 'Solo recibe daño de ataques directos.',
-    'Adaptabilidad'     : 'Aumenta el bonus STAB de 1.5× a 2×.',
-    'Velocidad'         : 'Aumenta la Velocidad con sol.',
-    'Clorofila'         : 'Dobla la Velocidad en sol.',
-    'Humedad'           : 'Invoca lluvia al entrar en batalla.',
-    'Fuerza Bruta'      : 'Potencia movimientos con efecto secundario.',
-    'Peso Pluma'        : 'Mitad de daño por movimientos de peso.',
-    'Perspicacia'       : 'Ignora cambios de evasión del rival.',
-    'Impetu'            : 'Aumenta el Ataque al inicio.',
-    'Pasion'            : 'Aumenta el Atq. Especial al inicio.',
-    'Filtro'            : 'Reduce el daño superefectivo recibido.',
-    'Ilusionista'       : 'Adopta la apariencia del último aliado.',
-    'Generador Estatico': 'Puede paralizar al contacto.',
-    'Arena Volcanica'   : 'Invoca tormenta de arena al entrar.',
-    'Cuerpo Puro'       : 'Bloquea efectos secundarios recibidos.',
-    'Cuerpo Gelido'     : 'Puede congelar al contacto.',
-    'Absorber'          : 'Absorbe HP al recibir ataques del tipo.',
-    'Aislamiento'       : 'Inmune a movimientos de sonido.',
-    'Turbamulino'       : 'Puede confundir al contacto.',
-    'Excrecion'         : 'Inflinge veneno al contacto.',
-    'Excreción'         : 'Inflinge veneno al contacto.',
-    'Magica Defensa'    : 'Ignora cambios de estadística del rival.',
-    'Magia Guard'       : 'Solo recibe daño de ataques directos.',
-    'Magic Guard'       : 'Solo recibe daño de ataques directos.',
-    'Insonmio'          : 'No puede ser dormido.',
-    'Celestial Aura'    : 'Potencia movimientos de tipo Hada aliados.',
-    'Levitacion'        : 'Inmune a movimientos de tipo Tierra.',
-    'Inspiración'       : 'Sube su estadística más baja al entrar.',
-    'Inspiracion'       : 'Sube su estadística más baja al entrar.',
-    'Multiesqueleto'    : 'Aumenta la Defensa al recibir un golpe.',
-};
+            var ABILITY_DESCS = {
+                'Levitación': 'Inmune a movimientos de tipo Tierra.',
+                'Magia Guard': 'Solo recibe daño de ataques directos.',
+                'Adaptabilidad': 'Aumenta el bonus STAB de 1.5× a 2×.',
+                'Velocidad': 'Aumenta la Velocidad con sol.',
+                'Clorofila': 'Dobla la Velocidad en sol.',
+                'Humedad': 'Invoca lluvia al entrar en batalla.',
+                'Fuerza Bruta': 'Potencia movimientos con efecto secundario.',
+                'Peso Pluma': 'Mitad de daño por movimientos de peso.',
+                'Perspicacia': 'Ignora cambios de evasión del rival.',
+                'Impetu': 'Aumenta el Ataque al inicio.',
+                'Pasion': 'Aumenta el Atq. Especial al inicio.',
+                'Filtro': 'Reduce el daño superefectivo recibido.',
+                'Ilusionista': 'Adopta la apariencia del último aliado.',
+                'Generador Estatico': 'Puede paralizar al contacto.',
+                'Arena Volcanica': 'Invoca tormenta de arena al entrar.',
+                'Cuerpo Puro': 'Bloquea efectos secundarios recibidos.',
+                'Cuerpo Gelido': 'Puede congelar al contacto.',
+                'Absorber': 'Absorbe HP al recibir ataques del tipo.',
+                'Aislamiento': 'Inmune a movimientos de sonido.',
+                'Turbamulino': 'Puede confundir al contacto.',
+                'Excrecion': 'Inflinge veneno al contacto.',
+                'Excreción': 'Inflinge veneno al contacto.',
+                'Magica Defensa': 'Ignora cambios de estadística del rival.',
+                'Magia Guard': 'Solo recibe daño de ataques directos.',
+                'Magic Guard': 'Solo recibe daño de ataques directos.',
+                'Insonmio': 'No puede ser dormido.',
+                'Celestial Aura': 'Potencia movimientos de tipo Hada aliados.',
+                'Levitacion': 'Inmune a movimientos de tipo Tierra.',
+                'Inspiración': 'Sube su estadística más baja al entrar.',
+                'Inspiracion': 'Sube su estadística más baja al entrar.',
+                'Multiesqueleto': 'Aumenta la Defensa al recibir un golpe.',
+            };
 
-function _renderAbilityPanel() {
-    var body = document.getElementById('eiBody');
-    if (!body) return;
-    var id   = window._currentEditId;
-    var poke = (typeof PokemonDB !== 'undefined' && id) ? PokemonDB[id] : null;
-    var abilities = poke ? (poke.abilities || [poke.ability].filter(Boolean)) : [];
+            function _renderAbilityPanel() {
+                var body = document.getElementById('eiBody');
+                if (!body) return;
+                var id = window._currentEditId;
+                var poke = (typeof PokemonDB !== 'undefined' && id) ? PokemonDB[id] : null;
+                var abilities = poke ? (poke.abilities || [poke.ability].filter(Boolean)) : [];
 
-    if (!abilities.length) {
-        body.innerHTML = '<div style="color:var(--t-text-dim);font-size:9.5px;padding:8px 0;">Sin habilidades registradas para este Pokémon.</div>';
-        return;
-    }
+                if (!abilities.length) {
+                    body.innerHTML = '<div style="color:var(--t-text-dim);font-size:9.5px;padding:8px 0;">Sin habilidades registradas para este Pokémon.</div>';
+                    return;
+                }
 
-    var current = window._currentAbility || abilities[0];
-    body.innerHTML = '<div style="font-size:8.5px;color:var(--t-text-dim);margin-bottom:10px;">Selecciona la habilidad activa:</div>' +
-        '<div class="items-list">' +
-        abilities.map(function(a) {
-            var sel = (a === current) ? 'selected' : '';
-            var desc = ABILITY_DESCS[a] || 'Habilidad especial de este Pokémon.';
-            return '<div class="item-option ' + sel + '" onclick="_pickAbility(\'' + a.replace(/'/g,"\\'") + '\',this)">' +
-                '<div class="item-icon">✨</div>' +
-                '<div><div class="item-option-name">' + a + '</div>' +
-                '<div class="item-option-desc">' + desc + '</div></div>' +
-            '</div>';
-        }).join('') +
-        '</div>';
-}
+                var current = window._currentAbility || abilities[0];
+                body.innerHTML = '<div style="font-size:8.5px;color:var(--t-text-dim);margin-bottom:10px;">Selecciona la habilidad activa:</div>' +
+                    '<div class="items-list">' +
+                    abilities.map(function (a) {
+                        var sel = (a === current) ? 'selected' : '';
+                        var desc = ABILITY_DESCS[a] || 'Habilidad especial de este Pokémon.';
+                        return '<div class="item-option ' + sel + '" onclick="_pickAbility(\'' + a.replace(/'/g, "\\'") + '\',this)">' +
+                            '<div class="item-icon">✨</div>' +
+                            '<div><div class="item-option-name">' + a + '</div>' +
+                            '<div class="item-option-desc">' + desc + '</div></div>' +
+                            '</div>';
+                    }).join('') +
+                    '</div>';
+            }
 
-window._pickAbility = function(ability, el) {
-    window._currentAbility = ability;
-    document.querySelectorAll('#eiBody .item-option').forEach(function(e) { e.classList.remove('selected'); });
-    el.classList.add('selected');
-    // Actualiza el header del editor
-    var eiAb = document.getElementById('eiAbility');
-    if (eiAb) eiAb.textContent = '✨ ' + ability;
-    // Guarda en el miembro del equipo si es accesible
-    var arr = window.team || window.playerTeam || window.currentTeam;
-    if (arr && Array.isArray(arr) && window._currentEditId) {
-        var member = arr.find(function(m) { return m && m.id === window._currentEditId; });
-        if (member) member.ability = ability;
-    }
-};
+            window._pickAbility = function (ability, el) {
+                window._currentAbility = ability;
+                document.querySelectorAll('#eiBody .item-option').forEach(function (e) { e.classList.remove('selected'); });
+                el.classList.add('selected');
+                // Actualiza el header del editor
+                var eiAb = document.getElementById('eiAbility');
+                if (eiAb) eiAb.textContent = '✨ ' + ability;
+                // Guarda en el miembro del equipo si es accesible
+                var arr = window.team || window.playerTeam || window.currentTeam;
+                if (arr && Array.isArray(arr) && window._currentEditId) {
+                    var member = arr.find(function (m) { return m && m.id === window._currentEditId; });
+                    if (member) member.ability = ability;
+                }
+            };
 
-function _renderItemPanel() {
-    var body = document.getElementById('eiBody');
-    if (!body) return;
+            function _renderItemPanel() {
+                var body = document.getElementById('eiBody');
+                if (!body) return;
 
-    // Busca ItemsDB en distintos nombres posibles
-    var items = typeof ItemsDB !== 'undefined' ? ItemsDB :
-                typeof ItemDB  !== 'undefined' ? ItemDB  :
-                typeof ITEMS   !== 'undefined' ? ITEMS   : null;
+                // Busca ItemsDB en distintos nombres posibles
+                var items = typeof ItemsDB !== 'undefined' ? ItemsDB :
+                    typeof ItemDB !== 'undefined' ? ItemDB :
+                        typeof ITEMS !== 'undefined' ? ITEMS : null;
 
-    if (!items) {
-        // Si no tenemos el DB, dejamos que el original lo gestione
-        if (typeof _origSwitchTab === 'function') {
-            // Restaura tab activo antes de llamar original
-            document.querySelectorAll('.ei-tab').forEach(function(t) { t.classList.remove('active'); });
-            var btn = document.getElementById('tab-item');
-            if (btn) btn.classList.add('active');
-            _origSwitchTab('item');
-        } else {
-            body.innerHTML = '<div style="color:var(--t-text-dim);font-size:9.5px;padding:8px 0;">Cargando objetos…</div>';
-        }
-        return;
-    }
+                if (!items) {
+                    // Si no tenemos el DB, dejamos que el original lo gestione
+                    if (typeof _origSwitchTab === 'function') {
+                        // Restaura tab activo antes de llamar original
+                        document.querySelectorAll('.ei-tab').forEach(function (t) { t.classList.remove('active'); });
+                        var btn = document.getElementById('tab-item');
+                        if (btn) btn.classList.add('active');
+                        _origSwitchTab('item');
+                    } else {
+                        body.innerHTML = '<div style="color:var(--t-text-dim);font-size:9.5px;padding:8px 0;">Cargando objetos…</div>';
+                    }
+                    return;
+                }
 
-    var current = window._currentItem;
-    var itemList = Array.isArray(items) ? items : Object.values(items);
+                var current = window._currentItem;
+                var itemList = Array.isArray(items) ? items : Object.values(items);
 
-    body.innerHTML = '<div style="font-size:8.5px;color:var(--t-text-dim);margin-bottom:10px;">Elige el objeto equipado:</div>' +
-        '<div class="items-list">' +
-        itemList.map(function(item) {
-            var name = item.name || item.id || String(item);
-            var desc = item.desc || item.description || item.effect || '';
-            var icon = item.icon || item.emoji || '🎒';
-            var sel  = (name === current) ? 'selected' : '';
-            return '<div class="item-option ' + sel + '" onclick="_pickItem(\'' + name.replace(/'/g,"\\'") + '\',this)">' +
-                '<div class="item-icon">' + icon + '</div>' +
-                '<div><div class="item-option-name">' + name + '</div>' +
-                '<div class="item-option-desc">' + desc + '</div></div>' +
-            '</div>';
-        }).join('') +
-        '</div>';
-}
+                body.innerHTML = '<div style="font-size:8.5px;color:var(--t-text-dim);margin-bottom:10px;">Elige el objeto equipado:</div>' +
+                    '<div class="items-list">' +
+                    itemList.map(function (item) {
+                        var name = item.name || item.id || String(item);
+                        var desc = item.desc || item.description || item.effect || '';
+                        var icon = item.icon || item.emoji || '🎒';
+                        var sel = (name === current) ? 'selected' : '';
+                        return '<div class="item-option ' + sel + '" onclick="_pickItem(\'' + name.replace(/'/g, "\\'") + '\',this)">' +
+                            '<div class="item-icon">' + icon + '</div>' +
+                            '<div><div class="item-option-name">' + name + '</div>' +
+                            '<div class="item-option-desc">' + desc + '</div></div>' +
+                            '</div>';
+                    }).join('') +
+                    '</div>';
+            }
 
-window._pickItem = function(itemName, el) {
-    window._currentItem = itemName;
-    document.querySelectorAll('#eiBody .item-option').forEach(function(e) { e.classList.remove('selected'); });
-    el.classList.add('selected');
-    var arr = window.team || window.playerTeam || window.currentTeam;
-    if (arr && Array.isArray(arr) && window._currentEditId) {
-        var member = arr.find(function(m) { return m && m.id === window._currentEditId; });
-        if (member) { member.item = itemName; member.heldItem = itemName; }
-    }
-};
+            window._pickItem = function (itemName, el) {
+                window._currentItem = itemName;
+                document.querySelectorAll('#eiBody .item-option').forEach(function (e) { e.classList.remove('selected'); });
+                el.classList.add('selected');
+                var arr = window.team || window.playerTeam || window.currentTeam;
+                if (arr && Array.isArray(arr) && window._currentEditId) {
+                    var member = arr.find(function (m) { return m && m.id === window._currentEditId; });
+                    if (member) { member.item = itemName; member.heldItem = itemName; }
+                }
+            };
 
-// Reset del editor al cerrarse para no confundir el próximo Pokémon
-var origCloseEditor = window.closeEditor;
-window.closeEditor = function() {
-    window._currentEditId  = null;
-    window._currentAbility = null;
-    window._currentItem    = null;
-    if (typeof origCloseEditor === 'function') origCloseEditor();
-};
+            // Reset del editor al cerrarse para no confundir el próximo Pokémon
+            var origCloseEditor = window.closeEditor;
+            window.closeEditor = function () {
+                window._currentEditId = null;
+                window._currentAbility = null;
+                window._currentItem = null;
+                if (typeof origCloseEditor === 'function') origCloseEditor();
+            };
 
-// ── 6. INIT ──────────────────────────────────────────────────────────────
-setTimeout(function() {
-    _addInfoButtons();
-    window._applyAllFilters();
-}, 300);
+            // ── 6. INIT ──────────────────────────────────────────────────────────────
+            setTimeout(function () {
+                _addInfoButtons();
+                window._applyAllFilters();
+            }, 300);
 
-}); // end DOMContentLoaded
-</script>
-<div class="theme-switcher">
-    <div class="theme-label-mini">Tema</div>
-    <div class="theme-options-mini">
-        <button class="theme-btn-mini theme-btn-mini-default"   id="tbtn-default"   onclick="setTheme('default')">  <span class="tdot"></span>Default</button>
-        <button class="theme-btn-mini theme-btn-mini-helodian"  id="tbtn-helodian"  onclick="setTheme('helodian')"> <span class="tdot"></span>Helodian</button>
-        <button class="theme-btn-mini theme-btn-mini-etherdiel" id="tbtn-etherdiel" onclick="setTheme('etherdiel')"><span class="tdot"></span>Etherdiel</button>
+        }); // end DOMContentLoaded
+    </script>
+    <div class="theme-switcher">
+        <div class="theme-label-mini">Tema</div>
+        <div class="theme-options-mini">
+            <button class="theme-btn-mini theme-btn-mini-default" id="tbtn-default" onclick="setTheme('default')"> <span
+                    class="tdot"></span>Default</button>
+            <button class="theme-btn-mini theme-btn-mini-helodian" id="tbtn-helodian" onclick="setTheme('helodian')">
+                <span class="tdot"></span>Helodian</button>
+            <button class="theme-btn-mini theme-btn-mini-etherdiel" id="tbtn-etherdiel"
+                onclick="setTheme('etherdiel')"><span class="tdot"></span>Etherdiel</button>
+        </div>
     </div>
-</div>
-<script>
-function setTheme(t){
-    document.documentElement.setAttribute('data-theme',t);
-    localStorage.setItem('prostarTheme',t);
-    ['default','helodian','etherdiel'].forEach(function(x){
-        var b=document.getElementById('tbtn-'+x);
-        if(b) b.classList.toggle('active', x===t);
-    });
-}
-(function(){ setTheme(localStorage.getItem('prostarTheme')||'default'); })();
-</script>
+    <script>
+        function setTheme(t) {
+            document.documentElement.setAttribute('data-theme', t);
+            localStorage.setItem('prostarTheme', t);
+            ['default', 'helodian', 'etherdiel'].forEach(function (x) {
+                var b = document.getElementById('tbtn-' + x);
+                if (b) b.classList.toggle('active', x === t);
+            });
+        }
+        (function () { setTheme(localStorage.getItem('prostarTheme') || 'default'); })();
+    </script>

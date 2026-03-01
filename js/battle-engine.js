@@ -181,6 +181,9 @@ function calculateDamage(attacker, defender, moveName, randomFactor = null) {
                 if (isPhysical) dmg *= atkAb.value;
                 break;
             case 'crit_boost':
+                // Nota: El multiplicador x1.5 se aplica ahora en la sección de crits abajo
+                // para que sea consistente con el sistema y pueda ser anulado por habilidades.
+                break;
             case 'brute_force':
                 dmg *= atkAb.value;
                 break;
@@ -212,13 +215,29 @@ function calculateDamage(attacker, defender, moveName, randomFactor = null) {
         dmg *= 0.5;
 
     // ── Factor aleatorio (85–100%) ────────────────────────────────────────
-    if (randomFactor !== null) {
-        dmg *= randomFactor;
-    } else {
-        dmg *= (0.85 + Math.random() * 0.15);
+    let finalRandom = (randomFactor !== null) ? randomFactor : (0.85 + Math.random() * 0.15);
+    dmg *= finalRandom;
+
+    // ── Golpe Crítico (6.25% de probabilidad) ─────────────────────────────
+    let isCrit = false;
+    // La probabilidad base es 6.25% (1/16)
+    // Habilidad 'Temeridad' asegura críticos (ya se aplica antes, pero mejor aquí para claridad)
+    const alwaysCrit = AbilitiesDB[attacker.ability]?.effect === 'crit_boost';
+
+    if (alwaysCrit || Math.random() < 0.0625) {
+        isCrit = true;
+        // La habilidad 'Escudo Destello' del defensor anula el multiplicador del crítico
+        if (AbilitiesDB[defender.ability]?.effect === 'negate_crit') {
+            isCrit = false; // No se cuenta como crítico si se anula
+        } else {
+            dmg *= 1.5;
+        }
     }
 
-    return Math.max(1, Math.floor(dmg));
+    return {
+        damage: Math.max(1, Math.floor(dmg)),
+        isCrit: isCrit
+    };
 }
 
 // ─── HABILIDADES AL ENTRAR EN COMBATE ────────────────────────────────────────

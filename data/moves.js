@@ -779,7 +779,7 @@ const MovesDB = {
         priority: 0,
         effect: "faint_after_use",
         effectChance: 100,
-        description: "Explosión estelar masiva. El usuario se debilita tras el ataque.",
+        description: "Que quieres que explique mas ?, es Supernova",
     },
 }; // fin MovesDB
 

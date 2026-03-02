@@ -200,6 +200,13 @@ function executeAttack(attacker, defender, moveName, side, callback) {
         else revealPlayerStat('item', attacker);
     }
 
+    // ── Autodebilitamiento (Supernova) ───────────────────────────────────
+    if (move.effect === 'faint_after_use') {
+        attacker.currentHp = 0;
+        attacker.fainted = true;
+        addLog(`💥 ¡${attacker.name} se debilitó tras el ataque!`, 'damage');
+    }
+
     // ── Orbe Vida ─────────────────────────────────────────────────────────
     if (attacker.item === 'Orbe Vida') {
         const o = Math.floor(attacker.stats.hp * 0.1);

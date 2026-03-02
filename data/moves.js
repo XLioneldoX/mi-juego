@@ -770,6 +770,17 @@ const MovesDB = {
         effectChance: 100,
         description: "Lanza púas tóxicas al campo rival para envenenar a quienes entren.",
     },
+    "Supernova": {
+        name: "Supernova",
+        type: "FUEGO",
+        category: "special",
+        power: 250,
+        accuracy: 100,
+        priority: 0,
+        effect: "faint_after_use",
+        effectChance: 100,
+        description: "Explosión estelar masiva. El usuario se debilita tras el ataque.",
+    },
 }; // fin MovesDB
 
 

@@ -811,6 +811,16 @@ const MovesDB = {
         effectChance: 100,
         description: "Ataca primero y hace retroceder. Solo funciona el primer turno.",
     },
+    "Sustituto": {
+        name: "Sustituto",
+        type: "NORMAL",
+        category: "status",
+        power: 0,
+        accuracy: 100,
+        priority: 0,
+        effect: "substitute",
+        description: "Crea un señuelo con el 25% del HP para protegerse.",
+    },
 
     // ════════════════════════════════════════════════════════════════════════
     // 🆕 NUEVOS MOVIMIENTOS

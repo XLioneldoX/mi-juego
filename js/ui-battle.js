@@ -7,8 +7,16 @@ function updateUI() {
     const enemy = enemyTeam[enemyActive];
     const pSp = document.getElementById('playerSprite');
     const eSp = document.getElementById('enemySprite');
-    if (pSp) { pSp.src = getSpriteUrl(player.id, 'back'); pSp.onerror = () => onSpriteError(pSp, player.id); }
-    if (eSp) { eSp.src = getSpriteUrl(enemy.id, 'front'); eSp.onerror = () => onSpriteError(eSp, enemy.id); }
+    if (pSp) {
+        pSp.src = getSpriteUrl(player.id, 'back');
+        pSp.onerror = () => onSpriteError(pSp, player.id);
+        pSp.classList.toggle('has-substitute', (player.substituteHp || 0) > 0);
+    }
+    if (eSp) {
+        eSp.src = getSpriteUrl(enemy.id, 'front');
+        eSp.onerror = () => onSpriteError(eSp, enemy.id);
+        eSp.classList.toggle('has-substitute', (enemy.substituteHp || 0) > 0);
+    }
     updatePokemonCard('player', player);
     updatePokemonCard('enemy', enemy);
     updateTeamMinis();

@@ -143,6 +143,9 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
         return;
     }
 
+    // ── Lógica especial: Intercepción por Sustituto (Visual/Log) ──────────
+    const hasSubstitute = (defender.substituteHp || 0) > 0;
+
     // ── Lógica especial: Sucker Punch (Golpe Bajo) ────────────────────────
     if (move.effect === 'sucker_punch') {
         const targetMove = targetMoveName ? getMoveInfo(targetMoveName) : null;
@@ -215,8 +218,18 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
         if (defSide === 'enemy') revealEnemyStat('item', defender);
         else revealPlayerStat('item', defender);
     } else {
-        defender.currentHp = Math.max(0, defender.currentHp - dmg);
-        if (defender.currentHp <= 0) defender.fainted = true;
+        const defHasSub = (defender.substituteHp || 0) > 0;
+        if (defHasSub && move.category !== 'status') {
+            addLog(`🎭 ¡El sustituto recibió el daño!`, 'important');
+            defender.substituteHp -= dmg;
+            if (defender.substituteHp <= 0) {
+                defender.substituteHp = 0;
+                addLog(`💥 ¡El sustituto de ${defender.name} se rompió!`, 'important');
+            }
+        } else {
+            defender.currentHp = Math.max(0, defender.currentHp - dmg);
+            if (defender.currentHp <= 0) defender.fainted = true;
+        }
     }
 
     // ── Log efectividad ───────────────────────────────────────────────────
@@ -375,6 +388,23 @@ function handleStatusMove(user, target, moveName) {
         user.currentHp = user.stats.hp;
         user.status = 'petrify';
         addLog(`🗿 ${user.name} se petrificó y recuperó todo el HP`, 'heal');
+        return;
+    }
+
+    if (move.effect === 'substitute') {
+        if ((user.substituteHp || 0) > 0) {
+            addLog(`❌ ¡${user.name} ya tiene un sustituto!`);
+            return;
+        }
+        const cost = Math.floor(user.stats.hp / 4);
+        if (user.currentHp > cost) {
+            user.currentHp -= cost;
+            user.substituteHp = cost;
+            addLog(`🎭 ¡${user.name} creó un sustituto a cambio de vida!`, 'important');
+            updateUI();
+        } else {
+            addLog(`❌ ¡No hay suficiente vida para crear un sustituto!`);
+        }
         return;
     }
     if (move.effect === 'change_type_flying') {

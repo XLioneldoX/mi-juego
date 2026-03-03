@@ -324,6 +324,34 @@
             z-index: 10;
         }
 
+        .pokemon-sprite.has-substitute {
+            opacity: 0.5;
+            transform: scale(0.9) translate(-10px, -10px);
+            z-index: 5;
+        }
+
+        .substitute-sprite {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            image-rendering: pixelated;
+            z-index: 15;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+        }
+
+        .player-sprite-pos .substitute-sprite {
+            transform: translateX(-50%) scaleX(-1);
+        }
+
+        .has-substitute+.substitute-sprite {
+            display: block;
+        }
+
         .player-sprite {
             transform: scaleX(-1);
         }
@@ -2047,6 +2075,8 @@
                     </div>
                     <div class="pokemon-sprite-wrap enemy-sprite-pos">
                         <img class="pokemon-sprite" id="enemySprite" src="" alt="Enemigo">
+                        <img class="substitute-sprite" id="enemySubstitute" src="sprites/000_Substitute.png"
+                            alt="Sustituto">
                         <div class="hazards-container" id="enemyHazardsCont"></div>
                     </div>
                 </div>
@@ -2054,6 +2084,8 @@
                 <div class="pokemon-card player-card-pos">
                     <div class="pokemon-sprite-wrap player-sprite-pos">
                         <img class="pokemon-sprite player-sprite" id="playerSprite" src="" alt="Jugador">
+                        <img class="substitute-sprite" id="playerSubstitute" src="sprites/000_Substitute.png"
+                            alt="Sustituto">
                         <div class="hazards-container" id="playerHazardsCont"></div>
                     </div>
                     <div class="pokemon-info-card player" id="playerCard">

@@ -42,19 +42,19 @@ function playerAttack(moveIndex) {
     else
         addLog('🎲 Velocidades iguales – orden aleatorio', 'speed-win');
 
-    const doPlayerAtk = (cb) => executeAttack(player, enemy, playerMove, 'player', null, enemyMove, cb);
-    const doEnemyAtk = (cb) => executeAttack(enemy, player, enemyMove, 'enemy', player.fainted, playerMove, cb);
+    const doPlayerAtk = (hasMoved, cb) => executeAttack(player, enemy, playerMove, 'player', hasMoved, enemyMove, cb);
+    const doEnemyAtk = (hasMoved, cb) => executeAttack(enemy, player, enemyMove, 'enemy', hasMoved, playerMove, cb);
 
     if (first === 'player') {
-        doPlayerAtk(() => {
+        doPlayerAtk(false, () => {
             if (!enemy.fainted && !player.fainted && !battleOver)
-                setTimeout(() => doEnemyAtk(() => afterTurn()), 800);
+                setTimeout(() => doEnemyAtk(true, () => afterTurn()), 800);
             else afterTurn();
         });
     } else {
-        doEnemyAtk(() => {
+        doEnemyAtk(false, () => {
             if (!player.fainted && !enemy.fainted && !battleOver)
-                setTimeout(() => doPlayerAtk(() => afterTurn()), 800);
+                setTimeout(() => doPlayerAtk(true, () => afterTurn()), 800);
             else afterTurn();
         });
     }
@@ -615,7 +615,7 @@ function switchTo(newIndex) {
         disableMoves();
         const enemy = enemyTeam[enemyActive];
         const emIdx = chooseEnemyMove(enemy, newPoke);
-        setTimeout(() => executeAttack(enemy, newPoke, enemy.moves[emIdx], 'enemy', () => afterTurn()), 800);
+        setTimeout(() => executeAttack(enemy, newPoke, enemy.moves[emIdx], 'enemy', true, null, () => afterTurn()), 800);
     } else {
         switchForced = false;
         isBusy = false;

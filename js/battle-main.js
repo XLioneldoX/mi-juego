@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Cambios de Pokémon van antes que ataques
-        const handlePlayerAction = (cb) => {
+        const handlePlayerAction = (hasMoved, cb) => {
             if (playerMove.type === 'switch') {
                 playerActive = playerMove.switchTo;
                 addLog(`🔄 Cambiaste a ${playerTeam[playerActive].name}`, 'important');
@@ -329,10 +329,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 applyHazardsOnSwitchIn(playerTeam[playerActive], 'player');
                 updateUI(); setTimeout(cb, 400);
             } else {
-                executeAttack(playerTeam[playerActive], enemyTeam[enemyActive], playerMove.moveName, 'player', cb);
+                executeAttack(playerTeam[playerActive], enemyTeam[enemyActive], playerMove.moveName, 'player', hasMoved, enemyMove.moveName, cb);
             }
         };
-        const handleEnemyAction = (cb) => {
+        const handleEnemyAction = (hasMoved, cb) => {
             if (enemyMove.type === 'switch') {
                 enemyActive = enemyMove.switchTo;
                 addLog(`🔄 Rival cambió a ${enemyTeam[enemyActive].name}`, 'important');
@@ -340,20 +340,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 applyHazardsOnSwitchIn(enemyTeam[enemyActive], 'enemy');
                 updateUI(); setTimeout(cb, 400);
             } else {
-                executeAttack(enemyTeam[enemyActive], playerTeam[playerActive], enemyMove.moveName, 'enemy', cb);
+                executeAttack(enemyTeam[enemyActive], playerTeam[playerActive], enemyMove.moveName, 'enemy', hasMoved, playerMove.moveName, cb);
             }
         };
 
         if (first === 'player') {
-            handlePlayerAction(() => {
+            handlePlayerAction(false, () => {
                 if (!enemyTeam[enemyActive].fainted && !playerTeam[playerActive].fainted && !battleOver)
-                    setTimeout(() => handleEnemyAction(() => afterTurn()), 800);
+                    setTimeout(() => handleEnemyAction(true, () => afterTurn()), 800);
                 else afterTurn();
             });
         } else {
-            handleEnemyAction(() => {
+            handleEnemyAction(false, () => {
                 if (!playerTeam[playerActive].fainted && !enemyTeam[enemyActive].fainted && !battleOver)
-                    setTimeout(() => handlePlayerAction(() => afterTurn()), 800);
+                    setTimeout(() => handlePlayerAction(true, () => afterTurn()), 800);
                 else afterTurn();
             });
         }

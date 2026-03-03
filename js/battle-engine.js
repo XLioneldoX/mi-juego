@@ -62,7 +62,7 @@ function getStatBoostMultiplier(stage) {
 // ─── STATS MODIFICADAS EN COMBATE (objeto + habilidad pasiva + boosts) ────────
 // Nota: las stats en pokemon.stats YA tienen naturaleza y EVs aplicados
 // via buildStats(). Aquí solo aplicamos boosts de combate, objetos y hab. pasivas.
-function getModifiedStats(pokemon) {
+function getModifiedStats(pokemon, ignoreBoosts = false) {
     const itemBoost = getItemStatBoost(pokemon);
     const abilityMult = getAbilityPassiveStatMult(pokemon);
 
@@ -71,12 +71,14 @@ function getModifiedStats(pokemon) {
         defBonus = 1.5; // +50% Defensa Física
     }
 
+    const b = (stat) => (ignoreBoosts ? 1 : getStatBoostMultiplier(pokemon.statBoosts?.[stat] || 0));
+
     return {
-        atk: Math.floor(pokemon.stats.atk * itemBoost.atk * abilityMult.atk * getStatBoostMultiplier(pokemon.statBoosts?.atk || 0)),
-        def: Math.floor(pokemon.stats.def * itemBoost.def * abilityMult.def * getStatBoostMultiplier(pokemon.statBoosts?.def || 0) * defBonus),
-        spa: Math.floor(pokemon.stats.spa * itemBoost.spa * abilityMult.spa * getStatBoostMultiplier(pokemon.statBoosts?.spa || 0)),
-        spd: Math.floor(pokemon.stats.spd * itemBoost.spd * abilityMult.spd * getStatBoostMultiplier(pokemon.statBoosts?.spd || 0)),
-        spe: Math.floor(pokemon.stats.spe * itemBoost.spe * abilityMult.spe * getStatBoostMultiplier(pokemon.statBoosts?.spe || 0)),
+        atk: Math.floor(pokemon.stats.atk * itemBoost.atk * abilityMult.atk * b('atk')),
+        def: Math.floor(pokemon.stats.def * itemBoost.def * abilityMult.def * b('def') * defBonus),
+        spa: Math.floor(pokemon.stats.spa * itemBoost.spa * abilityMult.spa * b('spa')),
+        spd: Math.floor(pokemon.stats.spd * itemBoost.spd * abilityMult.spd * b('spd')),
+        spe: Math.floor(pokemon.stats.spe * itemBoost.spe * abilityMult.spe * b('spe')),
     };
 }
 
@@ -141,14 +143,20 @@ function calculateDamage(attacker, defender, moveName, randomFactor = null) {
         effPower *= 2;
     }
 
+    // Desarme (Knock Off): 1.5x de potencia si el rival tiene objeto
+    if (move.effect === 'knock_off' && defender.item && defender.item !== 'Ninguno') {
+        effPower *= 1.5;
+    }
+
     const moveType = move.type;
     const isPhysical = move.category === 'physical';
+    const ignoreDef = (move.effect === 'ignore_def_boosts');
     const aStats = getModifiedStats(attacker);
-    const dStats = getModifiedStats(defender);
+    const dStats = getModifiedStats(defender, ignoreDef);
 
     // Si se pasan boosts manuales (para la calculadora), se aplican aquí
     const aBoostLvl = attacker.manualBoosts ? (isPhysical ? attacker.manualBoosts.atk : attacker.manualBoosts.spa) : 0;
-    const dBoostLvl = defender.manualBoosts ? (isPhysical ? defender.manualBoosts.def : defender.manualBoosts.spd) : 0;
+    const dBoostLvl = defender.manualBoosts && !ignoreDef ? (isPhysical ? defender.manualBoosts.def : defender.manualBoosts.spd) : 0;
 
     const atk = (isPhysical ? aStats.atk : aStats.spa) * (aBoostLvl !== 0 ? getStatBoostMultiplier(aBoostLvl) : 1);
     const def = (isPhysical ? dStats.def : dStats.spd) * (dBoostLvl !== 0 ? getStatBoostMultiplier(dBoostLvl) : 1);

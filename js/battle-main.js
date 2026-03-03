@@ -179,8 +179,8 @@ function makeWildPokemon(base, difficulty, level) {
 function startBattle() {
     enemyRevealed.item = false; enemyRevealed.ability = false;
     playerRevealed.item = false; playerRevealed.ability = false;
-    playerHazards = { toxicSpikes: 0 };
-    enemyHazards = { toxicSpikes: 0 };
+    playerHazards = { toxicSpikes: 0, spikes: 0 };
+    enemyHazards = { toxicSpikes: 0, spikes: 0 };
 
     updateUI();
     renderMoves();

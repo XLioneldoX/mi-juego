@@ -42,8 +42,8 @@ function playerAttack(moveIndex) {
     else
         addLog('🎲 Velocidades iguales – orden aleatorio', 'speed-win');
 
-    const doPlayerAtk = (cb) => executeAttack(player, enemy, playerMove, 'player', cb);
-    const doEnemyAtk = (cb) => executeAttack(enemy, player, enemyMove, 'enemy', cb);
+    const doPlayerAtk = (cb) => executeAttack(player, enemy, playerMove, 'player', null, enemyMove, cb);
+    const doEnemyAtk = (cb) => executeAttack(enemy, player, enemyMove, 'enemy', player.fainted, playerMove, cb);
 
     if (first === 'player') {
         doPlayerAtk(() => {
@@ -114,7 +114,7 @@ function checkStatusBlock(pokemon, logFn) {
 }
 
 // ─── EJECUTAR UN ATAQUE ───────────────────────────────────────────────────────
-function executeAttack(attacker, defender, moveName, side, callback) {
+function executeAttack(attacker, defender, moveName, side, targetHasMoved, targetMoveName, callback) {
     const move = getMoveInfo(moveName);
     const defSide = side === 'player' ? 'enemy' : 'player';
 
@@ -126,6 +126,18 @@ function executeAttack(attacker, defender, moveName, side, callback) {
     }
 
     addLog(`${side === 'player' ? '▶️' : '◀️'} ${attacker.name} usa <b>${moveName}</b>`, side === 'player' ? 'important' : '');
+
+    // ── Lógica especial: Sucker Punch (Golpe Bajo) ────────────────────────
+    if (move.effect === 'sucker_punch') {
+        const targetMove = targetMoveName ? getMoveInfo(targetMoveName) : null;
+        const isTargetAttacking = targetMove && targetMove.category !== 'status';
+
+        if (targetHasMoved || !isTargetAttacking) {
+            addLog(`❌ ¡${move.name} falló!`, '');
+            setTimeout(callback, 600);
+            return;
+        }
+    }
 
     // ── Movimiento de estado ──────────────────────────────────────────────
     if (move.category === 'status') {
@@ -214,6 +226,27 @@ function executeAttack(attacker, defender, moveName, side, callback) {
         if (attacker.currentHp <= 0) attacker.fainted = true;
     }
 
+    // ── Efecto de Drenaje (Puño Drenaje, Gigadrenado) ─────────────────────
+    if (move.effect === 'drain_50') {
+        const heal = Math.floor(dmg * 0.5);
+        attacker.currentHp = Math.min(attacker.stats.hp, attacker.currentHp + heal);
+        addLog(`💚 ¡${attacker.name} recuperó salud! (+${heal})`, 'heal');
+    }
+
+    // ── Bajada de Defensas (A Bocajarro, Asalto Cálido) ───────────────────
+    if (move.effect === 'drop_self_def_spd_1') {
+        attacker.statBoosts.def = Math.max(-6, (attacker.statBoosts.def || 0) - 1);
+        attacker.statBoosts.spd = Math.max(-6, (attacker.statBoosts.spd || 0) - 1);
+        addLog(`⬇️ ¡La Defensa y Defensa Especial de ${attacker.name} bajaron!`, 'damage');
+    }
+
+    // ── Desarme (Knock Off) ──────────────────────────────────────────────
+    if (move.effect === 'knock_off' && defender.item !== 'Ninguno') {
+        addLog(`🔍 ¡${attacker.name} desarmó a ${defender.name} y le quitó su ${defender.item}!`, 'important');
+        defender.item = 'Ninguno';
+        defender.itemUsed = true;
+    }
+
     // ── Efectos secundarios del movimiento ────────────────────────────────
     const bruteForce = AbilitiesDB[attacker.ability]?.effect === 'brute_force';
     if (!bruteForce && move.effect && move.effect !== 'recoil_33') {
@@ -233,6 +266,12 @@ function executeAttack(attacker, defender, moveName, side, callback) {
                 if (hz.toxicSpikes < 3) {
                     hz.toxicSpikes++;
                     addLog(`☠️ ¡Púas Tóxicas se esparcieron por el equipo rival!`, 'boost');
+                }
+            } else if (move.effect === 'apply_spikes') {
+                const hz = defSide === 'player' ? playerHazards : enemyHazards;
+                if (hz.spikes < 3) {
+                    hz.spikes++;
+                    addLog(`📌 ¡Se han esparcido Púas por el campo rival!`, 'boost');
                 }
             } else if (move.effect === 'drop_self_spa_2') {
                 attacker.statBoosts.spa = Math.max(-6, (attacker.statBoosts.spa || 0) - 2);
@@ -440,6 +479,18 @@ function applyHazardsOnSwitchIn(pokemon, side) {
                     addLog(`☠️ ¡${pokemon.name} fue envenenado por las púas tóxicas!`, 'damage');
                 }
             }
+        }
+    }
+
+    // PÚAS (Normales)
+    if (hazards.spikes > 0) {
+        const isGrounded = !pokemon.types.includes("VOLADOR") && AbilitiesDB[pokemon.ability]?.effect !== 'immune_ground';
+        if (isGrounded) {
+            const fractions = [0, 0.125, 0.166, 0.25]; // 1/8, 1/6, 1/4
+            const dmg = Math.floor(pokemon.stats.hp * fractions[Math.min(3, hazards.spikes)]);
+            pokemon.currentHp = Math.max(0, pokemon.currentHp - dmg);
+            addLog(`📌 ¡${pokemon.name} fue herido por las púas! (-${dmg})`, 'damage');
+            if (pokemon.currentHp <= 0) pokemon.fainted = true;
         }
     }
 }

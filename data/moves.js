@@ -76,8 +76,11 @@ const MovesDB = {
         priority: 0,
         effect: "apply_burn",
         effectChance: 10,
-        description: "Mordisco llameante. Puede quemar al objetivo.",
+        description: "Mordisco llameante. Puede quemar o hacer retroceder.",
     },
+    // Añadir flinch a Colmillo Ígneo es complejo porque tiene 2 efectos, 
+    // pero para este motor simplificado solo pondremos uno o lo dejaremos como está.
+    // Vamos a añadir flinch_30 a otros movimientos directos.
     "Nitrocarga": {
         name: "Nitrocarga",
         type: "FUEGO",
@@ -134,8 +137,9 @@ const MovesDB = {
         power: 80,
         accuracy: 100,
         priority: 0,
-        effect: null,
-        description: "Ataque físico de agua preciso.",
+        effect: "flinch_30",
+        effectChance: 20,
+        description: "Ataque físico de agua. Puede hacer retroceder.",
     },
     "Acuajet": {
         name: "Acuajet",
@@ -590,9 +594,9 @@ const MovesDB = {
         power: 75,
         accuracy: 90,
         priority: 0,
-        effect: null,
-        effectChance: 0,
-        description: "Avalancha de rocas constante.",
+        effect: "flinch_30",
+        effectChance: 30,
+        description: "Avalancha de rocas constante. Puede hacer retroceder.",
     },
     "Megacuerno": {
         name: "Megacuerno",
@@ -795,6 +799,17 @@ const MovesDB = {
         effect: "protect",
         effectChance: 100,
         description: "Protege de cualquier ataque este turno. Falla si se usa seguido.",
+    },
+    "Sorpresa": {
+        name: "Sorpresa",
+        type: "NORMAL",
+        category: "physical",
+        power: 40,
+        accuracy: 100,
+        priority: 3,
+        effect: "fake_out",
+        effectChance: 100,
+        description: "Ataca primero y hace retroceder. Solo funciona el primer turno.",
     },
 
     // ════════════════════════════════════════════════════════════════════════

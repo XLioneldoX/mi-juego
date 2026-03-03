@@ -120,12 +120,28 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
 
     // ── Chequeo de estado: ¿puede moverse? ───────────────────────────────
     if (!checkStatusBlock(attacker, (msg, type) => addLog(msg, type))) {
-        updateUI(); // actualizar badge de estado (ej. si se descongeló)
+        updateUI();
+        setTimeout(callback, 600);
+        return;
+    }
+
+    // ── Chequeo de Retroceso (Flinch) ────────────────────────────────────
+    if (attacker.flinched) {
+        addLog(`😵 ¡${attacker.name} retrocedió y no pudo atacar!`, 'important');
+        attacker.flinched = false;
+        updateUI();
         setTimeout(callback, 600);
         return;
     }
 
     addLog(`${side === 'player' ? '▶️' : '◀️'} ${attacker.name} usa <b>${moveName}</b>`, side === 'player' ? 'important' : '');
+
+    // ── Chequeo de Protección ────────────────────────────────────────────
+    if (defender.protected && moveName !== 'Protección' && move.category !== 'status') {
+        addLog(`🛡️ ¡${defender.name} se protegió!`, 'important');
+        setTimeout(callback, 600);
+        return;
+    }
 
     // ── Lógica especial: Sucker Punch (Golpe Bajo) ────────────────────────
     if (move.effect === 'sucker_punch') {
@@ -134,6 +150,15 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
 
         if (targetHasMoved || !isTargetAttacking) {
             addLog(`❌ ¡${move.name} falló!`, '');
+            setTimeout(callback, 600);
+            return;
+        }
+    }
+
+    // ── Lógica especial: Fake Out (Sorpresa) ──────────────────────────────
+    if (move.effect === 'fake_out') {
+        if (attacker.turnsInField > 0) {
+            addLog(`❌ ¡${move.name} solo funciona en el primer turno!`, '');
             setTimeout(callback, 600);
             return;
         }
@@ -260,6 +285,14 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
                         const sd = StatusDB[sk];
                         addLog(sd?.applyMsg?.replace('{pokemon}', defender.name) || `${defender.name} fue afectado`, 'boost');
                     }
+                }
+            } else if (move.effect === 'flinch_30') {
+                if (!defender.fainted && !targetHasMoved && Math.random() < 0.3) {
+                    defender.flinched = true;
+                }
+            } else if (move.effect === 'fake_out') {
+                if (!defender.fainted && !targetHasMoved) {
+                    defender.flinched = true;
                 }
             } else if (move.effect === 'apply_toxic_spikes') {
                 const hz = defSide === 'player' ? playerHazards : enemyHazards;
@@ -426,8 +459,10 @@ function afterTurn() {
             if (p.currentHp <= 0) { p.currentHp = 0; p.fainted = true; }
         }
 
-        // Limpiar protección
+        // Limpiar estados de turno
         p.protected = false;
+        p.flinched = false;
+        p.turnsInField++;
     });
 
     updateUI();
@@ -521,6 +556,8 @@ function handleFaint(side, callback) {
             if (side === 'enemy') {
                 enemyActive = enemyTeam.findIndex(p => !p.fainted);
                 const newEnemy = enemyTeam[enemyActive];
+                newEnemy.turnsInField = 0;
+                newEnemy.flinched = false;
                 addLog(`🔄 ¡El rival envió a ${newEnemy.name}!`, 'important');
                 // Habilidad on_switch_in del rival
                 applyAbilitySwitchIn(newEnemy, playerTeam[playerActive], (msg, t) => { addLog(msg, t); if (msg) revealEnemyStat('ability', newEnemy); });
@@ -596,6 +633,8 @@ function switchTo(newIndex) {
 
     playerActive = newIndex;
     const newPoke = playerTeam[playerActive];
+    newPoke.turnsInField = 0;
+    newPoke.flinched = false;
 
     document.getElementById('switchModal').classList.remove('open');
     addLog('━━━━━━━━━━━━━━', 'separator');

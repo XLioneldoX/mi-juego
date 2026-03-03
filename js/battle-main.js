@@ -141,6 +141,8 @@ function makePokemon(base, entry, level) {
         itemUsed: false,
         status: null,
         statBoosts: { atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
+        turnsInField: 0,
+        flinched: false,
     };
 }
 
@@ -172,6 +174,8 @@ function makeWildPokemon(base, difficulty, level) {
         itemUsed: false,
         status: null,
         statBoosts: { atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
+        turnsInField: 0,
+        flinched: false,
     };
 }
 

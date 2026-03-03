@@ -36,7 +36,7 @@ const PokemonDB = {
         abilities: ["Impetu", "Adaptabilidad"],
         ability: "Impetu",
         moves: ["Megacuerno", "Surf", "Cascada", "Ataque Rápido"],
-        learnset: ["Megacuerno", "Surf", "Cascada", "Ataque Rápido", "Golpe Cuerpo", "Rustedge", "Hidrobomba", "Powder Bomb", "Boo-mbs", "Protección", "Gigadrenado"],
+        learnset: ["Megacuerno", "Surf", "Cascada", "Ataque Rápido", "Golpe Cuerpo", "Rustedge", "Hidrobomba", "Powder Bomb", "Boo-mbs", "Protección", "Gigadrenado", "Sustituto"],
         stats: { hp: 72, atk: 88, def: 88, spa: 72, spd: 72, spe: 58 },
     },
     2: {

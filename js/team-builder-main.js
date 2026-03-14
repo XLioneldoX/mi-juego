@@ -664,14 +664,14 @@ function showPanel(which) {
 function renderTrainerGrid() {
     const grid = document.getElementById('trainerGrid');
     if (!grid || typeof TrainersDB === 'undefined') return;
-    grid.innerHTML = Object.values(TrainersDB).map(t => {
+    grid.innerHTML = Object.entries(TrainersDB).map(([key, t]) => {
         const previews = t.team.slice(0, 6).map(te => {
             const b = PokemonDB[te.id];
             if (!b) return '';
             const sp = getSpriteUrl(te.id, 'front');
             return `<img src="${sp}" title="${b.name}" onerror="onSpriteError(this, te.id)">`;
         }).join('');
-        return `<div class="trainer-card" style="border-color:${t.color}" onclick="goToTrainer('${t.id}')">
+        return `<div class="trainer-card" style="border-color:${t.color}" onclick="goToTrainer('${key}')">
             <div class="trainer-avatar">${t.avatar}</div>
             <div class="trainer-name" style="color:${t.color}">${t.name}</div>
             <div class="trainer-title">${t.title}</div>

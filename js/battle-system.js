@@ -695,6 +695,13 @@ function switchTo(newIndex) {
 function endBattle(playerWon) {
     battleOver = true;
     isBusy = true;
+
+    // Detener música si hay una reproduciéndose
+    if (typeof currentBGM !== 'undefined' && currentBGM) {
+        currentBGM.pause();
+        currentBGM = null;
+    }
+
     addLog('━━━━━━━━━━━━━━', 'separator');
     addLog(playerWon ? '🏆 ¡VICTORIA TOTAL!' : '💀 HAS SIDO DERROTADO', 'important');
     setTimeout(() => {

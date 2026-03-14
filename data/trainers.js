@@ -36,6 +36,7 @@ const TrainersDB = {
         title: "Líder del Gimnasio de tipo planta",    // ← título o descripción
         avatar: "🧑",                  // ← emoji del avatar
         color: "#f59e0b",             // ← color del borde (hex)
+        music: "Tridente_battel.mpeg", // ← archivo de música en carpeta Music
         description: "Descripción del entrenador para el log de batalla.",
         team: [
             {

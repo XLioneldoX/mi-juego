@@ -13,6 +13,8 @@ let trainerData = null;
 let wildDifficulty = 'normal';
 let battleLevel = 100;
 
+let currentBGM = null;
+
 // Estado de revelación: oculta habilidad y objeto del rival hasta que se usen
 const enemyRevealed = { item: false, ability: false };
 const playerRevealed = { item: false, ability: false };
@@ -214,6 +216,18 @@ function startBattle() {
     applyAbilitySwitchIn(fp, fe, addLog);
     applyAbilitySwitchIn(fe, fp, addLog);
     if (fp.statBoosts.atk !== 0 || fe.statBoosts.atk !== 0) updateUI();
+
+    // ── INICIAR MÚSICA DEL ENTRENADOR ──────────────────────────────────────────
+    if (battleMode === 'trainer' && trainerData.music) {
+        try {
+            currentBGM = new Audio('Music/' + trainerData.music);
+            currentBGM.loop = true;
+            currentBGM.volume = 0.4;
+            currentBGM.play().catch(e => console.warn('BGM no pudo iniciar por interacción:', e));
+        } catch(e) {
+            console.warn('Error al crear BGM:', e);
+        }
+    }
 }
 
 // ─── REVELAR STATS DEL RIVAL CUANDO SE USAN ──────────────────────────────────

@@ -1458,8 +1458,8 @@ const CustomSprites = {
     136: { front: "sprites/138_Shadtitch.png", back: "sprites/138_Shadtitch.png" },
     137: { front: "sprites/149_Etherdiel.png", back: "sprites/149_Etherdiel.png" },
     138: { front: "sprites/150_Helodian.png", back: "sprites/150_Helodian.png" },
-    139: { front: "sprites/139_Magnezone-Para.png", back: "sprites/139_Magnezone-Para.png" },
-    140: { front: "sprites/140_Torrterra-P.png", back: "sprites/140_Torrterra-P.png" },
+    139: { front: "sprites/Magnezone-Para.png", back: "sprites/Magnezone-Para.png" },
+    140: { front: "sprites/Torrterra-P.png", back: "sprites/Torrterra-P.png" },
     999: { front: "sprites/000_Substitute.png", back: "sprites/000_Substitute.png" },
 };
 

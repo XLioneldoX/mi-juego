@@ -39,22 +39,43 @@ const TrainersDB = {
         description: "Descripción del entrenador para el log de batalla.",
         team: [
             {
-                id: 1,                  // ← ID de PokemonDB
+                id: 139,                  // ← ID de PokemonDB
                 moves: ["Lanzallamas", "Garra Dragón", "Nitrocarga", "Danza Dragón"],
                 item: "Restos",
                 nature: "Adamante",
                 evs: { hp: 4, atk: 252, def: 252, spa: 252, spd: 252, spe: 252 },
             },
             {
-                id: 2,
+                id: 140,
                 moves: ["Rayo Solar", "Bomba Lodo", "Gigadrenado", "Síntesis"],
                 item: "Orbe Vida",
                 nature: "Modesta",
                 evs: { hp: 4, atk: 0, def: 0, spa: 252, spd: 0, spe: 252 },
             },
             {
-                id: 3,
+                id: 32,
                 moves: ["Hidrobomba", "Surf", "Rayo Hielo", "Protección"],
+                item: "Ninguno",
+                nature: "Seria",
+                evs: { hp: 252, atk: 0, def: 128, spa: 0, spd: 128, spe: 0 },
+            },
+            {
+                id: 67,
+                moves: ["Vendaval", "Megacuerno", "Pico Taladro", "Avalancha"],
+                item: "Ninguno",
+                nature: "Seria",
+                evs: { hp: 252, atk: 0, def: 128, spa: 0, spd: 128, spe: 0 },
+            },
+            {
+                id: 12,
+                moves: ["Psíquico", "Surf", "Recuperación", "Hipnosis"],
+                item: "Ninguno",
+                nature: "Seria",
+                evs: { hp: 252, atk: 0, def: 128, spa: 0, spd: 128, spe: 0 },
+            },
+            {
+                id: 113,
+                moves: ["Surf", "Terremoto", "Barro Bomba", "Cascada"],
                 item: "Ninguno",
                 nature: "Seria",
                 evs: { hp: 252, atk: 0, def: 128, spa: 0, spd: 128, spe: 0 },

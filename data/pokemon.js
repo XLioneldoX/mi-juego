@@ -1282,6 +1282,26 @@ const PokemonDB = {
         stats: { hp: 120, atk: 90, def: 100, spa: 120, spd: 150, spe: 100 },
     },
 
+    139: {
+        id: 139, name: "Magnezone-Para",
+        types: ["PLANTA", "PSÍQUICO"],
+        abilities: ["Magia Guard", "Clorofila"],
+        ability: "Magia Guard",
+        moves: ["Rayo Solar", "Psíquico", "Gigadrenado", "Hipnosis"],
+        learnset: ["Rayo Solar", "Psíquico", "Gigadrenado", "Hipnosis", "Teletransporte", "Hoja Afilada", "Foco Resplandor", "Síntesis", "Blossom Needle", "Guard Room"],
+        stats: { hp: 60, atk: 70, def: 77, spa: 130, spd: 90, spe: 60 },
+    },
+
+    140: {
+        id: 140, name: "Torrterra-P",
+        types: ["ROCA", "PLANTA"],
+        abilities: ["Arena Volcanica", "Absorber"],
+        ability: "Arena Volcanica",
+        moves: ["Avalancha", "Rayo Solar", "Roca Afilada", "Hoja Afilada"],
+        learnset: ["Avalancha", "Rayo Solar", "Roca Afilada", "Hoja Afilada", "Terremoto", "Gigadrenado", "Boulder Bout", "Síntesis", "Loose Dirt"],
+        stats: { hp: 95, atk: 109, def: 105, spa: 75, spd: 85, spe: 56 },
+    },
+
     999: {
         id: 999, name: "Substituto",
         types: ["NORMAL"],
@@ -1438,6 +1458,8 @@ const CustomSprites = {
     136: { front: "sprites/138_Shadtitch.png", back: "sprites/138_Shadtitch.png" },
     137: { front: "sprites/149_Etherdiel.png", back: "sprites/149_Etherdiel.png" },
     138: { front: "sprites/150_Helodian.png", back: "sprites/150_Helodian.png" },
+    139: { front: "sprites/139_Magnezone-Para.png", back: "sprites/139_Magnezone-Para.png" },
+    140: { front: "sprites/140_Torrterra-P.png", back: "sprites/140_Torrterra-P.png" },
     999: { front: "sprites/000_Substitute.png", back: "sprites/000_Substitute.png" },
 };
 

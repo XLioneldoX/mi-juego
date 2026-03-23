@@ -436,6 +436,19 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
     animHit(defSide);
     updateUI();
 
+    if (defender.fainted && attacker.fainted) {
+        setTimeout(() => {
+            if (typeof MP !== 'undefined' && MP.active) {
+                handleFaint('enemy');
+                handleFaint('player', callback);
+            } else {
+                handleFaint('enemy', () => {
+                    handleFaint('player', callback);
+                });
+            }
+        }, 600);
+        return;
+    }
     if (defender.fainted) { setTimeout(() => handleFaint(defSide, callback), 600); return; }
     if (attacker.fainted) { setTimeout(() => handleFaint(side, callback), 600); return; }
     setTimeout(callback, 600);
@@ -598,13 +611,16 @@ function afterTurn() {
     const eFainted = enemyTeam[enemyActive].fainted;
 
     if (pFainted && eFainted) {
-        // Ambos mueren a la vez (raro pero posible con retroceso/estado)
-        // El jugador pierde si no tiene más Pokémon
         if (playerTeam.every(p => p.fainted)) { endBattle(false); return; }
-        handleFaint('player', () => {
-            if (enemyTeam.every(p => p.fainted)) endBattle(true);
-            else handleFaint('enemy', () => { isBusy = false; renderMoves(); });
-        });
+        if (typeof MP !== 'undefined' && MP.active) {
+            handleFaint('enemy');
+            handleFaint('player');
+        } else {
+            handleFaint('enemy', () => {
+                if (enemyTeam.every(p => p.fainted)) endBattle(true);
+                else handleFaint('player', () => { isBusy = false; renderMoves(); });
+            });
+        }
         return;
     }
     if (eFainted) { handleFaint('enemy', () => { isBusy = false; renderMoves(); }); return; }

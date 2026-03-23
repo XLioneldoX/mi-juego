@@ -160,7 +160,18 @@ function renderMoves() {
         btn.innerHTML = `<div class="move-name">${moveName}</div>
             <div class="move-meta">${move.type} • ${move.category === 'physical' ? 'FÍS' : move.category === 'status' ? 'EST' : 'ESP'} • POW:${move.power || '─'} • PRE:${accLabel}</div>
             <div style="display:flex;gap:3px;flex-wrap:wrap;margin-top:2px;">${effBadge}${prioTag}</div>`;
-        btn.onclick = () => playerAttack(idx);
+
+        if (pokemon.disabledMove && pokemon.disabledMove.name === moveName) {
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+            btn.innerHTML = `<div class="move-name" style="text-decoration:line-through;color:#ef4444;">${moveName}</div>
+                <div style="font-size:9px;text-align:center;margin-top:2px;">🚫 Anulado (${pokemon.disabledMove.turns}t)</div>`;
+            btn.onclick = null;
+        } else {
+            btn.onclick = () => playerAttack(idx);
+        }
+
         btn.onmouseenter = (e) => showMoveTooltip(e, moveName, pokemon, enemy);
         btn.onmouseleave = () => hideMoveTooltip();
         grid.appendChild(btn);

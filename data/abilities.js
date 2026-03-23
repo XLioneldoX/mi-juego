@@ -273,6 +273,33 @@ const AbilitiesDB = {
         value:       1.3,
     },
 
+    "Cuerpo Maldito": {
+        name:        "Cuerpo Maldito",
+        icon:        "👻",
+        description: "30% de anular durante 4 turnos el movimiento que cause daño directo al poseedor.",
+        trigger:     "on_hit",
+        effect:      "cuerpo_maldito",
+        value:       30,
+    },
+
+    "Absorbe Almas": {
+        name:        "Absorbe Almas",
+        icon:        "💀",
+        description: "Inmune a tipo Fantasma. Al recibir un ataque Fantasma, sube su ATK y SPA un nivel.",
+        trigger:     "passive",
+        effect:      "absorb_stat_boost",
+        immune:      "FANTASMA",
+    },
+
+    "Absorbe Fuego": {
+        name:        "Absorbe Fuego",
+        icon:        "🔥",
+        description: "Inmune a tipo Fuego. Al recibir un ataque Fuego, sube su ATK y SPA un nivel.",
+        trigger:     "passive",
+        effect:      "absorb_stat_boost",
+        immune:      "FUEGO",
+    },
+
     // ← AÑADE UNA HABILIDAD NUEVA AQUÍ
     // Recuerda después ir a js/battle-engine.js → applyAbility()
     // y añadir el case para tu nuevo "effect"

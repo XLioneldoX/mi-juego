@@ -129,8 +129,11 @@ function calculateEffectiveness(attackType, defenderTypes, moveName = null, dual
 // ─── INMUNIDAD POR HABILIDAD ──────────────────────────────────────────────────
 function isImmuneByAbility(defender, moveType) {
     const ab = AbilitiesDB[defender.ability];
-    if (!ab || ab.effect !== 'immune_type') return false;
-    return ab.immune === moveType;
+    if (!ab) return false;
+    if (ab.effect === 'immune_type' || ab.effect === 'absorb_stat_boost') {
+        return ab.immune === moveType;
+    }
+    return false;
 }
 
 // ─── CÁLCULO DE DAÑO — FÓRMULA OFICIAL GEN 5+ ────────────────────────────────
@@ -328,17 +331,28 @@ function whoGoesFirst(playerMove, enemyMove) {
 
 // ─── IA ENEMIGA ───────────────────────────────────────────────────────────────
 function chooseEnemyMove(attacker, defender) {
+    const disabledMove = attacker.disabledMove ? attacker.disabledMove.name : null;
+    
     if (Math.random() < 0.7) {
         let best = 0, bestScore = -1;
         attacker.moves.forEach((mv, i) => {
+            if (mv === disabledMove) return;
             const move = getMoveInfo(mv);
             if (!move.power) return;
             const score = move.power * calculateEffectiveness(move.type, defender.types, move.name, move.dualType);
             if (score > bestScore) { bestScore = score; best = i; }
         });
-        return best;
+        if (bestScore !== -1) return best;
     }
-    return Math.floor(Math.random() * attacker.moves.length);
+    
+    // Si no atacó por ventaja o probabilidad
+    let avail = [];
+    attacker.moves.forEach((mv, i) => {
+        if (mv !== disabledMove) avail.push(i);
+    });
+    
+    if (avail.length === 0) return 0; // Fallback extremo
+    return avail[Math.floor(Math.random() * avail.length)];
 }
 
 // ─── ESTADOS AL FINAL DEL TURNO ──────────────────────────────────────────────

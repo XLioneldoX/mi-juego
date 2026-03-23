@@ -136,6 +136,13 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
 
     addLog(`${side === 'player' ? '▶️' : '◀️'} ${attacker.name} usa <b>${moveName}</b>`, side === 'player' ? 'important' : '');
 
+    // ── Chequeo de movimiento anulado (Cuerpo Maldito) ───────────────
+    if (attacker.disabledMove && attacker.disabledMove.name === moveName) {
+        addLog(`❌ ¡${attacker.name} no puede usar ${moveName} porque está anulado!`, '');
+        setTimeout(callback, 600);
+        return;
+    }
+
     // ── Chequeo de Protección ────────────────────────────────────────────
     if (defender.protected && moveName !== 'Protección' && move.category !== 'status') {
         addLog(`🛡️ ¡${defender.name} se protegió!`, 'important');
@@ -179,7 +186,14 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
     if (isImmuneByAbility(defender, move.type)) {
         const ab = AbilitiesDB[defender.ability];
         addLog(`${ab.icon} ${ab.name}: ¡${defender.name} es inmune a ${move.type}!`, 'boost');
-        if (defSide === 'enemy') revealEnemyStat('ability', defender);
+
+        if (ab.effect === 'absorb_stat_boost') {
+            defender.statBoosts = defender.statBoosts || {};
+            defender.statBoosts.atk = Math.min(6, (defender.statBoosts.atk || 0) + 1);
+            defender.statBoosts.spa = Math.min(6, (defender.statBoosts.spa || 0) + 1);
+            addLog(`⬆️ ¡El Ataque y Ataque Especial de ${defender.name} subieron!`, 'boost');
+        }
+
         if (defSide === 'enemy') revealEnemyStat('ability', defender);
         setTimeout(callback, 600);
         return;
@@ -346,6 +360,16 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
         }
     }
 
+    // ── Cuerpo Maldito (incluso si el defensor se debilita) ───────────
+    if (AbilitiesDB[defender.ability]?.effect === 'cuerpo_maldito' && !targetHasMoved && move.category !== 'status') {
+        const hasSub = (defender.substituteHp || 0) > 0;
+        if (!hasSub && Math.random() < 0.3) {
+            attacker.disabledMove = { name: moveName, turns: 4 };
+            addLog(`👻 ¡El Cuerpo Maldito de ${defender.name} anuló el uso de ${moveName}!`, 'important');
+            if (defSide === 'enemy') revealEnemyStat('ability', defender);
+        }
+    }
+
     // ── Habilidad del defensor al recibir golpe ───────────────────────────
     if (!defender.fainted) {
         applyAbilityOnHit(defender, attacker, isPhysical, effectiveness, (msg, type) => addLog(msg, type));
@@ -493,6 +517,15 @@ function afterTurn() {
         p.protected = false;
         p.flinched = false;
         p.turnsInField++;
+
+        // Movimientos anulados
+        if (p.disabledMove) {
+            p.disabledMove.turns--;
+            if (p.disabledMove.turns <= 0) {
+                addLog(`✨ ¡${p.name} ya puede volver a usar ${p.disabledMove.name}!`, 'boost');
+                p.disabledMove = null;
+            }
+        }
     });
 
     updateUI();

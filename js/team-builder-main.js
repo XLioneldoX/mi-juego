@@ -919,4 +919,62 @@ function closePreview() {
     document.getElementById('pokePreviewModal')?.classList.remove('open');
 }
 
+// ─── EXPORT POKEPASTE ────────────────────────────────────────────────────────
+function exportToPokepaste() {
+    if (!playerTeam.length) { showToast('⚠️ Equipo vacío'); return; }
+    
+    const evLabels = ["HP", "Atk", "Def", "SpA", "SpD", "Spe"];
+    const evKeys = ["hp", "atk", "def", "spa", "spd", "spe"];
+    
+    const pasteStr = playerTeam.map(entry => {
+        const p = PokemonDB[entry.id];
+        if (!p) return "";
+        
+        let lines = [];
+        
+        // Primera línea: Nombre @ Objeto
+        const itemStr = entry.item && entry.item !== 'Ninguno' ? ` @ ${entry.item}` : '';
+        lines.push(`${p.name}${itemStr}`);
+        
+        // Segunda línea: Habilidad
+        if (entry.ability) {
+            lines.push(`Ability: ${entry.ability}`);
+        }
+        
+        // Tercera línea: EVs
+        let evsArr = [];
+        for (let i = 0; i < 6; i++) {
+            if (entry.evs[evKeys[i]] > 0) {
+                evsArr.push(`${entry.evs[evKeys[i]]} ${evLabels[i]}`);
+            }
+        }
+        if (evsArr.length > 0) {
+            lines.push(`EVs: ${evsArr.join(" / ")}`);
+        }
+        
+        // Cuarta línea: Naturaleza
+        if (entry.nature) {
+            const nat = NaturesDB[entry.nature] || NaturesDB[entry.nature.toLowerCase()];
+            const natName = nat ? nat.label : entry.nature;
+            lines.push(`${natName} Nature`);
+        }
+        
+        // Movimientos
+        if (entry.moves) {
+            entry.moves.forEach(m => {
+                lines.push(`- ${m}`);
+            });
+        }
+        
+        return lines.join('\n');
+    }).filter(Boolean).join('\n\n');
+    
+    navigator.clipboard.writeText(pasteStr).then(() => {
+        showToast('📋 ¡Copiado al portapapeles!');
+    }).catch(err => {
+        showToast('⚠️ No se pudo copiar al portapapeles');
+        console.error('Error al copiar:', err);
+    });
+}
+
 init();

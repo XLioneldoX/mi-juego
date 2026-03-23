@@ -136,7 +136,7 @@ const PokemonDB = {
         ability: "Perspicacia",
         moves: ["Psíquico", "Surf", "Recuperación", "Hipnosis"],
         learnset: ["Psíquico", "Surf", "Recuperación", "Hipnosis", "Foco Resplandor", "Teletransporte", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Síntesis", "Blossom Needle", "Cultivation"],
-        stats: { hp: 72, atk: 60, def: 70, spa: 110, spd: 100, spe: 75 },
+        stats: { hp: 80, atk: 60, def: 91, spa: 111, spd: 118, spe: 70 },
     },
     13: {
         id: 13, name: "Cornivals",
@@ -217,7 +217,7 @@ const PokemonDB = {
         ability: "Filtro",
         moves: ["Ataque Rápido", "Surf", "Golpe Cuerpo", "Velocidad Extrema"],
         learnset: ["Ataque Rápido", "Surf", "Golpe Cuerpo", "Velocidad Extrema", "Hidrobomba", "Superdiente", "Garra Dragón", "Enfado", "Danza Dragón"],
-        stats: { hp: 70, atk: 75, def: 70, spa: 85, spd: 70, spe: 75 },
+        stats: { hp: 120, atk: 50, def: 180, spa: 50, spd: 110, spe: 25 },
     },
     22: {
         id: 22, name: "Aerothatil",
@@ -312,11 +312,11 @@ const PokemonDB = {
     32: {
         id: 32, name: "Lamuercea",
         types: ["FANTASMA", "PLANTA"],
-        abilities: ["Humedad", "Peso Pluma"],
-        ability: "Humedad",
-        moves: ["Surf", "Vendaval", "Pico Taladro", "Cascada"],
-        learnset: ["Surf", "Vendaval", "Pico Taladro", "Cascada", "Recuperación", "Hidrobomba", "Bola Sombra", "Possession", "Boo-mbs", "Spirit Charge", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Blossom Needle"],
-        stats: { hp: 70, atk: 75, def: 75, spa: 95, spd: 75, spe: 85 },
+        abilities: ["Absorbe Almas", "Cuerpo Maldito", "Cacheo"],
+        ability: "Absorbe Almas",
+        moves: ["Bola Sombra", "Rayo Confuso", "Anulación", "Maldición"],
+        learnset: ["Bola Sombra", "Rayo Confuso", "Anulación", "Maldición", "Choque Sombrío", "Mismo Destino", "Sombra Vil", "Tinieblas", "Infortunio", "Onda Ígnea", "Pulso Umbrío"],
+        stats: { hp: 105, atk: 74, def: 97, spa: 108, spd: 97, spe: 40 },
     },
     33: {
         id: 33, name: "Copperuhulaw",
@@ -351,8 +351,8 @@ const PokemonDB = {
         abilities: ["Impetu", "Fuerza Bruta"],
         ability: "Impetu",
         moves: ["Megacuerno", "Golpe Cuerpo", "Avalancha", "Cabezazo"],
-        learnset: ["Megacuerno", "Golpe Cuerpo", "Avalancha", "Cabezazo", "Superdiente", "Carga", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Blossom Needle", "Frenzy Jungle", "Psíquico", "Hipnosis"],
-        stats: { hp: 85, atk: 100, def: 90, spa: 65, spd: 75, spe: 65 },
+        learnset: ["Megacuerno", "Golpe Cuerpo", "Avalancha", "Cabezazo", "Hoja magica", "Carga", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Blossom Needle", "Frenzy Jungle", "Psíquico", "Hipnosis"],
+        stats: { hp: 70, atk: 40, def: 85, spa: 120, spd: 85, spe: 120 },
     },
     37: {
         id: 37, name: "Garchomp",
@@ -613,7 +613,7 @@ const PokemonDB = {
         ability: "Arena Volcanica",
         moves: ["Terremoto", "Megacuerno", "Avalancha", "Cabezazo"],
         learnset: ["Terremoto", "Megacuerno", "Avalancha", "Cabezazo", "Golpe Cuerpo", "Carga", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Blossom Needle", "Lanzallamas", "Onda Ígnea", "Supernova"],
-        stats: { hp: 80, atk: 110, def: 90, spa: 70, spd: 80, spe: 75 },
+        stats: { hp: 90, atk: 60, def: 90, spa: 118, spd: 100, spe: 70 },
     },
     66: {
         id: 66, name: "Gengar",
@@ -631,7 +631,7 @@ const PokemonDB = {
         ability: "Peso Pluma",
         moves: ["Vendaval", "Megacuerno", "Pico Taladro", "Avalancha"],
         learnset: ["Vendaval", "Megacuerno", "Pico Taladro", "Avalancha", "Carga", "Ataque Rápido", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Blossom Needle", "Rayo", "Onda Voltio", "Shortcut"],
-        stats: { hp: 75, atk: 90, def: 85, spa: 80, spd: 75, spe: 95 },
+        stats: { hp: 65, atk: 90, def: 72, spa: 78, spd: 79, spe: 110 },
     },
     68: {
         id: 68, name: "Bawluntain",
@@ -703,7 +703,7 @@ const PokemonDB = {
         ability: "Excrecion",
         moves: ["Rayo Solar", "Cabeza de Hierro", "Hoja Afilada", "Giro Metalico"],
         learnset: ["Rayo Solar", "Cabeza de Hierro", "Hoja Afilada", "Giro Metalico", "Síntesis", "Carga", "Powder Bomb", "Steely Spikes"],
-        stats: { hp: 75, atk: 95, def: 95, spa: 95, spd: 85, spe: 70 },
+        stats: { hp: 85, atk: 130, def: 105, spa: 85, spd: 85, spe: 80 },
     },
     76: {
         id: 76, name: "Pinberd",
@@ -712,7 +712,7 @@ const PokemonDB = {
         ability: "Peso Pluma",
         moves: ["Picotazo", "Vendaval", "Telaraña", "Pico Taladro"],
         learnset: ["Picotazo", "Vendaval", "Telaraña", "Pico Taladro", "Ataque Rápido", "Velocidad Extrema", "Powder Bomb", "Triturar", "Rowdy Tussle", "Harmful Strike"],
-        stats: { hp: 70, atk: 75, def: 70, spa: 80, spd: 75, spe: 95 },
+        stats: { hp: 74, atk: 130, def: 80, spa: 58, spd: 108, spe: 80 },
     },
     77: {
         id: 77, name: "Toucannon",
@@ -757,7 +757,7 @@ const PokemonDB = {
         ability: "Peso Pluma",
         moves: ["Vendaval", "Ataque Rápido", "Pico Taladro", "Velocidad Extrema"],
         learnset: ["Vendaval", "Ataque Rápido", "Pico Taladro", "Velocidad Extrema", "Golpe Cuerpo", "Carga", "Lanzallamas", "Onda Ígnea", "Nitrocarga", "Supernova", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Blossom Needle"],
-        stats: { hp: 75, atk: 85, def: 75, spa: 80, spd: 75, spe: 95 },
+        stats: { hp: 65, atk: 81, def: 55, spa: 150, spd: 55, spe: 101 },
     },
     82: {
         id: 82, name: "Calamively",
@@ -824,12 +824,12 @@ const PokemonDB = {
     },
     89: {
         id: 89, name: "Knightler",
-        types: ["ACERO", "AGUA"],
-        abilities: ["Perspicacia", "Arena Volcanica"],
-        ability: "Perspicacia",
-        moves: ["A Bocajarro", "Megacuerno", "Tiro Vital", "Avalancha"],
-        learnset: ["A Bocajarro", "Megacuerno", "Tiro Vital", "Avalancha", "Esfera Aural", "Cabezazo", "Giro Metalico", "Cabeza de Hierro", "Steely Spikes", "Surf", "Hidrobomba", "Cascada"],
-        stats: { hp: 80, atk: 110, def: 90, spa: 75, spd: 80, spe: 75 },
+        types: ["AGUA", "ACERO"],
+        abilities: ["Ignífugo", "Caparazón", "Cortante"],
+        ability: "Ignífugo",
+        moves: ["Mil Estocadas", "Ráfaga Vendal", "Cabeza de Hierro", "Allanador Férreo"],
+        learnset: ["Mil Estocadas", "Ráfaga Vendal", "Cabeza de Hierro", "Allanador Férreo", "Espada Santa", "Psicocorte", "Tajo Acuático", "Tajo Metralla", "Pirueta Helada", "Hoja Aguda"],
+        stats: { hp: 65, atk: 115, def: 130, spa: 40, spd: 50, spe: 75 },
     },
     90: {
         id: 90, name: "Mudsdale",
@@ -861,11 +861,11 @@ const PokemonDB = {
     93: {
         id: 93, name: "Lotuselly",
         types: ["PLANTA", "AGUA"],
-        abilities: ["Clorofila", "Magica Defensa"],
-        ability: "Clorofila",
+        abilities: ["Llovizna", "Cuerpo vivido"],
+        ability: "Llovizna",
         moves: ["Rayo Solar", "Hoja Afilada", "Síntesis", "Teletransporte"],
         learnset: ["Rayo Solar", "Hoja Afilada", "Síntesis", "Teletransporte", "Gigadrenado", "Recuperación", "Blossom Needle", "Frenzy Jungle", "Surf", "Hidrobomba", "Cascada"],
-        stats: { hp: 68, atk: 65, def: 68, spa: 122, spd: 72, spe: 109 },
+        stats: { hp: 70, atk: 50, def: 91, spa: 120, spd: 97, spe: 100 },
     },
     94: {
         id: 94, name: "Torkenaw",
@@ -883,7 +883,7 @@ const PokemonDB = {
         ability: "Magia Guard",
         moves: ["Psíquico", "Foco Resplandor", "Teletransporte", "Recuperación"],
         learnset: ["Psíquico", "Foco Resplandor", "Teletransporte", "Recuperación", "Hipnosis", "Golpe Cuerpo", "Guard Room"],
-        stats: { hp: 65, atk: 65, def: 65, spa: 130, spd: 95, spe: 85 },
+        stats: { hp: 50, atk: 40, def: 60, spa: 70, spd: 70, spe: 180 },
     },
     96: {
         id: 96, name: "Mudkrupt",
@@ -1009,7 +1009,7 @@ const PokemonDB = {
         ability: "Fuerza Bruta",
         moves: ["Garra Dragón", "Bomba Ludo", "Tóxico", "Barro Bomba"],
         learnset: ["Garra Dragón", "Bomba Ludo", "Tóxico", "Barro Bomba", "Danza Dragón", "Enfado", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Blossom Needle", "Roca Afilada", "Avalancha", "Boulder Bout"],
-        stats: { hp: 75, atk: 100, def: 90, spa: 100, spd: 100, spe: 80 },
+        stats: { hp: 60, atk: 80, def: 75, spa: 95, spd: 100, spe: 115 },
     },
     110: {
         id: 110, name: "Shiftry",
@@ -1045,7 +1045,7 @@ const PokemonDB = {
         ability: "Humedad",
         moves: ["Surf", "Terremoto", "Barro Bomba", "Cascada"],
         learnset: ["Surf", "Terremoto", "Barro Bomba", "Cascada", "Protección", "Hidrobomba", "Roca Afilada", "Avalancha", "Boulder Bout", "Loose Dirt", "Seismic Wave"],
-        stats: { hp: 85, atk: 95, def: 95, spa: 90, spd: 85, spe: 55 },
+        stats: { hp: 110, atk: 71, def: 120, spa: 55, spd: 100, spe: 35 },
     },
     114: {
         id: 114, name: "Hackedge",
@@ -1072,7 +1072,7 @@ const PokemonDB = {
         ability: "Clorofila",
         moves: ["Rayo Solar", "Vendaval", "Hoja Afilada", "Pico Taladro"],
         learnset: ["Rayo Solar", "Vendaval", "Hoja Afilada", "Pico Taladro", "Síntesis", "Gigadrenado", "Blossom Needle", "Garra Dragón", "Enfado", "Danza Dragón"],
-        stats: { hp: 99, atk: 68, def: 83, spa: 72, spd: 69, spe: 51 },
+        stats: { hp: 106, atk: 85, def: 102, spa: 58, spd: 97, spe: 60 },
     },
     117: {
         id: 117, name: "Meowream",

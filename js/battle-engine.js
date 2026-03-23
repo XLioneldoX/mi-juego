@@ -141,6 +141,10 @@ function calculateDamage(attacker, defender, moveName, randomFactor = null) {
     const move = getMoveInfo(moveName);
     if (!move.power || move.category === 'status') return 0;
 
+    if (move.effect === 'level_damage') {
+        return { damage: attacker.level || 100, isCrit: false };
+    }
+
     let effPower = move.power;
     if (moveName === "Healing Spa" && (attacker.status || defender.status)) {
         effPower *= 2;
@@ -149,6 +153,11 @@ function calculateDamage(attacker, defender, moveName, randomFactor = null) {
     // Desarme (Knock Off): 1.5x de potencia si el rival tiene objeto
     if (move.effect === 'knock_off' && defender.item && defender.item !== 'Ninguno') {
         effPower *= 1.5;
+    }
+
+    // Infortunio (Hex): 2x de potencia si el rival tiene estado
+    if (move.effect === 'hex' && defender.status) {
+        effPower *= 2;
     }
 
     const moveType = move.type;
@@ -249,6 +258,24 @@ function calculateDamage(attacker, defender, moveName, randomFactor = null) {
         damage: Math.max(1, Math.floor(dmg)),
         isCrit: isCrit
     };
+}
+
+// ─── CÁLCULO DE DAÑO POR CONFUSIÓN ───────────────────────────────────────────
+function calculateConfusionDamage(pokemon) {
+    const lvl = pokemon.level || 100;
+    const aStats = getModifiedStats(pokemon);
+    const atk = aStats.atk;
+    const def = aStats.def; // La confusión usa el atk y def físicos actuales del usuario
+    const power = 40;
+    
+    let dmg = Math.floor(
+        Math.floor(Math.floor(2 * lvl / 5 + 2) * power * atk / def) / 50
+    ) + 2;
+    
+    const randomFactor = 0.85 + Math.random() * 0.15;
+    dmg *= randomFactor;
+    
+    return Math.max(1, Math.floor(dmg));
 }
 
 // ─── HABILIDADES AL ENTRAR EN COMBATE ────────────────────────────────────────

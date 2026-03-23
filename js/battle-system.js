@@ -108,6 +108,34 @@ function checkStatusBlock(pokemon, logFn) {
             return true;
         }
 
+        case 'confusion': {
+            if (pokemon.confusionTurns === undefined) {
+                const min = sd.turnsMin || 2;
+                const max = sd.turnsMax || 5;
+                pokemon.confusionTurns = min + Math.floor(Math.random() * (max - min + 1));
+            }
+            pokemon.confusionTurns--;
+            if (pokemon.confusionTurns <= 0) {
+                pokemon.status = null;
+                pokemon.confusionTurns = undefined;
+                logFn(`✨ ${pokemon.name} ${sd.wakeMsg || 'se curó de su confusión!'}`, 'boost');
+                return true; // se curó, puede actuar
+            }
+            logFn(`💫 ${(sd.blockMsg || '{pokemon} está confundido.').replace('{pokemon}', pokemon.name)}`, '');
+            
+            if (Math.random() * 100 < (sd.selfHitChance || 33)) {
+                const dmg = calculateConfusionDamage(pokemon);
+                pokemon.currentHp = Math.max(0, pokemon.currentHp - dmg);
+                logFn(`💥 ¡Se hirió a sí mismo en su confusión!`, 'damage');
+                if (pokemon.currentHp <= 0) {
+                    pokemon.currentHp = 0;
+                    pokemon.fainted = true;
+                }
+                return false; // Bloquea el ataque principal
+            }
+            return true;
+        }
+
         default:
             return true;
     }
@@ -135,6 +163,11 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
     }
 
     addLog(`${side === 'player' ? '▶️' : '◀️'} ${attacker.name} usa <b>${moveName}</b>`, side === 'player' ? 'important' : '');
+
+    attacker.lastMoveUsed = moveName;
+    if (attacker.destinyBond && moveName !== 'Mismo Destino') {
+        attacker.destinyBond = false;
+    }
 
     // ── Chequeo de movimiento anulado (Cuerpo Maldito) ───────────────
     if (attacker.disabledMove && attacker.disabledMove.name === moveName) {
@@ -242,7 +275,14 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
             }
         } else {
             defender.currentHp = Math.max(0, defender.currentHp - dmg);
-            if (defender.currentHp <= 0) defender.fainted = true;
+            if (defender.currentHp <= 0) {
+                defender.fainted = true;
+                if (defender.destinyBond && move.category !== 'status') {
+                    attacker.currentHp = 0;
+                    attacker.fainted = true;
+                    addLog(`💀 ¡El Mismo Destino de ${defender.name} arrastró a ${attacker.name}!`, 'important');
+                }
+            }
         }
     }
 
@@ -320,6 +360,15 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
             } else if (move.effect === 'fake_out') {
                 if (!defender.fainted && !targetHasMoved) {
                     defender.flinched = true;
+                }
+            } else if (move.effect === 'flinch_20') {
+                if (!defender.fainted && !targetHasMoved && Math.random() < 0.2) {
+                    defender.flinched = true;
+                }
+            } else if (move.effect === 'drop_target_def_1_chance_50') {
+                if (Math.random() < 0.5 && !defender.fainted) {
+                    defender.statBoosts.def = Math.max(-6, (defender.statBoosts.def || 0) - 1);
+                    addLog(`⬇️ La Defensa de ${defender.name} bajó`, 'damage');
                 }
             } else if (move.effect === 'apply_toxic_spikes') {
                 const hz = defSide === 'player' ? playerHazards : enemyHazards;
@@ -434,6 +483,20 @@ function handleStatusMove(user, target, moveName) {
     if (move.effect === 'change_type_flying') {
         target.types = ["VOLADOR"];
         addLog(`💨 ¡El tipo de ${target.name} cambió a Volador!`, 'boost');
+        return;
+    }
+    if (move.effect === 'destiny_bond') {
+        user.destinyBond = true;
+        addLog(`🔗 ¡${user.name} se prepara para llevarse consigo a su atacante!`, 'important');
+        return;
+    }
+    if (move.effect === 'disable_last_move') {
+        if (!target.lastMoveUsed || target.disabledMove) {
+            addLog(`❌ ¡Pero falló!`, '');
+        } else {
+            target.disabledMove = { name: target.lastMoveUsed, turns: 4 };
+            addLog(`🚫 ¡Anulación desactivó ${target.lastMoveUsed} de ${target.name}!`, 'important');
+        }
         return;
     }
     if (move.effect === 'apply_toxic_spikes') {

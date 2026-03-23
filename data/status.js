@@ -131,15 +131,22 @@ const StatusDB = {
     },
 
     // ← AÑADE UN ESTADO NUEVO AQUÍ SIGUIENDO EL MISMO FORMATO
-    // Ejemplo:
-    // confuse: {
-    //     label:       "CON",
-    //     color:       "#ec4899",
-    //     icon:        "😵",
-    //     blockMove:   false,
-    //     selfHitChance: 33,   // % de golpearse a sí mismo
-    //     ...
-    // },
+    confusion: {
+        label: "CON",
+        color: "#ec4899",      // Rosa
+        icon: "😵",
+        blockMove: true,       // Activa el chequeo en checkStatusBlock
+        selfHitChance: 33,     // % de golpearse a sí mismo
+        endOfTurnDmg: 0,
+        spdMult: 1,
+        atkMult: 1,
+        curable: true,
+        turnsMin: 2,
+        turnsMax: 5,
+        applyMsg: "{pokemon} se confundió.",
+        blockMsg: "{pokemon} está confundido.",
+        wakeMsg: "se curó de su confusión.",
+    },
 
     // ── PETRIFICACIÓN ──────────────────────────────────────────────────────
     // El Pokémon se convierte en piedra. No puede moverse, pero su defensa física aumenta 50%.
@@ -173,4 +180,5 @@ const StatusCureMessages = {
     sleep: "{pokemon} se despertó.",         // también en StatusDB.sleep.wakeMsg
     freeze: "{pokemon} se descongeló.",
     petrify: "{pokemon} se despetrificó.",
+    confusion: "{pokemon} se curó de su confusión.",
 };

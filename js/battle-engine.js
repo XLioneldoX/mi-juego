@@ -73,11 +73,16 @@ function getModifiedStats(pokemon, ignoreBoosts = false) {
 
     const b = (stat) => (ignoreBoosts ? 1 : getStatBoostMultiplier(pokemon.statBoosts?.[stat] || 0));
 
+    let spdBonus = 1;
+    if (window.battleWeather && window.battleWeather.type === 'sand' && pokemon.types.includes('ROCA')) {
+        spdBonus = 1.5; // +50% Defensa Especial para tipo Roca en Arena
+    }
+
     return {
         atk: Math.floor(pokemon.stats.atk * itemBoost.atk * abilityMult.atk * b('atk')),
         def: Math.floor(pokemon.stats.def * itemBoost.def * abilityMult.def * b('def') * defBonus),
         spa: Math.floor(pokemon.stats.spa * itemBoost.spa * abilityMult.spa * b('spa')),
-        spd: Math.floor(pokemon.stats.spd * itemBoost.spd * abilityMult.spd * b('spd')),
+        spd: Math.floor(pokemon.stats.spd * itemBoost.spd * abilityMult.spd * b('spd') * spdBonus),
         spe: Math.floor(pokemon.stats.spe * itemBoost.spe * abilityMult.spe * b('spe')),
     };
 }
@@ -91,10 +96,17 @@ function getAbilityPassiveStatMult(pokemon) {
     const mults = { atk: 1, def: 1, spa: 1, spd: 1, spe: 1 };
     const ab = AbilitiesDB[pokemon.ability];
     if (!ab || ab.trigger !== 'passive') return mults;
+
     if (ab.effect === 'boost_spe_mult') mults.spe = ab.value;
     if (ab.effect === 'boost_def_mult') mults.def = ab.value;
     if (ab.effect === 'boost_atk_mult') mults.atk = ab.value;
     if (ab.effect === 'boost_spa_mult') mults.spa = ab.value;
+
+    // Habilidades de Clima (Velocidad)
+    if (ab.effect === 'boost_spe_weather' && window.battleWeather && window.battleWeather.type === ab.weather) {
+        mults.spe *= ab.value;
+    }
+
     return mults;
 }
 
@@ -182,6 +194,17 @@ function calculateDamage(attacker, defender, moveName, randomFactor = null) {
     // ── STAB ─────────────────────────────────────────────────────────────
     let stabMult = attacker.types.includes(moveType) ? 1.5 : 1;
 
+    // ── Clima (Bonus de daño) ─────────────────────────────────────────────
+    if (window.battleWeather && window.battleWeather.turns > 0) {
+        if (window.battleWeather.type === 'sun') {
+            if (moveType === 'FUEGO') dmg = Math.floor(dmg * 1.5);
+            if (moveType === 'AGUA') dmg = Math.floor(dmg * 0.5);
+        } else if (window.battleWeather.type === 'rain') {
+            if (moveType === 'AGUA') dmg = Math.floor(dmg * 1.5);
+            if (moveType === 'FUEGO') dmg = Math.floor(dmg * 0.5);
+        }
+    }
+
     // ── Habilidad del atacante ────────────────────────────────────────────
     const atkAb = AbilitiesDB[attacker.ability];
     if (atkAb && atkAb.trigger === 'on_attack') {
@@ -198,6 +221,12 @@ function calculateDamage(attacker, defender, moveName, randomFactor = null) {
                     dmg *= atkAb.value;
                 break;
             case 'boost_contact_moves':
+                break;
+            case 'sand_force':
+                if (window.battleWeather && window.battleWeather.type === 'sand') {
+                    if (['ROCA', 'TIERRA', 'ACERO'].includes(moveType)) dmg = Math.floor(dmg * 1.3);
+                }
+                break;
                 if (isPhysical) dmg *= atkAb.value;
                 break;
             case 'crit_boost':
@@ -343,8 +372,10 @@ function whoGoesFirst(playerMove, enemyMove) {
     const pP = getMoveInfo(playerMove).priority || 0;
     const eP = getMoveInfo(enemyMove).priority || 0;
     if (pP !== eP) return pP > eP ? 'player' : 'enemy';
+
     const pS = getEffectiveSpe(playerTeam[playerActive]);
     const eS = getEffectiveSpe(enemyTeam[enemyActive]);
+
     if (pS === eS) {
         const rand = Math.random();
         if (typeof MP !== 'undefined' && MP.active) {
@@ -353,6 +384,13 @@ function whoGoesFirst(playerMove, enemyMove) {
         }
         return rand < 0.5 ? 'player' : 'enemy';
     }
+
+    const isTrickRoom = window.trickRoomActive && window.trickRoomActive.turns > 0;
+    if (isTrickRoom) {
+        // En Espacio Raro, el más lento va primero
+        return pS < eS ? 'player' : 'enemy';
+    }
+
     return pS > eS ? 'player' : 'enemy';
 }
 

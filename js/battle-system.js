@@ -552,6 +552,43 @@ function handleStatusMove(user, target, moveName) {
         addLog(`🛡️ ${user.name} se protege este turno`, 'boost');
         return;
     }
+    if (move.effect === 'apply_trick_room') {
+        if (window.trickRoomActive && window.trickRoomActive.turns > 0) {
+            window.trickRoomActive.turns = 0;
+            addLog(`⌛ ¡Las dimensiones volvieron a la normalidad!`, 'important');
+        } else {
+            window.trickRoomActive = { turns: 5 };
+            addLog(`🌀 ¡${user.name} retorció las dimensiones!`, 'important');
+        }
+        updateWeatherAndTerrainUI();
+        return;
+    }
+
+    if (move.effect === 'apply_weather_sun') {
+        window.battleWeather = { type: 'sun', turns: 5 };
+        addLog(`☀️ ¡El sol brilla con fuerza!`, 'important');
+        updateWeatherAndTerrainUI();
+        return;
+    }
+    if (move.effect === 'apply_weather_rain') {
+        window.battleWeather = { type: 'rain', turns: 5 };
+        addLog(`🌧️ ¡Empezó a llover!`, 'important');
+        updateWeatherAndTerrainUI();
+        return;
+    }
+    if (move.effect === 'apply_weather_sand') {
+        window.battleWeather = { type: 'sand', turns: 5 };
+        addLog(`🏜️ ¡Se desató una tormenta de arena!`, 'important');
+        updateWeatherAndTerrainUI();
+        return;
+    }
+    if (move.effect === 'apply_weather_hail') {
+        window.battleWeather = { type: 'hail', turns: 5 };
+        addLog(`❄️ ¡Empezó a granizar!`, 'important');
+        updateWeatherAndTerrainUI();
+        return;
+    }
+
     if (move.effect?.startsWith('apply_')) {
         const sk = move.effect.replace('apply_', '');
         if (move.accuracy !== null && Math.random() * 100 > (move.accuracy || 100)) {
@@ -571,6 +608,24 @@ function handleStatusMove(user, target, moveName) {
 // ─── FIN DE TURNO ─────────────────────────────────────────────────────────────
 function afterTurn() {
     if (battleOver) return;
+
+    // ── Clima y Espacio Raro (Contadores) ─────────────────────────────
+    if (window.battleWeather && window.battleWeather.turns > 0) {
+        window.battleWeather.turns--;
+        if (window.battleWeather.turns <= 0) {
+            window.battleWeather.type = null;
+            addLog(`⌛ El clima volvió a la normalidad.`, 'important');
+            updateWeatherAndTerrainUI();
+        }
+    }
+    if (window.trickRoomActive && window.trickRoomActive.turns > 0) {
+        window.trickRoomActive.turns--;
+        if (window.trickRoomActive.turns <= 0) {
+            addLog(`⌛ El espacio volvió a la normalidad.`, 'important');
+            updateWeatherAndTerrainUI();
+        }
+    }
+
     turnCount++;
     const tb = document.getElementById('turnBadge');
     if (tb) tb.textContent = `Turno ${turnCount}`;
@@ -594,6 +649,26 @@ function afterTurn() {
         // Habilidades de fin de turno (Recuperación pasiva, Ímpetu Veloz)
         const abMsg = applyAbilityEndOfTurn(p);
         if (abMsg) addLog(abMsg, 'heal');
+
+        // Daño por Clima
+        if (window.battleWeather && window.battleWeather.turns > 0) {
+            const w = window.battleWeather.type;
+            if (w === 'sand') {
+                if (!p.types.includes('ROCA') && !p.types.includes('TIERRA') && !p.types.includes('ACERO')) {
+                    const d = Math.floor(p.stats.hp / 16);
+                    p.currentHp = Math.max(0, p.currentHp - d);
+                    addLog(`🏜️ La tormenta de arena daña a ${p.name}`, 'damage');
+                    if (p.currentHp <= 0) p.fainted = true;
+                }
+            } else if (w === 'hail') {
+                if (!p.types.includes('HIELO')) {
+                    const d = Math.floor(p.stats.hp / 16);
+                    p.currentHp = Math.max(0, p.currentHp - d);
+                    addLog(`❄️ El granizo daña a ${p.name}`, 'damage');
+                    if (p.currentHp <= 0) p.fainted = true;
+                }
+            }
+        }
 
         // Estados que dañan (veneno, quemadura, etc.)
         const statusRes = applyStatusEffects(p);

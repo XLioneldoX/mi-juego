@@ -212,7 +212,19 @@ const MovesDB = {
         effectChange: 100,
         description: "Es como Superona pero Planta.",
     },
-    
+    "Mazazo": {
+        name: "Mazazo",
+        type: "PLANTA",
+        category: "physical",
+        power: 120,
+        accuary: 100,
+        priority: 0,
+        effect: "recoil_33",
+        effectChance: 0,
+        description: "Mazo enorme que usa el usuario para golpear al oponente. El usuario recibe 1/3 de retroceso.",
+    },
+
+
 
     // ════════════════════════════════════════════════════════════════════════
     // ⚡ TIPO ELÉCTRICO

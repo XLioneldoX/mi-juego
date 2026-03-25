@@ -23,6 +23,36 @@ function updateUI() {
 
     if (typeof playerHazards !== 'undefined') renderHazards('player', playerHazards);
     if (typeof enemyHazards !== 'undefined') renderHazards('enemy', enemyHazards);
+
+    updateWeatherAndTerrainUI();
+}
+
+// ─── CLIMA Y TERRENO UI ────────────────────────────────────────────────────────
+function updateWeatherAndTerrainUI() {
+    const overlay = document.getElementById('weatherOverlay');
+    if (!overlay) return;
+
+    let content = '';
+    
+    // Si hay clima activo (usamos los videos para Sun, Rain, Sand, Hail)
+    if (window.battleWeather && window.battleWeather.turns > 0) {
+        if (window.battleWeather.type === 'sun') {
+            content += `<video autoplay loop muted playsinline style="position:absolute;width:100%;height:100%;object-fit:cover;opacity:0.5;"><source src="weather/weather-gen6-sunnyday.mp4" type="video/mp4"></video>`;
+        } else if (window.battleWeather.type === 'rain') {
+            content += `<video autoplay loop muted playsinline style="position:absolute;width:100%;height:100%;object-fit:cover;opacity:0.5;"><source src="weather/weather-gen6-raindance.webm" type="video/webm"></video>`;
+        } else if (window.battleWeather.type === 'sand') {
+            content += `<video autoplay loop muted playsinline style="position:absolute;width:100%;height:100%;object-fit:cover;opacity:0.5;"><source src="weather/weather-gen6-sandstorm.mp4" type="video/mp4"></video>`;
+        } else if (window.battleWeather.type === 'hail') {
+            content += `<video autoplay loop muted playsinline style="position:absolute;width:100%;height:100%;object-fit:cover;opacity:0.5;"><source src="weather/weather-gen6-hail.mp4" type="video/mp4"></video>`;
+        }
+    }
+
+    // El Trick Room se superpone como imagen (si procede)
+    if (window.trickRoomActive && window.trickRoomActive.turns > 0) {
+        content += `<img src="weather/weather-trickroom.png" style="position:absolute;width:100%;height:100%;object-fit:cover;opacity:0.6;">`;
+    }
+
+    overlay.innerHTML = content;
 }
 
 // ─── TARJETA DE POKÉMON ───────────────────────────────────────────────────────

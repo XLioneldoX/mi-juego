@@ -201,6 +201,18 @@ const MovesDB = {
         effectChance: 100,
         description: "Se recupera con la luz solar. Restaura 50% del HP.",
     },
+    "Bomba Gérmen": {
+        name: "Bomba Gérmen",
+        type: "PLANTA",
+        category: "physical",
+        power: 250,
+        accuary: 100,
+        priority: 0,
+        effect: "faint_after_use",
+        effectChange: 100,
+        description: "Es como Superona pero Planta.",
+    },
+    
 
     // ════════════════════════════════════════════════════════════════════════
     // ⚡ TIPO ELÉCTRICO

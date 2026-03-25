@@ -470,6 +470,20 @@ function handleStatusMove(user, target, moveName) {
         addLog(`💚 ${user.name} se durmió y recuperó todo el HP`, 'heal');
         return;
     }
+   if (move.effect === 'apply_sticky_web') {
+    const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
+    
+    // Crear la variable porque leo es tontísimo
+    if (hz.stickyWeb === undefined) hz.stickyWeb = false;
+
+    if (!hz.stickyWeb) {
+        hz.stickyWeb = true;
+        addLog(`🕸️ ¡Una Red Viscosa rodea el campo del equipo rival!`, 'boost');
+    } else {
+        addLog(`❌ Ya hay una Red Viscosa en el campo.`, '');
+    }
+    return;
+    }
     if (move.effect === 'heal_100_petrify') {
         user.currentHp = user.stats.hp;
         user.status = 'petrify';
@@ -636,7 +650,15 @@ function afterTurn() {
 function applyHazardsOnSwitchIn(pokemon, side) {
     if (pokemon.fainted) return;
     const hazards = side === 'player' ? playerHazards : enemyHazards;
-
+    //RED VISCOSA SEMEN
+    if (hazards.stickyWeb) {
+        const isGrounded = !pokemon.types.includes("VOLADOR") && AbilitiesDB[pokemon.ability]?.effect !== 'immune_ground';
+        if (isGrounded) {
+            pokemon.statBoosts = pokemon.statBoosts || {};
+            pokemon.statBoosts.spe = Math.max(-6, (pokemon.statBoosts.spe || 0) - 1);
+            addLog(`🕸️ ¡${pokemon.name} fue atrapado por la red viscosa! Su Velocidad bajó.`, 'damage');
+        }
+    }
     // PÚAS TÓXICAS
     if (hazards.toxicSpikes > 0) {
         // ¿Volador o levitación? No toca el suelo (inmune)

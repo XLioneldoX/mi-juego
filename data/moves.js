@@ -1066,11 +1066,22 @@ const MovesDB = {
         type: "VENENO",
         category: "status",
         power: 0,
-        accuracy: 100,
+        accuracy: null,
         priority: 0,
         effect: "apply_toxic_spikes",
         effectChance: 100,
         description: "Lanza púas tóxicas al campo rival para envenenar a quienes entren.",
+    },
+    "Red Viscosa": {
+    name: "Red Viscosa",
+    type: "BICHO",
+    category: "status",
+    power: 0,
+    accuracy: null,
+    priority: 0,
+    effect: "apply_sticky_web",
+    effectChance: 100,
+    description: "Coloca una red que baja la Velocidad de los oponentes que entran al campo."
     },
     "Supernova": {
         name: "Supernova",

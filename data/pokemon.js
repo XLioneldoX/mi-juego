@@ -1308,17 +1308,18 @@ const PokemonDB = {
         abilities: ["Absorber", "Piel Dura"],
         ability: "Absorber",
         moves: ["Avalancha", "Terremoto", "Bomba Lodo", "Megacuerno"],
-        learnest: ["Avalancha", "Terremoto", "Bomba Lodo", "Megacuerno", "Roca Afilada", "Asalto Cálido", "Cascada"],
+        learnset: ["Avalancha", "Terremoto", "Bomba Lodo", "Megacuerno", "Roca Afilada", "Asalto Cálido", "Cascada"],
         stats: { hp: 85, atk: 91, def: 117, spa: 45, spd: 92, spe: 60 },
 
-    999: {
-        id: 999, name: "Substituto",
-        types: ["NORMAL"],
-        stats: { hp: 999, atk: 0, def: 999, spa: 0, spd: 999, spe: 0 },
-    },
+        999: {
+            id: 999, name: "Substituto",
+            types: ["NORMAL"],
+            stats: { hp: 999, atk: 0, def: 999, spa: 0, spd: 999, spe: 0 },
+        },
 
-}; // fin PokemonDB
+    } // fin PokemonDB
 
+}
 
 // ─── SPRITES PERSONALIZADOS ───────────────────────────────────────────────────
 // Ficheros en SpriteB64 (data/sprites.js) — funcionan sin internet.
@@ -1486,7 +1487,7 @@ function getPlaceholderSvg(name) {
         <text x="48" y="62" font-family="monospace" font-size="44" fill="${color}" text-anchor="middle">${letter}</text>
     </svg>`;
     return 'data:image/svg+xml;base64,' + btoa(svg);
-}
+};
 
 // ─── OBTENER URL DE SPRITE ────────────────────────────────────────────────────
 // Prioridad: 1) Custom embebido  2) Ruta archivo directo  3) Placeholder

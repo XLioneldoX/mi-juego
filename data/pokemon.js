@@ -1285,8 +1285,8 @@ const PokemonDB = {
     139: {
         id: 139, name: "Magnezone-Para",
         types: ["PLANTA", "PSÍQUICO"],
-        abilities: ["Magia Guard", "Clorofila"],
-        ability: "Magia Guard",
+        abilities: ["Persistent", "Clorofila"],
+        ability: "Persistent",
         moves: ["Rayo Solar", "Psíquico", "Gigadrenado", "Hipnosis"],
         learnset: ["Rayo Solar", "Psíquico", "Gigadrenado", "Hipnosis", "Teletransporte", "Hoja Afilada", "Foco Resplandor", "Síntesis", "Blossom Needle", "Guard Room"],
         stats: { hp: 60, atk: 70, def: 77, spa: 130, spd: 90, spe: 60 },

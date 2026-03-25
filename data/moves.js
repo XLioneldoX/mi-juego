@@ -430,6 +430,31 @@ const MovesDB = {
         effectChance: 100,
         description: "Carga terrestre masiva. Baja la Def y Def. Esp del usuario.",
     },
+    "Tierra Viva": {
+        name: "Tierra Viva",
+        type: "TIERRA",
+        category: "special",
+        power: 90,
+        accuary: 100,
+        priority: 0,
+        effect: "drop_spdf_1",
+        effectChance: 10,           // 10% de bajar la defensa especial
+        description: "Se abre la tierra debajo del oponente. Probabilidad de bajar la defensa especial del oponente.",
+    },
+    "Arenas Ardientes": {
+        name: "Arenas Ardientes",
+        type: "TIERRA",
+        category: "special",
+        power: 70,
+        accuary: 100,
+        priority: 0,
+        effect: "apply_burn",
+        effectChange: 30,          // 30% de quemar al oponente
+        description: "Arenas de alta temperatura. Probabilidad de quemar al enemigo.",
+    },
+
+
+
 
     // ════════════════════════════════════════════════════════════════════════
     // 🦅 TIPO VOLADOR
@@ -481,7 +506,7 @@ const MovesDB = {
     },
 
     // ════════════════════════════════════════════════════════════════════════
-    // 🔮 TIPO PSÍQUICO
+    //  TIPO PSÍQUICO
     // ════════════════════════════════════════════════════════════════════════
 
     "Psíquico": {
@@ -538,6 +563,8 @@ const MovesDB = {
         effect: "sumon_trick room",
         effectChange: 100,
         description: "Invoca un espacio raro en el que alterna las velocidades de ambos Pokemons activos durante los proximos 5 turnos.",
+    },
+
 
 
 
@@ -567,6 +594,20 @@ const MovesDB = {
         effectChance: 0,
         description: "Extiende su sombra para atacar. Tiene prioridad.",
     },
+    "Choque Sombrío": {
+        name: "Choque Sombrío",
+        type: "FANTASMA",
+        category: "physical",
+        power: 80,
+        accuracy: 90,
+        priority: 0,
+        effect: "drop_def_1",
+        effectChange: 50,             // 50% de bajar la defensa
+        description: "El poseedor usa su energia oscura para embestir hacia su oponente. Alta probabilidad de bajar la defensa del oponente"
+    },
+
+
+
 
     // ════════════════════════════════════════════════════════════════════════
     // ☠️ TIPO VENENO
@@ -583,6 +624,21 @@ const MovesDB = {
         effectChance: 30,             // 30% de envenenar
         description: "Bomba de lodo tóxico. Alta probabilidad de envenenar.",
     },
+    "Puya Nociva": {
+        name: "Puya Nociva",
+        type: "VENENO",
+        category: "physical",
+        power: 80,
+        accuracy: 100,
+        priority: 0,
+        effect: "apply_poison",
+        effectChange: 30,             // 30% de envenenar
+        description: "Puyas venenosas y corrosivas. Probabilidad de envenenar.",
+    },
+
+
+
+
 
     // ════════════════════════════════════════════════════════════════════════
     // 🪨 TIPO ROCA

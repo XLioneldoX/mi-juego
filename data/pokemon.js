@@ -1302,6 +1302,15 @@ const PokemonDB = {
         stats: { hp: 95, atk: 109, def: 105, spa: 75, spd: 85, spe: 56 },
     },
 
+    141: {
+        id: 141, name: "Parasect-P",
+        types: ["ROCA", "VENENO"],
+        abilities: ["Absorber", "Piel Dura"],
+        ability: "Absorber",
+        moves: ["Avalancha", "Terremoto", "Bomba Lodo", "Megacuerno"],
+        learnest: ["Avalancha", "Terremoto", "Bomba Lodo", "Megacuerno", "Roca Afilada", "Asalto Cálido", "Cascada"],
+        stats: { hp: 85, atk: 91, def: 117, spa: 45, spd: 92, spe: 60 },
+
     999: {
         id: 999, name: "Substituto",
         types: ["NORMAL"],
@@ -1460,6 +1469,7 @@ const CustomSprites = {
     138: { front: "sprites/150_Helodian.png", back: "sprites/150_Helodian.png" },
     139: { front: "sprites/Magnezone-Para.png", back: "sprites/Magnezone-Para.png" },
     140: { front: "sprites/Torrterra-P.png", back: "sprites/Torrterra-P.png" },
+    141: { front: "sprites/Parasect-P.png", back: "sprites/Parasect-P.png" },
     999: { front: "sprites/000_Substitute.png", back: "sprites/000_Substitute.png" },
 };
 

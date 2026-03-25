@@ -528,6 +528,18 @@ const MovesDB = {
         effectChance: 100,
         description: "Duerme al objetivo si acierta. Precisión del 60%.",
     },
+    "Trick Room": {
+        name: "Trick Room",
+        type: "PSÍQUICO",
+        category: "status",
+        power: 0,
+        accuracy: null,
+        priority: -10,
+        effect: "sumon_trick room",
+        effectChange: 100,
+        description: "Invoca un espacio raro en el que alterna las velocidades de ambos Pokemons activos.",
+
+
 
     // ════════════════════════════════════════════════════════════════════════
     // 👻 TIPO FANTASMA

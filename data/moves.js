@@ -646,6 +646,17 @@ const MovesDB = {
         effectChance: 30,            // 30% de envenenar
         description: "Lanza un monton de basura al oponente. Probabilidad de envenenar.",
     },
+    "Onda Tóxica": {
+        name: "Onda Tóxica",
+        type: "VENENO",
+        category: "special",
+        power: 90,
+        accuary: 100,
+        priority: 0,
+        effect: "apply_poison",
+        effectChance: 10,           // 10% de envenenar
+        description: "Onda corrosiva muy toxica. Probabilidad de envenenar al oponente. Daña a todos los Pokemos del campo.",
+    },
 
 
 

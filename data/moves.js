@@ -449,7 +449,7 @@ const MovesDB = {
         accuary: 100,
         priority: 0,
         effect: "apply_burn",
-        effectChange: 30,          // 30% de quemar al oponente
+        effectChange: 30,          // 30% de quemar
         description: "Arenas de alta temperatura. Probabilidad de quemar al enemigo.",
     },
 
@@ -635,7 +635,17 @@ const MovesDB = {
         effectChange: 30,             // 30% de envenenar
         description: "Puyas venenosas y corrosivas. Probabilidad de envenenar.",
     },
-
+    "Lanzamugre": {
+        name: "Lanzamugre",
+        type: "VENENO",
+        category: "physical",
+        power: 120,
+        accuary: 80,
+        priority: 0,
+        effect: "apply_poison",
+        effectChance: 30,            // 30% de envenenar
+        description: "Lanza un monton de basura al oponente. Probabilidad de envenenar.",
+    },
 
 
 

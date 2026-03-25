@@ -437,9 +437,9 @@ const MovesDB = {
         power: 90,
         accuary: 100,
         priority: 0,
-        effect: "drop_spdf_1",
-        effectChance: 10,           // 10% de bajar la defensa especial
-        description: "Se abre la tierra debajo del oponente. Probabilidad de bajar la defensa especial del oponente.",
+        effect: null,
+        effectChance: 0,           
+        description: "Se abre la tierra debajo del oponente.",
     },
     "Arenas Ardientes": {
         name: "Arenas Ardientes",
@@ -601,9 +601,9 @@ const MovesDB = {
         power: 80,
         accuracy: 90,
         priority: 0,
-        effect: "drop_def_1",
-        effectChange: 50,             // 50% de bajar la defensa
-        description: "El poseedor usa su energia oscura para embestir hacia su oponente. Alta probabilidad de bajar la defensa del oponente"
+        effect: null,
+        effectChange: 0,             
+        description: "El poseedor usa su energia oscura para embestir hacia su oponente.",
     },
 
 

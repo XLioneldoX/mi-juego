@@ -774,7 +774,7 @@ const PokemonDB = {
         abilities: ["Levitacion", "Cuerpo Puro"],
         ability: "Levitacion",
         moves: ["Bola Sombra", "Foco Resplandor", "Hipnosis", "Recuperación"],
-        learnset: ["Bola Sombra", "Foco Resplandor", "Hipnosis", "Recuperación", "Teletransporte", "Golpe Cuerpo", "Possession", "Boo-mbs", "Spirit Charge", "Rayo", "Onda Voltio", "Shortcut"],
+        learnset: ["Bola Sombra", "Foco Resplandor", "Hipnosis", "Recuperación", "Teletransporte", "Red Viscosa", "Golpe Cuerpo", "Possession", "Boo-mbs", "Spirit Charge", "Rayo", "Onda Voltio", "Shortcut"],
         stats: { hp: 58, atk: 60, def: 90, spa: 134, spd: 105, spe: 30 },
     },
     84: {

@@ -537,7 +537,7 @@ const MovesDB = {
         priority: -10,
         effect: "sumon_trick room",
         effectChange: 100,
-        description: "Invoca un espacio raro en el que alterna las velocidades de ambos Pokemons activos durnate los proximos 5 turnos.",
+        description: "Invoca un espacio raro en el que alterna las velocidades de ambos Pokemons activos.",
 
 
 

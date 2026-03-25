@@ -36,7 +36,7 @@ const PokemonDB = {
         abilities: ["Impetu", "Adaptabilidad"],
         ability: "Impetu",
         moves: ["Megacuerno", "Surf", "Cascada", "Ataque Rápido"],
-        learnset: ["Megacuerno", "Surf", "Cascada", "Ataque Rápido", "Golpe Cuerpo", "Rustedge", "Hidrobomba", "Powder Bomb", "Boo-mbs", "Protección", "Gigadrenado", "Sustituto"],
+        learnset: ["Megacuerno", "Surf", "Cascada", "Ataque Rápido", "Golpe Cuerpo", "Rustedge", "Hidrobomba", "Powder Bomb", "Red Viscosa", "Protección", "Gigadrenado", "Sustituto"],
         stats: { hp: 72, atk: 88, def: 88, spa: 72, spd: 72, spe: 58 },
     },
     2: {
@@ -1308,7 +1308,7 @@ const PokemonDB = {
         abilities: ["Absorber", "Piel Dura"],
         ability: "Absorber",
         moves: ["Avalancha", "Terremoto", "Bomba Lodo", "Megacuerno"],
-        learnset: ["Avalancha", "Terremoto", "Bomba Lodo", "Megacuerno", "Roca Afilada", "Asalto Cálido", "Cascada"],
+        learnset: ["Avalancha", "Terremoto", "Bomba Lodo", "Megacuerno", "Red Viscosa", "Asalto Cálido", "Cascada"],
         stats: { hp: 85, atk: 91, def: 117, spa: 45, spd: 92, spe: 60 },
 
         999: {

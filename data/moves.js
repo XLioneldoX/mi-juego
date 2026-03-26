@@ -103,6 +103,17 @@ const MovesDB = {
         effectChance: 10,             // 10% de quemar
         description: "Carga de fuego masiva. El usuario recibe 1/3 de retroceso.",
     },
+    "Día Soleado": {
+        name: "Día Soleado",
+        type: "FUEGO",
+        category: "status",
+        power: 0,
+        accuracy: null,
+        priority: 0,
+        effect: "apply_weather_sun",
+        effectChance: 100,
+        description: "El sol brilla con fuerza durante 5 turnos. Potencia los movimientos de tipo Fuego.",
+    },
 
     // ════════════════════════════════════════════════════════════════════════
     // 💧 TIPO AGUA
@@ -151,6 +162,17 @@ const MovesDB = {
         effect: null,
         effectChance: 0,
         description: "Ataque veloz con prioridad. Siempre golpea primero.",
+    },
+    "Danza Lluvia": {
+        name: "Danza Lluvia",
+        type: "AGUA",
+        category: "status",
+        power: 0,
+        accuracy: null,
+        priority: 0,
+        effect: "apply_weather_rain",
+        effectChance: 100,
+        description: "Genera una fuerte lluvia durante 5 turnos. Potencia los movimientos de tipo Agua.",
     },
 
     // ════════════════════════════════════════════════════════════════════════
@@ -345,6 +367,17 @@ const MovesDB = {
         effectChance: 100,
         description: "Ataque giratorio que elimina los campos activos.",
     },
+    "Granizo": {
+        name: "Granizo",
+        type: "HIELO",
+        category: "status",
+        power: 0,
+        accuracy: null,
+        priority: 0,
+        effect: "apply_weather_hail",
+        effectChance: 100,
+        description: "Tormenta de granizo de 5 turnos. Daña a todos los Pokémon salvo a los de tipo Hielo.",
+    },
 
     // ════════════════════════════════════════════════════════════════════════
     // 👊 TIPO LUCHA
@@ -477,9 +510,6 @@ const MovesDB = {
         description: "Arenas de alta temperatura. Probabilidad de quemar al enemigo.",
     },
 
-
-
-
     // ════════════════════════════════════════════════════════════════════════
     // 🦅 TIPO VOLADOR
     // ════════════════════════════════════════════════════════════════════════
@@ -589,9 +619,6 @@ const MovesDB = {
         description: "Invoca un espacio raro en el que alterna las velocidades de ambos Pokemons activos durante los proximos 5 turnos.",
     },
 
-
-
-
     // ════════════════════════════════════════════════════════════════════════
     // 👻 TIPO FANTASMA
     // ════════════════════════════════════════════════════════════════════════
@@ -625,13 +652,54 @@ const MovesDB = {
         power: 80,
         accuracy: 90,
         priority: 0,
-        effect: null,
-        effectChange: 0,             
-        description: "El poseedor usa su energia oscura para embestir hacia su oponente.",
+        effect: "drop_target_def_1_chance_50",
+        effectChance: 50,
+        description: "Golpe de sombras. 50% de probabilidad de bajar la Defensa rival.",
     },
-
-
-
+    "Rayo Confuso": {
+        name: "Rayo Confuso",
+        type: "FANTASMA",
+        category: "status",
+        power: 0,
+        accuracy: 100,
+        priority: 0,
+        effect: "apply_confusion",
+        effectChance: 100,
+        description: "Un rayo siniestro que confunde al objetivo.",
+    },
+    "Mismo Destino": {
+        name: "Mismo Destino",
+        type: "FANTASMA",
+        category: "status",
+        power: 0,
+        accuracy: null,
+        priority: 0,
+        effect: "destiny_bond",
+        effectChance: 100,
+        description: "Si el usuario se debilita por un ataque, el atacante también.",
+    },
+    "Tinieblas": {
+        name: "Tinieblas",
+        type: "FANTASMA",
+        category: "special",
+        power: 1, // Se sobrescribe en el cálculo de daño
+        accuracy: 100,
+        priority: 0,
+        effect: "level_damage",
+        effectChance: 100,
+        description: "Ataque espectral que quita PS igual al nivel del usuario.",
+    },
+    "Infortunio": {
+        name: "Infortunio",
+        type: "FANTASMA",
+        category: "special",
+        power: 65,
+        accuracy: 100,
+        priority: 0,
+        effect: "hex",
+        effectChance: 100,
+        description: "Duplica su poder si el rival sufre un problema de estado.",
+    },
 
     // ════════════════════════════════════════════════════════════════════════
     // ☠️ TIPO VENENO
@@ -681,9 +749,17 @@ const MovesDB = {
         effectChance: 10,           // 10% de envenenar
         description: "Onda corrosiva muy toxica. Probabilidad de envenenar al oponente. Daña a todos los Pokemos del campo.",
     },
-
-
-
+    "Púas Tóxicas": {
+        name: "Púas Tóxicas",
+        type: "VENENO",
+        category: "status",
+        power: 0,
+        accuracy: null,
+        priority: 0,
+        effect: "apply_toxic_spikes",
+        effectChance: 100,
+        description: "Lanza púas tóxicas al campo rival para envenenar a quienes entren.",
+    },
 
     // ════════════════════════════════════════════════════════════════════════
     // 🪨 TIPO ROCA
@@ -721,6 +797,33 @@ const MovesDB = {
         effect: null,
         effectChance: 0,
         description: "Cornada devastadora de 120 de poder.",
+    },
+    "Tormenta Arena": {
+        name: "Tormenta Arena",
+        type: "ROCA",
+        category: "status",
+        power: 0,
+        accuracy: null,
+        priority: 0,
+        effect: "apply_weather_sand",
+        effectChance: 100,
+        description: "Tormenta de arena de 5 turnos. Daña a los Pokémon que no son Roca, Tierra o Acero.",
+    },
+
+    // ════════════════════════════════════════════════════════════════════════
+    // 🐛 TIPO BICHO
+    // ════════════════════════════════════════════════════════════════════════
+
+    "Red Viscosa": {
+        name: "Red Viscosa",
+        type: "BICHO",
+        category: "status",
+        power: 0,
+        accuracy: null,
+        priority: 0,
+        effect: "apply_sticky_web",
+        effectChance: 100,
+        description: "Coloca una red que baja la Velocidad de los oponentes que entran al campo.",
     },
 
     // ════════════════════════════════════════════════════════════════════════
@@ -842,6 +945,17 @@ const MovesDB = {
         effectChance: 100,
         description: "Giro brutal que ignora las mejoras de defensa del rival.",
     },
+    "Pulso Umbrío": {
+        name: "Pulso Umbrío",
+        type: "SINIESTRO",
+        category: "special",
+        power: 80,
+        accuracy: 100,
+        priority: 0,
+        effect: "flinch_20",
+        effectChance: 20,
+        description: "Onda de aura oscura. 20% de probabilidad de amedrentar.",
+    },
 
     // ════════════════════════════════════════════════════════════════════════
     // ⬜ TIPO NORMAL
@@ -934,33 +1048,26 @@ const MovesDB = {
         effect: "substitute",
         description: "Crea un señuelo con el 25% del HP para protegerse.",
     },
+    "Anulación": {
+        name: "Anulación",
+        type: "NORMAL",
+        category: "status",
+        power: 0,
+        accuracy: 100,
+        priority: 0,
+        effect: "disable_last_move",
+        effectChance: 100,
+        description: "Anula el último movimiento del objetivo temporalmente.",
+    },
 
     // ════════════════════════════════════════════════════════════════════════
     // 🆕 NUEVOS MOVIMIENTOS
     // ════════════════════════════════════════════════════════════════════════
 
-    "Rustedge": {
-        name: "Rustedge",
-        type: "VENENO",
-        category: "physical",
-        power: 75,
-        accuracy: 100,
-        priority: 0,
-        effect: "apply_toxic_spikes",
-        effectChance: 100,
-        description: "Filo Oxidado. Coloca Púas Tóxicas en el campo rival si acierta.",
-    },
-    "Shorcuit": {
-        name: "Shorcuit",
-        type: "ELÉCTRICO",
-        category: "special",
-        power: 130,
-        accuracy: 90,
-        priority: 0,
-        effect: "drop_self_spa_2",
-        effectChance: 100,
-        description: "Cortocircuito. Daño masivo, pero reduce el Ataque Especial del usuario en 2 niveles.",
-    },
+    // ────────────────────────────────────────────────────────────────────────
+    // 🔥 FUEGO
+    // ────────────────────────────────────────────────────────────────────────
+
     "Grease Fire": {
         name: "Grease Fire",
         type: "FUEGO",
@@ -972,28 +1079,54 @@ const MovesDB = {
         effectChance: 0,
         description: "Fuego de Grasa. Es súper efectivo contra los Pokémon de tipo Agua.",
     },
-    "Loose Dirt": {
-        name: "Loose Dirt",
-        type: "ROCA",
+    "Supernova": {
+        name: "Supernova",
+        type: "FUEGO",
         category: "special",
-        power: 80,
+        power: 250,
         accuracy: 100,
         priority: 0,
-        effect: "drop_target_atk_1",
-        effectChance: 30,
-        description: "Tierra Suelta. Tiene un 30% de probabilidad de reducir el Ataque del objetivo.",
+        effect: "faint_after_use",
+        effectChance: 100,
+        description: "Que quieres que explique mas ?, es Supernova",
     },
-    "Scalatue": {
-        name: "Scalatue",
-        type: "DRAGÓN",
+
+    // ────────────────────────────────────────────────────────────────────────
+    // ⚡ ELÉCTRICO
+    // ────────────────────────────────────────────────────────────────────────
+
+    "Shorcuit": {
+        name: "Shorcuit",
+        type: "ELÉCTRICO",
+        category: "special",
+        power: 130,
+        accuracy: 90,
+        priority: 0,
+        effect: "drop_self_spa_2",
+        effectChance: 100,
+        description: "Cortocircuito. Daño masivo, pero reduce el Ataque Especial del usuario en 2 niveles.",
+    },
+
+    // ────────────────────────────────────────────────────────────────────────
+    // 🌍 TIERRA
+    // ────────────────────────────────────────────────────────────────────────
+
+    "Púas": {
+        name: "Púas",
+        type: "TIERRA",
         category: "status",
         power: 0,
         accuracy: null,
         priority: 0,
-        effect: "heal_100_petrify",
+        effect: "apply_spikes",
         effectChance: 100,
-        description: "El usuario se petrifica y restaura todos sus HP.",
+        description: "Esparce púas en el campo rival. Los Pokémon que entren al campo recibirán daño (máximo 3 capas).",
     },
+
+    // ────────────────────────────────────────────────────────────────────────
+    // 🦅 VOLADOR
+    // ────────────────────────────────────────────────────────────────────────
+
     "Galegust Rush": {
         name: "Galegust Rush",
         type: "VOLADOR",
@@ -1016,6 +1149,71 @@ const MovesDB = {
         effectChance: 100,
         description: "Cambia el tipo del objetivo a Volador.",
     },
+
+    // ────────────────────────────────────────────────────────────────────────
+    // ☠️ VENENO
+    // ────────────────────────────────────────────────────────────────────────
+
+    "Rustedge": {
+        name: "Rustedge",
+        type: "VENENO",
+        category: "physical",
+        power: 75,
+        accuracy: 100,
+        priority: 0,
+        effect: "apply_toxic_spikes",
+        effectChance: 100,
+        description: "Filo Oxidado. Coloca Púas Tóxicas en el campo rival si acierta.",
+    },
+    "Harmful Strike": {
+        name: "Harmful Strike",
+        type: "VENENO",
+        category: "physical",
+        power: 95,
+        accuracy: 100,
+        priority: 0,
+        effect: null,
+        effectChance: 0,
+        dualType: "SINIESTRO", // Nueva propiedad procesada en calculateDamage
+        description: "Golpe Nocivo. Combina los tipos Veneno y Siniestro en el cálculo de efectividad.",
+    },
+
+    // ────────────────────────────────────────────────────────────────────────
+    // 🪨 ROCA
+    // ────────────────────────────────────────────────────────────────────────
+
+    "Loose Dirt": {
+        name: "Loose Dirt",
+        type: "ROCA",
+        category: "special",
+        power: 80,
+        accuracy: 100,
+        priority: 0,
+        effect: "drop_target_atk_1",
+        effectChance: 30,
+        description: "Tierra Suelta. Tiene un 30% de probabilidad de reducir el Ataque del objetivo.",
+    },
+
+    // ────────────────────────────────────────────────────────────────────────
+    // 🐉 DRAGÓN
+    // ────────────────────────────────────────────────────────────────────────
+
+    "Scalatue": {
+        name: "Scalatue",
+        type: "DRAGÓN",
+        category: "status",
+        power: 0,
+        accuracy: null,
+        priority: 0,
+        effect: "heal_100_petrify",
+        effectChance: 100,
+        description: "El usuario se petrifica y restaura todos sus HP.",
+    },
+
+    // ────────────────────────────────────────────────────────────────────────
+    // 🤝 HADA
+    // ────────────────────────────────────────────────────────────────────────
+
     "Rowdy Tussle": {
         name: "Rowdy Tussle",
         type: "HADA",
@@ -1038,18 +1236,11 @@ const MovesDB = {
         effectChance: 10,
         description: "Juego brusco que puede bajar el Ataque del rival.",
     },
-    "Harmful Strike": {
-        name: "Harmful Strike",
-        type: "VENENO",
-        category: "physical",
-        power: 95,
-        accuracy: 100,
-        priority: 0,
-        effect: null,
-        effectChance: 0,
-        dualType: "SINIESTRO", // Nueva propiedad procesada en calculateDamage
-        description: "Golpe Nocivo. Combina los tipos Veneno y Siniestro en el cálculo de efectividad.",
-    },
+
+    // ────────────────────────────────────────────────────────────────────────
+    // 👊 LUCHA
+    // ────────────────────────────────────────────────────────────────────────
+
     "Healing Spa": {
         name: "Healing Spa",
         type: "LUCHA",
@@ -1061,172 +1252,7 @@ const MovesDB = {
         effectChance: 100,
         description: "Su poder se duplica si algún Pokémon sufre un estado, y luego los cura.",
     },
-    "Púas Tóxicas": {
-        name: "Púas Tóxicas",
-        type: "VENENO",
-        category: "status",
-        power: 0,
-        accuracy: null,
-        priority: 0,
-        effect: "apply_toxic_spikes",
-        effectChance: 100,
-        description: "Lanza púas tóxicas al campo rival para envenenar a quienes entren.",
-    },
-    "Púas": {
-    name: "Púas",
-    type: "TIERRA",
-    category: "status",
-    power: 0,
-    accuracy: null,
-    priority: 0,
-    effect: "apply_spikes",
-    effectChance: 100,
-    description: "Esparce púas en el campo rival. Los Pokémon que entren al campo recibirán daño (máximo 3 capas).",
-},
-    "Red Viscosa": {
-    name: "Red Viscosa",
-    type: "BICHO",
-    category: "status",
-    power: 0,
-    accuracy: null,
-    priority: 0,
-    effect: "apply_sticky_web",
-    effectChance: 100,
-    description: "Coloca una red que baja la Velocidad de los oponentes que entran al campo."
-    },
-    "Supernova": {
-        name: "Supernova",
-        type: "FUEGO",
-        category: "special",
-        power: 250,
-        accuracy: 100,
-        priority: 0,
-        effect: "faint_after_use",
-        effectChance: 100,
-        description: "Que quieres que explique mas ?, es Supernova",
-    },
-    // Nuevos movimientos:
-    "Rayo Confuso": {
-        name: "Rayo Confuso",
-        type: "FANTASMA",
-        category: "status",
-        power: 0,
-        accuracy: 100,
-        priority: 0,
-        effect: "apply_confusion",
-        effectChance: 100,
-        description: "Un rayo siniestro que confunde al objetivo.",
-    },
-    "Mismo Destino": {
-        name: "Mismo Destino",
-        type: "FANTASMA",
-        category: "status",
-        power: 0,
-        accuracy: null,
-        priority: 0,
-        effect: "destiny_bond",
-        effectChance: 100,
-        description: "Si el usuario se debilita por un ataque, el atacante también.",
-    },
-    "Tinieblas": {
-        name: "Tinieblas",
-        type: "FANTASMA",
-        category: "special",
-        power: 1, // Se sobrescribe en el cálculo de daño
-        accuracy: 100,
-        priority: 0,
-        effect: "level_damage",
-        effectChance: 100,
-        description: "Ataque espectral que quita PS igual al nivel del usuario.",
-    },
-    "Choque Sombrío": {
-        name: "Choque Sombrío",
-        type: "FANTASMA",
-        category: "physical",
-        power: 80,
-        accuracy: 90,
-        priority: 0,
-        effect: "drop_target_def_1_chance_50",
-        effectChance: 50,
-        description: "Golpe de sombras. 50% de probabilidad de bajar la Defensa rival.",
-    },
-    "Infortunio": {
-        name: "Infortunio",
-        type: "FANTASMA",
-        category: "special",
-        power: 65,
-        accuracy: 100,
-        priority: 0,
-        effect: "hex",
-        effectChance: 100,
-        description: "Duplica su poder si el rival sufre un problema de estado.",
-    },
-    "Anulación": {
-        name: "Anulación",
-        type: "NORMAL",
-        category: "status",
-        power: 0,
-        accuracy: 100,
-        priority: 0,
-        effect: "disable_last_move",
-        effectChance: 100,
-        description: "Anula el último movimiento del objetivo temporalmente.",
-    },
-    "Pulso Umbrío": {
-        name: "Pulso Umbrío",
-        type: "SINIESTRO",
-        category: "special",
-        power: 80,
-        accuracy: 100,
-        priority: 0,
-        effect: "flinch_20",
-        effectChance: 20,
-        description: "Onda de aura oscura. 20% de probabilidad de amedrentar.",
-    },
-    "Día Soleado": {
-        name: "Día Soleado",
-        type: "FUEGO",
-        category: "status",
-        power: 0,
-        accuracy: null,
-        priority: 0,
-        effect: "apply_weather_sun",
-        effectChance: 100,
-        description: "El sol brilla con fuerza durante 5 turnos. Potencia los movimientos de tipo Fuego.",
-    },
-    "Danza Lluvia": {
-        name: "Danza Lluvia",
-        type: "AGUA",
-        category: "status",
-        power: 0,
-        accuracy: null,
-        priority: 0,
-        effect: "apply_weather_rain",
-        effectChance: 100,
-        description: "Genera una fuerte lluvia durante 5 turnos. Potencia los movimientos de tipo Agua.",
-    },
-    "Tormenta Arena": {
-        name: "Tormenta Arena",
-        type: "ROCA",
-        category: "status",
-        power: 0,
-        accuracy: null,
-        priority: 0,
-        effect: "apply_weather_sand",
-        effectChance: 100,
-        description: "Tormenta de arena de 5 turnos. Daña a los Pokémon que no son Roca, Tierra o Acero.",
-    },
-    "Granizo": {
-        name: "Granizo",
-        type: "HIELO",
-        category: "status",
-        power: 0,
-        accuracy: null,
-        priority: 0,
-        effect: "apply_weather_hail",
-        effectChance: 100,
-        description: "Tormenta de granizo de 5 turnos. Daña a todos los Pokémon salvo a los de tipo Hielo.",
-    },
+
 }; // fin MovesDB
 
 

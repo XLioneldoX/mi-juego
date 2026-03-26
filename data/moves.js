@@ -1072,6 +1072,17 @@ const MovesDB = {
         effectChance: 100,
         description: "Lanza púas tóxicas al campo rival para envenenar a quienes entren.",
     },
+    "Púas": {
+    name: "Púas",
+    type: "TIERRA",
+    category: "status",
+    power: 0,
+    accuracy: null,
+    priority: 0,
+    effect: "apply_spikes",
+    effectChance: 100,
+    description: "Esparce púas en el campo rival. Los Pokémon que entren al campo recibirán daño (máximo 3 capas).",
+},
     "Red Viscosa": {
     name: "Red Viscosa",
     type: "BICHO",

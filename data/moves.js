@@ -449,17 +449,6 @@ const MovesDB = {
         effectChance: 100,
         description: "Corte místico que ignora los cambios en la Defensa del rival.",
     },
-    "Terratemblor": {
-        name: "Terratemblor",
-        type: "TIERRA",
-        category: "physical",
-        power: 100,
-        accuracy: 100,
-        priority: 0,
-        effect: null,
-        effectChance: 0,
-        description: "Golpe sísmico de alta potencia.",
-    },
 
     // ════════════════════════════════════════════════════════════════════════
     // 🌍 TIPO TIERRA
@@ -475,6 +464,17 @@ const MovesDB = {
         effect: null,
         effectChance: 0,
         description: "Sacudida de tierra de 100 de poder. Muy preciso.",
+    },
+     "Terratemblor": {
+        name: "Terratemblor",
+        type: "TIERRA",
+        category: "physical",
+        power: 100,
+        accuracy: 100,
+        priority: 0,
+        effect: null,
+        effectChance: 0,
+        description: "Golpe sísmico de alta potencia.",
     },
     "Asalto Cálido": {
         name: "Asalto Cálido",
@@ -573,28 +573,6 @@ const MovesDB = {
         effect: null,
         effectChance: 0,
         description: "Ataque psíquico de alta potencia.",
-    },
-    "Foco Resplandor": {
-        name: "Foco Resplandor",
-        type: "PSÍQUICO",
-        category: "special",
-        power: 120,
-        accuracy: 100,
-        priority: 0,
-        effect: null,
-        effectChance: 0,
-        description: "Explosión de energía mental concentrada. 120 de poder.",
-    },
-    "Recuperación": {
-        name: "Recuperación",
-        type: "PSÍQUICO",
-        category: "status",
-        power: 0,
-        accuracy: null,
-        priority: 0,
-        effect: "heal_50",
-        effectChance: 100,
-        description: "Recupera el 50% del HP máximo.",
     },
     "Hipnosis": {
         name: "Hipnosis",
@@ -863,6 +841,11 @@ const MovesDB = {
         effectChance: 100,
         description: "Danza mística. Sube ATK y Velocidad del usuario 1 nivel.",
     },
+
+     // ════════════════════════════════════════════════════════════════════════
+    // TIPO ACERO
+    // ════════════════════════════════════════════════════════════════════════
+    
     "Cabeza de Hierro": {
         name: "Cabeza de Hierro",
         type: "ACERO",
@@ -884,6 +867,17 @@ const MovesDB = {
         effect: null,
         effectChance: 0,
         description: "Puñetazo tan rápido como una bala. Tiene prioridad.",
+    },
+    "Foco Resplandor": {
+        name: "Foco Resplandor",
+        type: "ACERO",
+        category: "special",
+        power: 120,
+        accuracy: 100,
+        priority: 0,
+        effect: null,
+        effectChance: 0,
+        description: "Explosión de energía mental concentrada. 120 de poder.",
     },
 
     // ════════════════════════════════════════════════════════════════════════
@@ -1058,6 +1052,17 @@ const MovesDB = {
         effect: "disable_last_move",
         effectChance: 100,
         description: "Anula el último movimiento del objetivo temporalmente.",
+    },
+    "Recuperación": {
+        name: "Recuperación",
+        type: "NORMAL",
+        category: "status",
+        power: 0,
+        accuracy: null,
+        priority: 0,
+        effect: "heal_50",
+        effectChance: 100,
+        description: "Recupera el 50% del HP máximo.",
     },
 
     // ════════════════════════════════════════════════════════════════════════

@@ -536,6 +536,16 @@ function handleStatusMove(user, target, moveName) {
         }
         return;
     }
+    if (move.effect === 'apply_spikes') {
+    const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
+    if (hz.spikes < 3) {
+        hz.spikes++;
+        addLog(`📌 ¡Se han esparcido Púas por el campo rival!`, 'boost');
+    } else {
+        addLog(`❌ Las púas no pueden apilarse más.`, '');
+    }
+    return;
+    }
     if (move.effect === 'boost_atk_spe') {
         user.statBoosts.atk = Math.min(6, (user.statBoosts.atk || 0) + 1);
         user.statBoosts.spe = Math.min(6, (user.statBoosts.spe || 0) + 1);

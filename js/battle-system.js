@@ -464,6 +464,19 @@ function handleStatusMove(user, target, moveName) {
         addLog(`💚 ${user.name} recuperó ${h} HP`, 'heal');
         return;
     }
+    if (move.effect === 'apply_leech_seed') {
+    if (target.types.includes('PLANTA')) {
+        addLog(`🌿 ¡No tiene efecto sobre los Pokémon de tipo Planta!`, '');
+        return;
+    }
+    if (target.leechSeed) {
+        addLog(`🌿 ¡${target.name} ya tiene una semilla plantada!`, '');
+        return;
+    }
+    target.leechSeed = true;
+    addLog(`🌱 ¡Una semilla fue plantada en ${target.name}!`, 'boost');
+    return;
+    }
     if (move.effect === 'heal_100_sleep') {
         user.currentHp = user.stats.hp;
         user.status = 'sleep';
@@ -655,6 +668,20 @@ function afterTurn() {
             // Revelar si es el rival
             if (enemyTeam.includes(p)) revealEnemyStat('item', p);
         }
+        // Drenadoras
+if (p.leechSeed && !p.fainted) {
+    const drain = Math.floor(p.stats.hp / 8);
+    p.currentHp = Math.max(0, p.currentHp - drain);
+    addLog(`🌿 ¡Drenadoras drenaron ${drain} HP de ${p.name}!`, 'damage');
+    if (p.currentHp <= 0) p.fainted = true;
+
+    const isPlayer = playerTeam.includes(p);
+    const receiver = isPlayer ? enemyTeam[enemyActive] : playerTeam[playerActive];
+    if (receiver && !receiver.fainted) {
+        receiver.currentHp = Math.min(receiver.stats.hp, receiver.currentHp + drain);
+        addLog(`💚 ${receiver.name} absorbió ${drain} HP`, 'heal');
+    }
+}
 
         // Habilidades de fin de turno (Recuperación pasiva, Ímpetu Veloz)
         const abMsg = applyAbilityEndOfTurn(p);
@@ -805,6 +832,7 @@ function handleFaint(side, callback) {
             if (side === 'enemy') {
                 enemyActive = enemyTeam.findIndex(p => !p.fainted);
                 const newEnemy = enemyTeam[enemyActive];
+                newEnemy.leechSeed = false;
                 newEnemy.turnsInField = 0;
                 newEnemy.flinched = false;
                 addLog(`🔄 ¡El rival envió a ${newEnemy.name}!`, 'important');
@@ -868,6 +896,8 @@ function closeSwitch() {
 
 function switchTo(newIndex) {
     const oldName = playerTeam[playerActive].name;
+    // Limpiar drenadoras del Pokémon que sale
+    playerTeam[playerActive].leechSeed = false;
 
     // ── MODO MULTIJUGADOR ─────────────────────────────────────────────────────
     if (typeof MP !== 'undefined' && MP.active) {

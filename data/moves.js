@@ -1075,6 +1075,17 @@ const MovesDB = {
         effectChance: 100,
         description: "Recupera el 50% del HP máximo.",
     },
+    "Giro Rápido": {
+    name: "Giro Rápido",
+    type: "NORMAL",
+    category: "physical",
+    power: 50,
+    accuracy: 100,
+    priority: 0,
+    effect: "rapid_spin",
+    effectChance: 100,
+    description: "Giro veloz que hace daño y elimina las trampas del propio campo y las Drenadoras.",
+},
 
     // ════════════════════════════════════════════════════════════════════════
     // 🆕 NUEVOS MOVIMIENTOS

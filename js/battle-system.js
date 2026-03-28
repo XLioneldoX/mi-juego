@@ -324,6 +324,15 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
         attacker.currentHp = Math.min(attacker.stats.hp, attacker.currentHp + heal);
         addLog(`💚 ¡${attacker.name} recuperó salud! (+${heal})`, 'heal');
     }
+    // ── Giro Rápido ───────────────────────────────────────────────────────
+if (move.effect === 'rapid_spin') {
+    const hz = side === 'player' ? playerHazards : enemyHazards;
+    hz.spikes = 0;
+    hz.toxicSpikes = 0;
+    hz.stickyWeb = false;
+    attacker.leechSeed = false;
+    addLog(`🌀 ¡Giro Rápido eliminó las trampas del campo de ${attacker.name}!`, 'boost');
+    }
 
     // ── Bajada de Defensas (A Bocajarro, Asalto Cálido) ───────────────────
     if (move.effect === 'drop_self_def_spd_1') {

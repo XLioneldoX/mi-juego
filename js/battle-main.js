@@ -15,6 +15,9 @@ let battleLevel = 100;
 
 let currentBGM = null;
 
+window.battleWeather = { type: null, turns: 0 };
+window.trickRoomActive = { turns: 0 };
+
 // Estado de revelación: oculta habilidad y objeto del rival hasta que se usen
 const enemyRevealed = { item: false, ability: false };
 const playerRevealed = { item: false, ability: false };
@@ -187,6 +190,10 @@ function startBattle() {
     playerRevealed.item = false; playerRevealed.ability = false;
     playerHazards = { toxicSpikes: 0, spikes: 0 };
     enemyHazards = { toxicSpikes: 0, spikes: 0 };
+
+    window.battleWeather = { type: null, turns: 0 };
+    window.trickRoomActive = { turns: 0 };
+    if (typeof updateWeatherAndTerrainUI === 'function') updateWeatherAndTerrainUI();
 
     updateUI();
     renderMoves();

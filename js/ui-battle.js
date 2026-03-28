@@ -23,6 +23,51 @@ function updateUI() {
 
     if (typeof playerHazards !== 'undefined') renderHazards('player', playerHazards);
     if (typeof enemyHazards !== 'undefined') renderHazards('enemy', enemyHazards);
+
+    updateWeatherAndTerrainUI();
+}
+
+// ─── CLIMA Y TERRENO UI ────────────────────────────────────────────────────────
+function updateWeatherAndTerrainUI() {
+    const overlay = document.getElementById('weatherOverlay');
+    if (!overlay) return;
+
+    let content = '';
+    
+    // 1. Capa de Video de Clima (Efectos de partículas)
+    if (window.battleWeather && window.battleWeather.turns > 0) {
+        const w = window.battleWeather.type;
+        let videoFile = '';
+        if (w === 'sun') videoFile = 'weather/weather-gen6-sunnyday.mp4';
+        else if (w === 'rain') videoFile = 'weather/weather-gen6-raindance.mp4';
+        else if (w === 'sand') videoFile = 'weather/weather-gen6-sandstorm.mp4';
+        else if (w === 'hail') videoFile = 'weather/weather-gen6-hail.mp4';
+
+        if (videoFile) {
+            content += `<video autoplay loop muted playsinline style="position:absolute;width:100%;height:100%;object-fit:cover;opacity:0.7;z-index:1;mix-blend-mode:screen;"><source src="${videoFile}" type="video/mp4"></video>`;
+        }
+    }
+
+    // 2. Capa de Imagen de Clima (Fondo/Tinte)
+    if (window.battleWeather && window.battleWeather.turns > 0) {
+        const w = window.battleWeather.type;
+        let imageFile = '';
+        if (w === 'sun') imageFile = 'weather/weather-sunnyday.png';
+        else if (w === 'rain') imageFile = 'weather/weather-raindance.png';
+        else if (w === 'sand') imageFile = 'weather/weather-sandstorm.png';
+        else if (w === 'hail') imageFile = 'weather/weather-hail.png';
+
+        if (imageFile) {
+            content += `<img src="${imageFile}" style="position:absolute;width:100%;height:100%;object-fit:cover;opacity:0.5;z-index:2;mix-blend-mode:overlay;">`;
+        }
+    }
+
+    // 3. Capa de Trick Room (Súper notorio)
+    if (window.trickRoomActive && window.trickRoomActive.turns > 0) {
+        content += `<img src="weather/weather-trickroom.png" style="position:absolute;width:100%;height:100%;object-fit:cover;opacity:0.85;z-index:3;mix-blend-mode:hard-light;filter: contrast(120%);">`;
+    }
+
+    overlay.innerHTML = content;
 }
 
 // ─── TARJETA DE POKÉMON ───────────────────────────────────────────────────────

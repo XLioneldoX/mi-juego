@@ -470,6 +470,20 @@ function handleStatusMove(user, target, moveName) {
         addLog(`💚 ${user.name} se durmió y recuperó todo el HP`, 'heal');
         return;
     }
+   if (move.effect === 'apply_sticky_web') {
+    const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
+    
+    // Crear la variable porque leo es tontísimo
+    if (hz.stickyWeb === undefined) hz.stickyWeb = false;
+
+    if (!hz.stickyWeb) {
+        hz.stickyWeb = true;
+        addLog(`🕸️ ¡Una Red Viscosa rodea el campo del equipo rival!`, 'boost');
+    } else {
+        addLog(`❌ Ya hay una Red Viscosa en el campo.`, '');
+    }
+    return;
+    }
     if (move.effect === 'heal_100_petrify') {
         user.currentHp = user.stats.hp;
         user.status = 'petrify';
@@ -522,6 +536,16 @@ function handleStatusMove(user, target, moveName) {
         }
         return;
     }
+    if (move.effect === 'apply_spikes') {
+    const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
+    if (hz.spikes < 3) {
+        hz.spikes++;
+        addLog(`📌 ¡Se han esparcido Púas por el campo rival!`, 'boost');
+    } else {
+        addLog(`❌ Las púas no pueden apilarse más.`, '');
+    }
+    return;
+    }
     if (move.effect === 'boost_atk_spe') {
         user.statBoosts.atk = Math.min(6, (user.statBoosts.atk || 0) + 1);
         user.statBoosts.spe = Math.min(6, (user.statBoosts.spe || 0) + 1);
@@ -538,6 +562,43 @@ function handleStatusMove(user, target, moveName) {
         addLog(`🛡️ ${user.name} se protege este turno`, 'boost');
         return;
     }
+    if (move.effect === 'apply_trick_room') {
+        if (window.trickRoomActive && window.trickRoomActive.turns > 0) {
+            window.trickRoomActive.turns = 0;
+            addLog(`⌛ ¡Las dimensiones volvieron a la normalidad!`, 'important');
+        } else {
+            window.trickRoomActive = { turns: 5 };
+            addLog(`🌀 ¡${user.name} retorció las dimensiones!`, 'important');
+        }
+        updateWeatherAndTerrainUI();
+        return;
+    }
+
+    if (move.effect === 'apply_weather_sun') {
+        window.battleWeather = { type: 'sun', turns: 5 };
+        addLog(`☀️ ¡El sol brilla con fuerza!`, 'important');
+        updateWeatherAndTerrainUI();
+        return;
+    }
+    if (move.effect === 'apply_weather_rain') {
+        window.battleWeather = { type: 'rain', turns: 5 };
+        addLog(`🌧️ ¡Empezó a llover!`, 'important');
+        updateWeatherAndTerrainUI();
+        return;
+    }
+    if (move.effect === 'apply_weather_sand') {
+        window.battleWeather = { type: 'sand', turns: 5 };
+        addLog(`🏜️ ¡Se desató una tormenta de arena!`, 'important');
+        updateWeatherAndTerrainUI();
+        return;
+    }
+    if (move.effect === 'apply_weather_hail') {
+        window.battleWeather = { type: 'hail', turns: 5 };
+        addLog(`❄️ ¡Empezó a granizar!`, 'important');
+        updateWeatherAndTerrainUI();
+        return;
+    }
+
     if (move.effect?.startsWith('apply_')) {
         const sk = move.effect.replace('apply_', '');
         if (move.accuracy !== null && Math.random() * 100 > (move.accuracy || 100)) {
@@ -557,6 +618,24 @@ function handleStatusMove(user, target, moveName) {
 // ─── FIN DE TURNO ─────────────────────────────────────────────────────────────
 function afterTurn() {
     if (battleOver) return;
+
+    // ── Clima y Espacio Raro (Contadores) ─────────────────────────────
+    if (window.battleWeather && window.battleWeather.turns > 0) {
+        window.battleWeather.turns--;
+        if (window.battleWeather.turns <= 0) {
+            window.battleWeather.type = null;
+            addLog(`⌛ El clima volvió a la normalidad.`, 'important');
+            updateWeatherAndTerrainUI();
+        }
+    }
+    if (window.trickRoomActive && window.trickRoomActive.turns > 0) {
+        window.trickRoomActive.turns--;
+        if (window.trickRoomActive.turns <= 0) {
+            addLog(`⌛ El espacio volvió a la normalidad.`, 'important');
+            updateWeatherAndTerrainUI();
+        }
+    }
+
     turnCount++;
     const tb = document.getElementById('turnBadge');
     if (tb) tb.textContent = `Turno ${turnCount}`;
@@ -580,6 +659,26 @@ function afterTurn() {
         // Habilidades de fin de turno (Recuperación pasiva, Ímpetu Veloz)
         const abMsg = applyAbilityEndOfTurn(p);
         if (abMsg) addLog(abMsg, 'heal');
+
+        // Daño por Clima
+        if (window.battleWeather && window.battleWeather.turns > 0) {
+            const w = window.battleWeather.type;
+            if (w === 'sand') {
+                if (!p.types.includes('ROCA') && !p.types.includes('TIERRA') && !p.types.includes('ACERO')) {
+                    const d = Math.floor(p.stats.hp / 16);
+                    p.currentHp = Math.max(0, p.currentHp - d);
+                    addLog(`🏜️ La tormenta de arena daña a ${p.name}`, 'damage');
+                    if (p.currentHp <= 0) p.fainted = true;
+                }
+            } else if (w === 'hail') {
+                if (!p.types.includes('HIELO')) {
+                    const d = Math.floor(p.stats.hp / 16);
+                    p.currentHp = Math.max(0, p.currentHp - d);
+                    addLog(`❄️ El granizo daña a ${p.name}`, 'damage');
+                    if (p.currentHp <= 0) p.fainted = true;
+                }
+            }
+        }
 
         // Estados que dañan (veneno, quemadura, etc.)
         const statusRes = applyStatusEffects(p);
@@ -636,7 +735,15 @@ function afterTurn() {
 function applyHazardsOnSwitchIn(pokemon, side) {
     if (pokemon.fainted) return;
     const hazards = side === 'player' ? playerHazards : enemyHazards;
-
+    //RED VISCOSA SEMEN
+    if (hazards.stickyWeb) {
+        const isGrounded = !pokemon.types.includes("VOLADOR") && AbilitiesDB[pokemon.ability]?.effect !== 'immune_ground';
+        if (isGrounded) {
+            pokemon.statBoosts = pokemon.statBoosts || {};
+            pokemon.statBoosts.spe = Math.max(-6, (pokemon.statBoosts.spe || 0) - 1);
+            addLog(`🕸️ ¡${pokemon.name} fue atrapado por la red viscosa! Su Velocidad bajó.`, 'damage');
+        }
+    }
     // PÚAS TÓXICAS
     if (hazards.toxicSpikes > 0) {
         // ¿Volador o levitación? No toca el suelo (inmune)

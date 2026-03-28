@@ -300,6 +300,55 @@ const AbilitiesDB = {
         immune:      "FUEGO",
     },
 
+    "Nado Rápido": {
+        name:        "Nado Rápido",
+        icon:        "🌊",
+        description: "Su VELOCIDAD se duplica bajo la lluvia.",
+        trigger:     "passive",
+        effect:      "boost_spe_weather",
+        weather:     "rain",
+        value:       2.0,
+    },
+
+    "Clorofila": {
+        name:        "Clorofila",
+        icon:        "🌿",
+        description: "Su VELOCIDAD se duplica bajo el sol.",
+        trigger:     "passive",
+        effect:      "boost_spe_weather",
+        weather:     "sun",
+        value:       2.0,
+    },
+
+    "Ímpetu Arena": {
+        name:        "Ímpetu Arena",
+        icon:        "🏜️",
+        description: "Su VELOCIDAD se duplica en tormenta de arena.",
+        trigger:     "passive",
+        effect:      "boost_spe_weather",
+        weather:     "sand",
+        value:       2.0,
+    },
+
+    "Ímpetu Nieve": {
+        name:        "Ímpetu Nieve",
+        icon:        "❄️",
+        description: "Su VELOCIDAD se duplica bajo el granizo o nieve.",
+        trigger:     "passive",
+        effect:      "boost_spe_weather",
+        weather:     "hail",
+        value:       2.0,
+    },
+
+    "Poder Arena": {
+        name:        "Poder Arena",
+        icon:        "⚙️",
+        description: "Potencia movimientos de Roca, Tierra y Acero ×1.3 en arena.",
+        trigger:     "on_attack",
+        effect:      "sand_force",
+        value:       1.3,
+    },
+
     // ← AÑADE UNA HABILIDAD NUEVA AQUÍ
     // Recuerda después ir a js/battle-engine.js → applyAbility()
     // y añadir el case para tu nuevo "effect"

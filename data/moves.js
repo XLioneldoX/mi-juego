@@ -212,6 +212,17 @@ const MovesDB = {
         effectChance: 100,
         description: "Drena la energía del objetivo. Recupera 50% del daño.",
     },
+    "Drenadoras": {
+        name: "Drenadoras",
+        type: "PLANTA",
+        category: "status",
+        power: 0,
+        accuracy: 90,
+        priority: 0,
+        effect: "apply_leech_seed",
+        effectChance: 100,
+        description: "Planta una semilla en el objetivo. Al final de cada turno drena 1/8 de su HP y lo transfiere al Pokémon activo rival. Se cancela si el objetivo es cambiado o se debilita.",
+    },
     "Síntesis": {
         name: "Síntesis",
         type: "PLANTA",

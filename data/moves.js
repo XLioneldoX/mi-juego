@@ -868,6 +868,17 @@ const MovesDB = {
         effectChance: 0,
         description: "Puñetazo tan rápido como una bala. Tiene prioridad.",
     },
+    "Trampa Rocas": {
+    name: "Trampa Rocas",
+    type: "ROCA",
+    category: "status",
+    power: 0,
+    accuracy: null,
+    priority: 0,
+    effect: "apply_stealth_rock",
+    effectChance: 100,
+    description: "Coloca rocas en el campo rival que dañan a los Pokémon al entrar según su debilidad al tipo Roca.",
+    },
     "Foco Resplandor": {
         name: "Foco Resplandor",
         type: "ACERO",

@@ -36,7 +36,7 @@ const PokemonDB = {
         abilities: ["Impetu", "Adaptabilidad", "Nado Rápido"],
         ability: "Impetu",
         moves: ["Megacuerno", "Surf", "Cascada", "Ataque Rápido"],
-        learnset: ["Megacuerno", "Púas", "Surf", "Cascada", "Ataque Rápido", "Golpe Cuerpo", "Rustedge", "Hidrobomba", "Powder Bomb", "Red Viscosa", "Protección", "Gigadrenado", "Sustituto", "Danza Lluvia"],
+        learnset: ["Megacuerno", "Surf", "Cascada", "Ataque Rápido", "Golpe Cuerpo", "Rustedge", "Hidrobomba", "Powder Bomb", "Protección", "Gigadrenado", "Sustituto", "Danza Lluvia"],
         stats: { hp: 72, atk: 88, def: 88, spa: 72, spd: 72, spe: 58 },
     },
     2: {
@@ -103,7 +103,7 @@ const PokemonDB = {
         stats: { hp: 70, atk: 65, def: 75, spa: 115, spd: 85, spe: 95 },
     },
     9: {
-        id: 9, name: "Alakazan",
+        id: 9, name: "Alakazam",
         types: ["PSÍQUICO", "SINIESTRO"],
         abilities: ["Magia Guard", "Magica Defensa"],
         ability: "Magia Guard",
@@ -630,7 +630,7 @@ const PokemonDB = {
         abilities: ["Peso Pluma", "Arena Volcanica"],
         ability: "Peso Pluma",
         moves: ["Vendaval", "Megacuerno", "Pico Taladro", "Avalancha"],
-        learnset: ["Vendaval", "Megacuerno", "Pico Taladro", "Avalancha", "Carga", "Ataque Rápido", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Blossom Needle", "Rayo", "Onda Voltio", "Shortcut"],
+        learnset: ["Vendaval", "Megacuerno", "Pico Taladro", "Avalancha", "Carga", "Ataque Rápido", "Drenadoras", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Blossom Needle", "Rayo", "Onda Voltio", "Shortcut"],
         stats: { hp: 65, atk: 90, def: 72, spa: 78, spd: 79, spe: 110 },
     },
     68: {
@@ -774,7 +774,7 @@ const PokemonDB = {
         abilities: ["Levitacion", "Cuerpo Puro"],
         ability: "Levitacion",
         moves: ["Bola Sombra", "Foco Resplandor", "Hipnosis", "Recuperación"],
-        learnset: ["Bola Sombra", "Foco Resplandor", "Hipnosis", "Recuperación", "Teletransporte", "Red Viscosa", "Golpe Cuerpo", "Possession", "Boo-mbs", "Spirit Charge", "Rayo", "Onda Voltio", "Shortcut", "Trick Room"],
+        learnset: ["Bola Sombra", "Foco Resplandor", "Hipnosis", "Recuperación", "Teletransporte", "Golpe Cuerpo", "Possession", "Boo-mbs", "Spirit Charge", "Rayo", "Onda Voltio", "Shortcut", "Trick Room"],
         stats: { hp: 58, atk: 60, def: 90, spa: 134, spd: 105, spe: 30 },
     },
     84: {

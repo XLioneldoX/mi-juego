@@ -122,7 +122,7 @@ function checkStatusBlock(pokemon, logFn) {
                 return true; // se curó, puede actuar
             }
             logFn(`💫 ${(sd.blockMsg || '{pokemon} está confundido.').replace('{pokemon}', pokemon.name)}`, '');
-            
+
             if (Math.random() * 100 < (sd.selfHitChance || 33)) {
                 const dmg = calculateConfusionDamage(pokemon);
                 pokemon.currentHp = Math.max(0, pokemon.currentHp - dmg);
@@ -182,9 +182,6 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
         setTimeout(callback, 600);
         return;
     }
-
-    // ── Lógica especial: Intercepción por Sustituto (Visual/Log) ──────────
-    const hasSubstitute = (defender.substituteHp || 0) > 0;
 
     // ── Lógica especial: Sucker Punch (Golpe Bajo) ────────────────────────
     if (move.effect === 'sucker_punch') {
@@ -259,9 +256,7 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
         defender.currentHp = 1;
         defender.itemUsed = true;
         addLog(`💪 ¡Cinta Focus: ${defender.name} aguantó con 1 HP!`, 'boost');
-        if (defSide === 'enemy') revealEnemyStat('item', defender);
-        else revealPlayerStat('item', defender);
-        // Revelar objeto si es enemigo
+        // FIX #1/#5: eliminada la llamada duplicada a revealEnemyStat/revealPlayerStat
         if (defSide === 'enemy') revealEnemyStat('item', defender);
         else revealPlayerStat('item', defender);
     } else {
@@ -298,8 +293,7 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
         attacker.currentHp = Math.max(0, attacker.currentHp - r);
         if (attacker.currentHp <= 0) attacker.fainted = true;
         addLog(`⚡ ${attacker.name} recibe ${r} de retroceso`, 'damage');
-        if (side === 'enemy') revealEnemyStat('item', attacker);
-        else revealPlayerStat('item', attacker);
+        // FIX #1/#5: eliminada la llamada duplicada a revealEnemyStat/revealPlayerStat
         if (side === 'enemy') revealEnemyStat('item', attacker);
         else revealPlayerStat('item', attacker);
     }
@@ -325,6 +319,16 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
         addLog(`💚 ¡${attacker.name} recuperó salud! (+${heal})`, 'heal');
     }
 
+    // ── Giro Rápido ───────────────────────────────────────────────────────
+    if (move.effect === 'rapid_spin') {
+        const hz = side === 'player' ? playerHazards : enemyHazards;
+        hz.spikes = 0;
+        hz.toxicSpikes = 0;
+        hz.stickyWeb = false;
+        attacker.leechSeed = false;
+        addLog(`🌀 ¡Giro Rápido eliminó las trampas del campo de ${attacker.name}!`, 'boost');
+    }
+
     // ── Bajada de Defensas (A Bocajarro, Asalto Cálido) ───────────────────
     if (move.effect === 'drop_self_def_spd_1') {
         attacker.statBoosts.def = Math.max(-6, (attacker.statBoosts.def || 0) - 1);
@@ -344,7 +348,8 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
     if (!bruteForce && move.effect && move.effect !== 'recoil_33') {
         const chance = move.effectChance || 0;
         if (chance === 100 || Math.random() * 100 < chance) {
-            if (move.effect.startsWith('apply_') && !['apply_toxic_spikes'].includes(move.effect)) {
+            if (move.effect.startsWith('apply_') && !['apply_toxic_spikes', 'apply_leech_seed'].includes(move.effect)) {
+                // FIX #3: apply_leech_seed excluido explícitamente del bloque genérico apply_
                 if (!defender.fainted) {
                     const sk = move.effect.replace('apply_', '');
                     if (!defender.status && !isImmuneToStatus(defender, sk)) {
@@ -464,26 +469,41 @@ function handleStatusMove(user, target, moveName) {
         addLog(`💚 ${user.name} recuperó ${h} HP`, 'heal');
         return;
     }
+
+    // ── Drenadoras ────────────────────────────────────────────────────────
+    if (move.effect === 'apply_leech_seed') {
+        if (target.types.includes('PLANTA')) {
+            addLog(`🌿 ¡No tiene efecto sobre los Pokémon de tipo Planta!`, '');
+            return;
+        }
+        if (target.leechSeed) {
+            addLog(`🌿 ¡${target.name} ya tiene una semilla plantada!`, '');
+            return;
+        }
+        target.leechSeed = true;
+        addLog(`🌱 ¡Una semilla fue plantada en ${target.name}!`, 'boost');
+        return;
+    }
+
     if (move.effect === 'heal_100_sleep') {
         user.currentHp = user.stats.hp;
         user.status = 'sleep';
         addLog(`💚 ${user.name} se durmió y recuperó todo el HP`, 'heal');
         return;
     }
-   if (move.effect === 'apply_sticky_web') {
-    const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
-    
-    // Crear la variable porque leo es tontísimo
-    if (hz.stickyWeb === undefined) hz.stickyWeb = false;
 
-    if (!hz.stickyWeb) {
-        hz.stickyWeb = true;
-        addLog(`🕸️ ¡Una Red Viscosa rodea el campo del equipo rival!`, 'boost');
-    } else {
-        addLog(`❌ Ya hay una Red Viscosa en el campo.`, '');
+    if (move.effect === 'apply_sticky_web') {
+        const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
+        if (hz.stickyWeb === undefined) hz.stickyWeb = false;
+        if (!hz.stickyWeb) {
+            hz.stickyWeb = true;
+            addLog(`🕸️ ¡Una Red Viscosa rodea el campo del equipo rival!`, 'boost');
+        } else {
+            addLog(`❌ Ya hay una Red Viscosa en el campo.`, '');
+        }
+        return;
     }
-    return;
-    }
+
     if (move.effect === 'heal_100_petrify') {
         user.currentHp = user.stats.hp;
         user.status = 'petrify';
@@ -507,16 +527,19 @@ function handleStatusMove(user, target, moveName) {
         }
         return;
     }
+
     if (move.effect === 'change_type_flying') {
         target.types = ["VOLADOR"];
         addLog(`💨 ¡El tipo de ${target.name} cambió a Volador!`, 'boost');
         return;
     }
+
     if (move.effect === 'destiny_bond') {
         user.destinyBond = true;
         addLog(`🔗 ¡${user.name} se prepara para llevarse consigo a su atacante!`, 'important');
         return;
     }
+
     if (move.effect === 'disable_last_move') {
         if (!target.lastMoveUsed || target.disabledMove) {
             addLog(`❌ ¡Pero falló!`, '');
@@ -526,6 +549,7 @@ function handleStatusMove(user, target, moveName) {
         }
         return;
     }
+
     if (move.effect === 'apply_toxic_spikes') {
         const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
         if (hz.toxicSpikes < 3) {
@@ -536,32 +560,37 @@ function handleStatusMove(user, target, moveName) {
         }
         return;
     }
+
     if (move.effect === 'apply_spikes') {
-    const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
-    if (hz.spikes < 3) {
-        hz.spikes++;
-        addLog(`📌 ¡Se han esparcido Púas por el campo rival!`, 'boost');
-    } else {
-        addLog(`❌ Las púas no pueden apilarse más.`, '');
+        const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
+        if (hz.spikes < 3) {
+            hz.spikes++;
+            addLog(`📌 ¡Se han esparcido Púas por el campo rival!`, 'boost');
+        } else {
+            addLog(`❌ Las púas no pueden apilarse más.`, '');
+        }
+        return;
     }
-    return;
-    }
+
     if (move.effect === 'boost_atk_spe') {
         user.statBoosts.atk = Math.min(6, (user.statBoosts.atk || 0) + 1);
         user.statBoosts.spe = Math.min(6, (user.statBoosts.spe || 0) + 1);
         addLog(`⬆️ ${user.name}: ↑ ATK y ↑ SPE`, 'boost');
         return;
     }
+
     if (move.effect === 'boost_spe') {
         user.statBoosts.spe = Math.min(6, (user.statBoosts.spe || 0) + 1);
         addLog(`⬆️ ${user.name}: ↑ SPE`, 'boost');
         return;
     }
+
     if (move.effect === 'protect') {
         user.protected = true;
         addLog(`🛡️ ${user.name} se protege este turno`, 'boost');
         return;
     }
+
     if (move.effect === 'apply_trick_room') {
         if (window.trickRoomActive && window.trickRoomActive.turns > 0) {
             window.trickRoomActive.turns = 0;
@@ -580,18 +609,21 @@ function handleStatusMove(user, target, moveName) {
         updateWeatherAndTerrainUI();
         return;
     }
+
     if (move.effect === 'apply_weather_rain') {
         window.battleWeather = { type: 'rain', turns: 5 };
         addLog(`🌧️ ¡Empezó a llover!`, 'important');
         updateWeatherAndTerrainUI();
         return;
     }
+
     if (move.effect === 'apply_weather_sand') {
         window.battleWeather = { type: 'sand', turns: 5 };
         addLog(`🏜️ ¡Se desató una tormenta de arena!`, 'important');
         updateWeatherAndTerrainUI();
         return;
     }
+
     if (move.effect === 'apply_weather_hail') {
         window.battleWeather = { type: 'hail', turns: 5 };
         addLog(`❄️ ¡Empezó a granizar!`, 'important');
@@ -646,21 +678,41 @@ function afterTurn() {
     ].forEach(({ p }) => {
         if (p.fainted) return;
 
-        // Restos
+        // ── Restos ────────────────────────────────────────────────────────
         if (p.item === 'Restos') {
             const h = Math.floor(p.stats.hp / 16);
             p.currentHp = Math.min(p.currentHp + h, p.stats.hp);
             addLog(`♻️ Restos: ${p.name} recuperó ${h} HP`, 'heal');
-            if (enemyTeam.includes(p)) revealEnemyStat('item', p);
-            // Revelar si es el rival
+            // FIX #6: eliminada la llamada duplicada a revealEnemyStat
             if (enemyTeam.includes(p)) revealEnemyStat('item', p);
         }
 
-        // Habilidades de fin de turno (Recuperación pasiva, Ímpetu Veloz)
+        // ── Drenadoras ────────────────────────────────────────────────────
+        // FIX #10: drenadoras respetan el Sustituto del objetivo
+        if (p.leechSeed && !p.fainted) {
+            const hasSub = (p.substituteHp || 0) > 0;
+            if (hasSub) {
+                addLog(`🎭 ¡El sustituto de ${p.name} bloqueó las Drenadoras!`, '');
+            } else {
+                const drain = Math.floor(p.stats.hp / 8);
+                p.currentHp = Math.max(0, p.currentHp - drain);
+                addLog(`🌿 ¡Drenadoras drenaron ${drain} HP de ${p.name}!`, 'damage');
+                if (p.currentHp <= 0) p.fainted = true;
+
+                const isPlayer = playerTeam.includes(p);
+                const receiver = isPlayer ? enemyTeam[enemyActive] : playerTeam[playerActive];
+                if (receiver && !receiver.fainted) {
+                    receiver.currentHp = Math.min(receiver.stats.hp, receiver.currentHp + drain);
+                    addLog(`💚 ${receiver.name} absorbió ${drain} HP`, 'heal');
+                }
+            }
+        }
+
+        // ── Habilidades de fin de turno ───────────────────────────────────
         const abMsg = applyAbilityEndOfTurn(p);
         if (abMsg) addLog(abMsg, 'heal');
 
-        // Daño por Clima
+        // ── Daño por Clima ────────────────────────────────────────────────
         if (window.battleWeather && window.battleWeather.turns > 0) {
             const w = window.battleWeather.type;
             if (w === 'sand') {
@@ -680,20 +732,19 @@ function afterTurn() {
             }
         }
 
-        // Estados que dañan (veneno, quemadura, etc.)
+        // ── Estados que dañan (veneno, quemadura, etc.) ───────────────────
         const statusRes = applyStatusEffects(p);
         if (statusRes) {
             addLog(statusRes.message, 'damage');
-            // Marcar fainted inmediatamente si llega a 0
             if (p.currentHp <= 0) { p.currentHp = 0; p.fainted = true; }
         }
 
-        // Limpiar estados de turno
+        // ── Limpiar estados de turno ──────────────────────────────────────
         p.protected = false;
         p.flinched = false;
         p.turnsInField++;
 
-        // Movimientos anulados
+        // ── Movimientos anulados ──────────────────────────────────────────
         if (p.disabledMove) {
             p.disabledMove.turns--;
             if (p.disabledMove.turns <= 0) {
@@ -735,7 +786,8 @@ function afterTurn() {
 function applyHazardsOnSwitchIn(pokemon, side) {
     if (pokemon.fainted) return;
     const hazards = side === 'player' ? playerHazards : enemyHazards;
-    //RED VISCOSA SEMEN
+
+    // ── Red Viscosa ───────────────────────────────────────────────────────
     if (hazards.stickyWeb) {
         const isGrounded = !pokemon.types.includes("VOLADOR") && AbilitiesDB[pokemon.ability]?.effect !== 'immune_ground';
         if (isGrounded) {
@@ -744,19 +796,15 @@ function applyHazardsOnSwitchIn(pokemon, side) {
             addLog(`🕸️ ¡${pokemon.name} fue atrapado por la red viscosa! Su Velocidad bajó.`, 'damage');
         }
     }
-    // PÚAS TÓXICAS
-    if (hazards.toxicSpikes > 0) {
-        // ¿Volador o levitación? No toca el suelo (inmune)
-        const isGrounded = !pokemon.types.includes("VOLADOR") && AbilitiesDB[pokemon.ability]?.effect !== 'immune_ground';
 
+    // ── Púas Tóxicas ──────────────────────────────────────────────────────
+    if (hazards.toxicSpikes > 0) {
+        const isGrounded = !pokemon.types.includes("VOLADOR") && AbilitiesDB[pokemon.ability]?.effect !== 'immune_ground';
         if (isGrounded) {
-            // Pokémon Tipo Veneno absorbe las púas
             if (pokemon.types.includes("VENENO")) {
                 hazards.toxicSpikes = 0;
                 addLog(`🧹 ¡${pokemon.name} absorbió las Púas Tóxicas!`, 'heal');
-            }
-            // Otros Pokémon se envenenan (si no son Acero, ni tienen estado, ni son inmunes)
-            else if (!pokemon.types.includes("ACERO")) {
+            } else if (!pokemon.types.includes("ACERO")) {
                 if (!pokemon.status && !isImmuneToStatus(pokemon, 'poison') && !isImmuneToStatus(pokemon, 'badPoison')) {
                     const tox = hazards.toxicSpikes >= 3 ? 'badPoison' : 'poison';
                     pokemon.status = tox;
@@ -766,7 +814,7 @@ function applyHazardsOnSwitchIn(pokemon, side) {
         }
     }
 
-    // PÚAS (Normales)
+    // ── Púas (Normales) ───────────────────────────────────────────────────
     if (hazards.spikes > 0) {
         const isGrounded = !pokemon.types.includes("VOLADOR") && AbilitiesDB[pokemon.ability]?.effect !== 'immune_ground';
         if (isGrounded) {
@@ -792,28 +840,22 @@ function handleFaint(side, callback) {
     }
     setTimeout(() => {
         if (typeof MP !== 'undefined' && MP.active) {
-            // MULTIPLAYER: El jugador decide cuándo enviar su nuevo Pokémon.
-            // Si el enemigo murió, solo esperamos a que el rival elija.
-            // Si yo morí, levanto el switch de manera forzada para elegir.
             if (side === 'player') {
                 switchForced = true;
                 isBusy = false;
                 openSwitch(true);
             }
         } else {
-            // SINGLE-PLAYER ORIGINAL
             if (side === 'enemy') {
                 enemyActive = enemyTeam.findIndex(p => !p.fainted);
                 const newEnemy = enemyTeam[enemyActive];
+                // FIX #4/#5: el nuevo Pokémon que entra no hereda leechSeed
+                newEnemy.leechSeed = false;
                 newEnemy.turnsInField = 0;
                 newEnemy.flinched = false;
                 addLog(`🔄 ¡El rival envió a ${newEnemy.name}!`, 'important');
-                // Habilidad on_switch_in del rival
                 applyAbilitySwitchIn(newEnemy, playerTeam[playerActive], (msg, t) => { addLog(msg, t); if (msg) revealEnemyStat('ability', newEnemy); });
-
-                // ── TRAMPAS AL ENTRAR AL CAMPO ────────────────────────────────
                 applyHazardsOnSwitchIn(newEnemy, 'enemy');
-
                 updateUI();
                 if (callback) callback();
             } else {
@@ -868,15 +910,19 @@ function closeSwitch() {
 
 function switchTo(newIndex) {
     const oldName = playerTeam[playerActive].name;
+    // FIX #4: limpiar leechSeed del Pokémon que sale (jugador)
+    playerTeam[playerActive].leechSeed = false;
 
     // ── MODO MULTIJUGADOR ─────────────────────────────────────────────────────
     if (typeof MP !== 'undefined' && MP.active) {
         if (switchForced) {
             MP.forcedSwitch(newIndex);
         } else {
+            // FIX #2: en MP, limpiar leechSeed también cuando el enemigo cambia
+            // Esto se gestiona desde el servidor al recibir el evento de cambio
             MP.chooseSwitch(newIndex);
             document.getElementById('switchModal').classList.remove('open');
-            return; // En multiplayer regular switch, esperar respuesta del servidor
+            return;
         }
     }
 
@@ -889,10 +935,7 @@ function switchTo(newIndex) {
     addLog('━━━━━━━━━━━━━━', 'separator');
     addLog(`🔄 ${oldName} regresa. ¡Adelante, ${newPoke.name}!`, 'important');
 
-    // Habilidad on_switch_in del nuevo Pokémon
     applyAbilitySwitchIn(newPoke, enemyTeam[enemyActive], (msg, t) => addLog(msg, t));
-
-    // ── TRAMPAS AL ENTRAR AL CAMPO ────────────────────────────────────────────
     applyHazardsOnSwitchIn(newPoke, 'player');
 
     updateUI();
@@ -915,7 +958,6 @@ function endBattle(playerWon) {
     battleOver = true;
     isBusy = true;
 
-    // Detener música si hay una reproduciéndose
     if (typeof currentBGM !== 'undefined' && currentBGM) {
         currentBGM.pause();
         currentBGM = null;

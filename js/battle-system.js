@@ -482,7 +482,7 @@ function handleStatusMove(user, target, moveName) {
         }
         target.leechSeed = true;
         addLog(`🌱 ¡Una semilla fue plantada en ${target.name}!`, 'boost');
-        return;
+        return; //tu puta madre leo
     }
 
     if (move.effect === 'heal_100_sleep') {

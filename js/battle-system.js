@@ -208,7 +208,33 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
     if (move.category === 'status') {
         handleStatusMove(attacker, defender, moveName);
         updateUI();
-        setTimeout(callback, 600);
+        
+        // Verificar si es un movimiento de cambio (U-turn, Volt Switch, Flip Turn)
+        if (move.effect === 'user_switch') {
+            // Permitir el cambio después del movimiento
+            setTimeout(() => {
+                if (side === 'player') {
+                    // Forzar la pantalla de selección de Pokémon
+                    switchForced = true;
+                    isBusy = false;
+                    openSwitch(true);
+                } else {
+                    // Para el enemigo, cambiar al siguiente Pokémon disponible
+                    const nextPokemon = enemyTeam.findIndex((p, i) => i !== enemyActive && p.currentHp > 0);
+                    if (nextPokemon !== -1) {
+                        switchForced = true;
+                        enemyActive = nextPokemon;
+                        addLog(`🔄 El enemigo cambió a ${enemyTeam[nextPokemon].name}!`, 'important');
+                        updateUI();
+                        renderMoves();
+                        switchForced = false;
+                    }
+                }
+                if (callback) callback();
+            }, 1000);
+        } else {
+            setTimeout(callback, 600);
+        }
         return;
     }
 
@@ -266,6 +292,9 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
     const dmg = dmgResult.damage;
     const isCrit = dmgResult.isCrit;
 
+    // Verificar si es un movimiento de cambio (U-turn, Volt Switch, Flip Turn)
+    const isSwitchMove = move.effect === 'user_switch';
+    
     if (isCrit) {
         addLog('✨ ¡Un golpe crítico!', 'important');
     }
@@ -474,9 +503,47 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
         }, 600);
         return;
     }
-    if (defender.fainted) { setTimeout(() => handleFaint(defSide, callback), 600); return; }
+    if (defender.fainted) { 
+        setTimeout(() => {
+            handleFaint(defSide, () => {
+                // Si es un movimiento de cambio, permitir el cambio después del KO
+                if (isSwitchMove && side === 'player') {
+                    switchForced = true;
+                    isBusy = false;
+                    openSwitch(true);
+                } else {
+                    if (callback) callback();
+                }
+            });
+        }, 600); 
+        return; 
+    }
     if (attacker.fainted) { setTimeout(() => handleFaint(side, callback), 600); return; }
-    setTimeout(callback, 600);
+    
+    // Si es un movimiento de cambio, permitir el cambio después del ataque
+    if (isSwitchMove) {
+        setTimeout(() => {
+            if (side === 'player') {
+                switchForced = true;
+                isBusy = false;
+                openSwitch(true);
+            } else {
+                // Para el enemigo, cambiar al siguiente Pokémon disponible
+                const nextPokemon = enemyTeam.findIndex((p, i) => i !== enemyActive && p.currentHp > 0);
+                if (nextPokemon !== -1) {
+                    switchForced = true;
+                    enemyActive = nextPokemon;
+                    addLog(`🔄 El enemigo cambió a ${enemyTeam[nextPokemon].name}!`, 'important');
+                    updateUI();
+                    renderMoves();
+                    switchForced = false;
+                }
+            }
+            if (callback) callback();
+        }, 1000);
+    } else {
+        setTimeout(callback, 600);
+    }
 }
 
 // ─── MOVIMIENTOS DE ESTADO ────────────────────────────────────────────────────

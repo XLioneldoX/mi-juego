@@ -34,6 +34,39 @@ const MovesDB = {
     // 🔥 TIPO FUEGO
     // ════════════════════════════════════════════════════════════════════════
 
+    "Absorber": {
+        name: "Absorber",
+        type: "PLANTA",
+        category: "special",
+        power: 20,
+        accuracy: 100,
+        priority: 0,
+        effect: "drain_50",
+        effectChance: 100,
+        description: "Absorbe energía del objetivo. Recupera HP del daño causado.",
+    },
+    "Acrobacias": {
+        name: "Acrobacias",
+        type: "VOLADOR",
+        category: "physical",
+        power: 55,
+        accuracy: 100,
+        priority: 0,
+        effect: "double_power_no_item",
+        effectChance: 100,
+        description: "Golpeo acrobático. Duplica poder si el usuario no tiene item.",
+    },
+    "Acupresión": {
+        name: "Acupresión",
+        type: "NORMAL",
+        category: "status",
+        power: 0,
+        accuracy: true,
+        priority: 0,
+        effect: "boost_random_stat_2",
+        effectChance: 100,
+        description: "Presiona puntos vitales. Sube 2 niveles un stat aleatorio.",
+    },
     "Lanzallamas": {
         name: "Lanzallamas",
         type: "FUEGO",
@@ -256,8 +289,6 @@ const MovesDB = {
         effectChance: 0,
         description: "Mazo enorme que usa el usuario para golpear al oponente. El usuario recibe 1/3 de retroceso.",
     },
-
-
 
     // ════════════════════════════════════════════════════════════════════════
     // ⚡ TIPO ELÉCTRICO
@@ -1062,7 +1093,655 @@ const MovesDB = {
         accuracy: 100,
         priority: 0,
         effect: "substitute",
+        effectChance: 100,
         description: "Crea un señuelo con el 25% del HP para protegerse.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 🌟 TIPO HADA
+    // ══════════════════════════════════════════════════════════════════════
+
+    "Niebla Aromática": {
+        name: "Niebla Aromática",
+        type: "HADA",
+        category: "status",
+        power: 0,
+        accuracy: true,
+        priority: 0,
+        effect: "boost_ally_spd_1",
+        effectChance: 100,
+        description: "Crea niebla aromática. Sube 1 nivel la Defensa Especial de un aliado.",
+    },
+    "Burbuja Encantada": {
+        name: "Burbuja Encantada",
+        type: "HADA",
+        category: "special",
+        power: 90,
+        accuracy: 100,
+        priority: 0,
+        effect: "apply_paralysis",
+        effectChance: 10,
+        description: "Burbuja mágica. Puede paralizar.",
+    },
+    "Danza Lunar": {
+        name: "Danza Lunar",
+        type: "HADA",
+        category: "status",
+        power: 0,
+        accuracy: true,
+        priority: 0,
+        effect: "boost_atk_spe",
+        effectChance: 100,
+        description: "Danza mística. Sube ATK y Velocidad del usuario 1 nivel.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 🌊 TIPO AGUA (Adicionales)
+    // ══════════════════════════════════════════════════════════════════════
+
+    "Lluvia Torrencial": {
+        name: "Lluvia Torrencial",
+        type: "AGUA",
+        category: "status",
+        power: 0,
+        accuracy: true,
+        priority: 0,
+        effect: "apply_weather_rain",
+        effectChance: 100,
+        description: "Genera una fuerte lluvia durante 5 turnos. Potencia los movimientos de tipo Agua.",
+    },
+    "Pulso Agua": {
+        name: "Pulso Agua",
+        type: "AGUA",
+        category: "special",
+        power: 60,
+        accuracy: 100,
+        priority: 0,
+        effect: "apply_confusion",
+        effectChance: 20,
+        description: "Onda acuática. Puede confundir.",
+    },
+    "Hidrocañón": {
+        name: "Hidrocañón",
+        type: "AGUA",
+        category: "special",
+        power: 110,
+        accuracy: 80,
+        priority: 0,
+        effect: null,
+        effectChance: 0,
+        description: "Cañón de agua muy poderoso.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 🌿 TIPO PLANTA (Adicionales)
+    // ══════════════════════════════════════════════════════════════════════
+
+    "Ácido": {
+        name: "Ácido",
+        type: "VENENO",
+        category: "special",
+        power: 40,
+        accuracy: 100,
+        priority: 0,
+        effect: "lower_spd_1",
+        effectChance: 10,
+        description: "Lanza ácido corrosivo. Puede bajar la Defensa Especial del objetivo.",
+    },
+    "Armadura Ácida": {
+        name: "Armadura Ácida",
+        type: "VENENO",
+        category: "status",
+        power: 0,
+        accuracy: true,
+        priority: 0,
+        effect: "boost_def_2",
+        effectChance: 100,
+        description: "Reduce la temperatura corporal. Sube 2 niveles la Defensa.",
+    },
+    "Rociador Ácido": {
+        name: "Rociador Ácido",
+        type: "VENENO",
+        category: "special",
+        power: 40,
+        accuracy: 100,
+        priority: 0,
+        effect: "lower_spd_2",
+        effectChance: 100,
+        description: "Rocía ácido fuerte. Baja 2 niveles la Defensa Especial del objetivo.",
+    },
+    "Latigazo": {
+        name: "Latigazo",
+        type: "PLANTA",
+        category: "physical",
+        power: 45,
+        accuracy: 100,
+        priority: 0,
+        effect: null,
+        effectChance: 0,
+        description: "Ataque con látigo.",
+    },
+    "Bomba Ácida": {
+        name: "Bomba Ácida",
+        type: "VENENO",
+        category: "special",
+        power: 80,
+        accuracy: 100,
+        priority: 0,
+        effect: "lower_spd_2",
+        effectChance: 100,
+        description: "Explosión ácida. Baja 2 niveles la Defensa Especial del objetivo.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // ⚡ TIPO ELÉCTRICO (Adicionales)
+    // ══════════════════════════════════════════════════════════════════════
+
+    "Acelerroca": {
+        name: "Acelerroca",
+        type: "ROCA",
+        category: "physical",
+        power: 40,
+        accuracy: 100,
+        priority: 1,
+        effect: null,
+        effectChance: 0,
+        description: "Lanza rocas a gran velocidad. Ataca primero.",
+    },
+    "Corte Aéreo": {
+        name: "Corte Aéreo",
+        type: "VOLADOR",
+        category: "special",
+        power: 75,
+        accuracy: 95,
+        priority: 0,
+        effect: "flinch_30",
+        effectChance: 30,
+        description: "Corta con aire. Puede hacer retroceder al objetivo.",
+    },
+    "Rayo": {
+        name: "Rayo",
+        type: "ELÉCTRICO",
+        category: "special",
+        power: 90,
+        accuracy: 100,
+        priority: 0,
+        effect: "apply_paralysis",
+        effectChance: 10,
+        description: "Descarga eléctrica. Puede paralizar.",
+    },
+    "Onda Voltio": {
+        name: "Onda Voltio",
+        type: "ELÉCTRICO",
+        category: "special",
+        power: 65,
+        accuracy: 100,
+        priority: 0,
+        effect: "apply_paralysis",
+        effectChance: 10,
+        description: "Onda eléctrica débil. Puede paralizar.",
+    },
+    "Puño Trueno": {
+        name: "Puño Trueno",
+        type: "ELÉCTRICO",
+        category: "physical",
+        power: 75,
+        accuracy: 100,
+        priority: 0,
+        effect: "apply_paralysis",
+        effectChance: 10,
+        description: "Puño con electricidad. Puede paralizar.",
+    },
+    "Impactrueno": {
+        name: "Impactrueno",
+        type: "ELÉCTRICO",
+        category: "physical",
+        power: 40,
+        accuracy: 100,
+        priority: 0,
+        effect: "apply_paralysis",
+        effectChance: 10,
+        description: "Impacto eléctrico. Puede paralizar.",
+    },
+    "Onda Trueno": {
+        name: "Onda Trueno",
+        type: "ELÉCTRICO",
+        category: "special",
+        power: 110,
+        accuracy: 70,
+        priority: 0,
+        effect: "apply_paralysis",
+        effectChance: 30,
+        description: "Rayo poderoso. Baja precisión pero puede paralizar.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 🥊 TIPO LUCHA (Adicionales)
+    // ══════════════════════════════════════════════════════════════════════
+
+    "Embestida de Brazo": {
+        name: "Embestida de Brazo",
+        type: "LUCHA",
+        category: "physical",
+        power: 15,
+        accuracy: 100,
+        priority: 0,
+        effect: "multihit_2_5",
+        effectChance: 100,
+        description: "Golpea rápidamente con los brazos. Golpea 2-5 veces.",
+    },
+    "Patada Salto": {
+        name: "Patada Salto",
+        type: "LUCHA",
+        category: "physical",
+        power: 85,
+        accuracy: 95,
+        priority: 0,
+        effect: "apply_paralysis",
+        effectChance: 30,
+        description: "Patada saltarina. Puede paralizar.",
+    },
+    "Avalancha": {
+        name: "Avalancha",
+        type: "LUCHA",
+        category: "physical",
+        power: 60,
+        accuracy: 100,
+        priority: -4,
+        effect: "double_power_damaged",
+        effectChance: 100,
+        description: "Poderoso si recibe daño primero. Ataca después.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 🐞 TIPO BICHO (Adicionales)
+    // ══════════════════════════════════════════════════════════════════════
+
+    "Mordisco Bicho": {
+        name: "Mordisco Bicho",
+        type: "BICHO",
+        category: "physical",
+        power: 60,
+        accuracy: 100,
+        priority: 0,
+        effect: "steal_berry",
+        effectChance: 100,
+        description: "Muerde y puede robar la baya del objetivo.",
+    },
+    "Zumbido Bicho": {
+        name: "Zumbido Bicho",
+        type: "BICHO",
+        category: "special",
+        power: 90,
+        accuracy: 100,
+        priority: 0,
+        effect: "lower_spd_1",
+        effectChance: 10,
+        description: "Emite un zumbido ensordecedor. Puede bajar la Defensa Especial.",
+    },
+    "Doble Ataque": {
+        name: "Doble Ataque",
+        type: "BICHO",
+        category: "physical",
+        power: 35,
+        accuracy: 90,
+        priority: 0,
+        effect: "multihit_2",
+        effectChance: 100,
+        description: "Ataca dos veces seguidas.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 🐉 TIPO DRAGÓN (Adicionales)
+    // ══════════════════════════════════════════════════════════════════════
+
+    "Escamas Estridentes": {
+        name: "Escamas Estridentes",
+        type: "DRAGÓN",
+        category: "special",
+        power: 110,
+        accuracy: 100,
+        priority: 0,
+        effect: "lower_self_def_1",
+        effectChance: 100,
+        description: "Chirría con fuerza. Baja la Defensa del usuario 1 nivel.",
+    },
+    "Garra Dragón": {
+        name: "Garra Dragón",
+        type: "DRAGÓN",
+        category: "physical",
+        power: 80,
+        accuracy: 100,
+        priority: 0,
+        effect: null,
+        effectChance: 0,
+        description: "Zarpazo con energía dracónica. Muy preciso.",
+    },
+    "Enfado": {
+        name: "Enfado",
+        type: "DRAGÓN",
+        category: "physical",
+        power: 120,
+        accuracy: 100,
+        priority: 0,
+        effect: "recoil_33",
+        effectChance: 100,
+        description: "Ataque de 120 poder con furia. El usuario recibe 1/3 del daño.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 🧠 TIPO PSÍQUICO (Adicionales)
+    // ══════════════════════════════════════════════════════════════════════
+
+    "Agilidad": {
+        name: "Agilidad",
+        type: "PSÍQUICO",
+        category: "status",
+        power: 0,
+        accuracy: true,
+        priority: 0,
+        effect: "boost_spe_2",
+        effectChance: 100,
+        description: "Aumenta la velocidad drásticamente. Sube 2 niveles la Velocidad.",
+    },
+    "Amnesia": {
+        name: "Amnesia",
+        type: "PSÍQUICO",
+        category: "status",
+        power: 0,
+        accuracy: true,
+        priority: 0,
+        effect: "boost_spd_2",
+        effectChance: 100,
+        description: "Olvida temporalmente. Sube 2 niveles la Defensa Especial.",
+    },
+    "Hipnosis": {
+        name: "Hipnosis",
+        type: "PSÍQUICO",
+        category: "status",
+        power: 0,
+        accuracy: 60,
+        priority: 0,
+        effect: "apply_sleep",
+        effectChance: 100,
+        description: "Induce sueño profundo. Duerme al objetivo.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 🧊 TIPO HIELO (Adicionales)
+    // ══════════════════════════════════════════════════════════════════════
+
+    "Rayo Aurora": {
+        name: "Rayo Aurora",
+        type: "HIELO",
+        category: "special",
+        power: 65,
+        accuracy: 100,
+        priority: 0,
+        effect: "lower_atk_1",
+        effectChance: 10,
+        description: "Dispara un rayo auroral. Puede bajar el Ataque del objetivo.",
+    },
+    "Viento Hielo": {
+        name: "Viento Hielo",
+        type: "HIELO",
+        category: "special",
+        power: 55,
+        accuracy: 95,
+        priority: 0,
+        effect: null,
+        effectChance: 0,
+        description: "Viento helado moderado con buena precisión.",
+    },
+    "Canto Helado": {
+        name: "Canto Helado",
+        type: "HIELO",
+        category: "physical",
+        power: 40,
+        accuracy: 100,
+        priority: 1,
+        effect: null,
+        effectChance: 0,
+        description: "Ataque de hielo con prioridad. Siempre golpea primero.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 🐍 TIPO VENENO (Adicionales)
+    // ════════════════════════════════════════════════════════════════════════
+
+    "Bomba Lodo": {
+        name: "Bomba Lodo",
+        type: "VENENO",
+        category: "special",
+        power: 90,
+        accuracy: 100,
+        priority: 0,
+        effect: "apply_poison",
+        effectChance: 30,
+        description: "Bomba de lodo tóxico. Alta probabilidad de envenenar.",
+    },
+    "Puya Nociva": {
+        name: "Puya Nociva",
+        type: "VENENO",
+        category: "physical",
+        power: 80,
+        accuracy: 100,
+        priority: 0,
+        effect: "apply_poison",
+        effectChance: 30,
+        description: "Puyas venenosas y corrosivas. Probabilidad de envenenar.",
+    },
+    "Onda Tóxica": {
+        name: "Onda Tóxica",
+        type: "VENENO",
+        category: "special",
+        power: 90,
+        accuracy: 100,
+        priority: 0,
+        effect: "apply_poison",
+        effectChance: 10,
+        description: "Onda corrosiva muy toxica. Probabilidad de envenenar al oponente.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 🌍 TIPO TIERRA (Adicionales)
+    // ════════════════════════════════════════════════════════════════════════
+
+    "Anclaje": {
+        name: "Anclaje",
+        type: "ACERO",
+        category: "physical",
+        power: 80,
+        accuracy: 100,
+        priority: 0,
+        effect: "trap_target",
+        effectChance: 100,
+        description: "Dispara un ancla. Previene el cambio y atrapa al objetivo.",
+    },
+    "Terremoto": {
+        name: "Terremoto",
+        type: "TIERRA",
+        category: "physical",
+        power: 100,
+        accuracy: 100,
+        priority: 0,
+        effect: null,
+        effectChance: 0,
+        description: "Sacudida de tierra de 100 de poder. Muy preciso.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 🪨 TIPO ACERO (Adicionales)
+    // ════════════════════════════════════════════════════════════════════════
+
+    "Puño Bala": {
+        name: "Puño Bala",
+        type: "ACERO",
+        category: "physical",
+        power: 40,
+        accuracy: 100,
+        priority: 1,
+        effect: null,
+        effectChance: 0,
+        description: "Puñetazo tan rápido como una bala. Tiene prioridad.",
+    },
+    "Cabeza de Hierro": {
+        name: "Cabeza de Hierro",
+        type: "ACERO",
+        category: "physical",
+        power: 80,
+        accuracy: 100,
+        priority: 0,
+        effect: null,
+        effectChance: 0,
+        description: "Embestida con cabeza de acero. Muy preciso.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 🦅 TIPO VOLADOR (Adicionales)
+    // ════════════════════════════════════════════════════════════════════════
+
+    "Vuelo": {
+        name: "Vuelo",
+        type: "VOLADOR",
+        category: "physical",
+        power: 90,
+        accuracy: 95,
+        priority: 0,
+        effect: "charge_turn",
+        effectChance: 100,
+        description: "Vuela alto el primer turno, ataca el segundo.",
+    },
+    "Pico Taladro": {
+        name: "Pico Taladro",
+        type: "VOLADOR",
+        category: "physical",
+        power: 80,
+        accuracy: 100,
+        priority: 0,
+        effect: null,
+        effectChance: 0,
+        description: "Picotazo penetrante de gran precisión.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 👻 TIPO FANTASMA (Adicionales)
+    // ════════════════════════════════════════════════════════════════════════
+
+    "Bola Sombra": {
+        name: "Bola Sombra",
+        type: "FANTASMA",
+        category: "special",
+        power: 80,
+        accuracy: 100,
+        priority: 0,
+        effect: null,
+        effectChance: 0,
+        description: "Bola de energía oscura de buena potencia.",
+    },
+    "Sombra Vil": {
+        name: "Sombra Vil",
+        type: "FANTASMA",
+        category: "physical",
+        power: 40,
+        accuracy: 100,
+        priority: 1,
+        effect: null,
+        effectChance: 0,
+        description: "Extiende su sombra para atacar. Tiene prioridad.",
+    },
+    "Rayo Confuso": {
+        name: "Rayo Confuso",
+        type: "FANTASMA",
+        category: "status",
+        power: 0,
+        accuracy: 100,
+        priority: 0,
+        effect: "apply_confusion",
+        effectChance: 100,
+        description: "Un rayo siniestro que confunde al objetivo.",
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // 🌑 TIPO NORMAL (Adicionales)
+    // ══════════════════════════════════════════════════════════════════════
+
+    "Ataque Rápido": {
+        name: "Ataque Rápido",
+        type: "NORMAL",
+        category: "physical",
+        power: 40,
+        accuracy: 100,
+        priority: 1,
+        effect: null,
+        effectChance: 0,
+        description: "Ataque veloz con prioridad. Siempre golpea primero.",
+    },
+    "Velocidad Extrema": {
+        name: "Velocidad Extrema",
+        type: "NORMAL",
+        category: "physical",
+        power: 80,
+        accuracy: 100,
+        priority: 2,
+        effect: null,
+        effectChance: 0,
+        description: "Ataque de velocidad extrema con prioridad +2.",
+    },
+    "Golpe Cuerpo": {
+        name: "Golpe Cuerpo",
+        type: "NORMAL",
+        category: "physical",
+        power: 85,
+        accuracy: 100,
+        priority: 0,
+        effect: null,
+        effectChance: 0,
+        description: "Golpe con todo el cuerpo. Preciso y sólido.",
+    },
+    "Superdiente": {
+        name: "Superdiente",
+        type: "NORMAL",
+        category: "physical",
+        power: 90,
+        accuracy: 100,
+        priority: 0,
+        effect: null,
+        effectChance: 0,
+        description: "Mordisco poderoso con colmillos afilados.",
+    },
+    "Descanso": {
+        name: "Descanso",
+        type: "NORMAL",
+        category: "status",
+        power: 0,
+        accuracy: null,
+        priority: 0,
+        effect: "heal_100_sleep",
+        effectChance: 100,
+        description: "Duerme 2 turnos pero recupera todo el HP.",
+    },
+    "Protección": {
+        name: "Protección",
+        type: "NORMAL",
+        category: "status",
+        power: 0,
+        accuracy: null,
+        priority: 4,
+        effect: "protect",
+        effectChance: 100,
+        description: "Protege de cualquier ataque este turno. Falla si se usa seguido.",
+    },
+    "Sorpresa": {
+        name: "Sorpresa",
+        type: "NORMAL",
+        category: "physical",
+        power: 40,
+        accuracy: 100,
+        priority: 3,
+        effect: "fake_out",
+        effectChance: 100,
+        description: "Ataca primero y hace retroceder. Solo funciona el primer turno.",
     },
     "Anulación": {
         name: "Anulación",

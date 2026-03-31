@@ -240,6 +240,26 @@ function executeAttack(attacker, defender, moveName, side, targetHasMoved, targe
         }
     }
 
+    // ── EFECTOS ESPECIALES ANTES DEL DAÑO ────────────────────────────────
+    
+    // Poder duplicado sin item
+    if (move.effect === 'double_power_no_item' && !attacker.item) {
+        dmg *= 2;
+        addLog(`💪 ¡Poder duplicado sin item!`, 'boost');
+    }
+    
+    // Multigolpes
+    if (move.effect === 'multihit_2_5') {
+        const hits = Math.floor(Math.random() * 4) + 2; // 2-5 hits
+        let totalDamage = 0;
+        for (let i = 0; i < hits; i++) {
+            const hitDamage = calculateDamage(attacker, defender, move);
+            totalDamage += hitDamage;
+            addLog(`💥 Golpe ${i + 1}: ${Math.floor(hitDamage)} daño`, 'damage');
+        }
+        dmg = totalDamage;
+    }
+
     const isPhysical = move.category === 'physical';
     const effectiveness = calculateEffectiveness(move.type, defender.types, move.name, move.dualType);
     const dmgResult = calculateDamage(attacker, defender, moveName);
@@ -482,7 +502,7 @@ function handleStatusMove(user, target, moveName) {
         }
         target.leechSeed = true;
         addLog(`🌱 ¡Una semilla fue plantada en ${target.name}!`, 'boost');
-        return; //tu puta madre leo
+        return; 
     }
 
     if (move.effect === 'heal_100_sleep') {
@@ -508,6 +528,233 @@ function handleStatusMove(user, target, moveName) {
         user.currentHp = user.stats.hp;
         user.status = 'petrify';
         addLog(`🗿 ${user.name} se petrificó y recuperó todo el HP`, 'heal');
+        return;
+    }
+
+    // ── NUEVOS EFECTOS DE TRADUCCIÓN ────────────────────────────────────────
+    
+    // Drenaje de vida
+    if (move.effect === 'drain_50') {
+        const drainAmount = Math.floor(dmg * 0.5);
+        user.currentHp = Math.min(user.currentHp + drainAmount, user.stats.hp);
+        addLog(`💚 ${user.name} recuperó ${drainAmount} HP`, 'heal');
+        return;
+    }
+
+    // Boosts propios
+    if (move.effect === 'boost_def_2') {
+        user.boosts = user.boosts || {};
+        user.boosts.def = Math.min(6, (user.boosts.def || 0) + 2);
+        addLog(`⬆️ ${user.name}: ↑ DEF +2`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'boost_spe_2') {
+        user.boosts = user.boosts || {};
+        user.boosts.spe = Math.min(6, (user.boosts.spe || 0) + 2);
+        addLog(`⬆️ ${user.name}: ↑ SPE +2`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'boost_spd_2') {
+        user.boosts = user.boosts || {};
+        user.boosts.spd = Math.min(6, (user.boosts.spd || 0) + 2);
+        addLog(`⬆️ ${user.name}: ↑ SPD +2`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'boost_ally_spd_1') {
+        target.boosts = target.boosts || {};
+        target.boosts.spd = Math.min(6, (target.boosts.spd || 0) + 1);
+        addLog(`⬆️ ${target.name}: ↑ SPD +1`, 'boost');
+        return;
+    }
+
+    // Debuffs al objetivo
+    if (move.effect === 'lower_spd_1') {
+        target.boosts = target.boosts || {};
+        target.boosts.spd = Math.max(-6, (target.boosts.spd || 0) - 1);
+        addLog(`⬇️ ${target.name}: ↓ SPD -1`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'lower_spd_2') {
+        target.boosts = target.boosts || {};
+        target.boosts.spd = Math.max(-6, (target.boosts.spd || 0) - 2);
+        addLog(`⬇️ ${target.name}: ↓ SPD -2`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'lower_atk_1') {
+        target.boosts = target.boosts || {};
+        target.boosts.atk = Math.max(-6, (target.boosts.atk || 0) - 1);
+        addLog(`⬇️ ${target.name}: ↓ ATK -1`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'lower_self_def_1') {
+        user.boosts = user.boosts || {};
+        user.boosts.def = Math.max(-6, (user.boosts.def || 0) - 1);
+        addLog(`⬇️ ${user.name}: ↓ DEF -1`, 'boost');
+        return;
+    }
+
+    // Efectos especiales
+    if (move.effect === 'flinch_30') {
+        if (Math.random() * 100 < 30) {
+            target.flinched = true;
+            addLog(`😵 ${target.name} retrocede`, 'boost');
+        }
+        return;
+    }
+
+    if (move.effect === 'trap_target') {
+        target.trapped = true;
+        addLog(`🔗 ${target.name} no puede cambiar`, 'important');
+        return;
+    }
+
+    if (move.effect === 'steal_berry') {
+        if (target.item && target.item.isBerry) {
+            const stolenBerry = target.item;
+            target.item = null;
+            user.item = stolenBerry;
+            addLog(`🫐 ${user.name} robó ${stolenBerry.name}`, 'important');
+        }
+        return;
+    }
+
+    // Boost aleatorio
+    if (move.effect === 'boost_random_stat_2') {
+        const stats = ['atk', 'def', 'spa', 'spd', 'spe'];
+        const availableStats = stats.filter(stat => !target.boosts || target.boosts[stat] < 6);
+        if (availableStats.length > 0) {
+            const randomStat = availableStats[Math.floor(Math.random() * availableStats.length)];
+            target.boosts = target.boosts || {};
+            target.boosts[randomStat] = Math.min(6, (target.boosts[randomStat] || 0) + 2);
+            addLog(`⬆️ ${target.name}: ↑ ${randomStat.toUpperCase()} +2`, 'boost');
+        }
+        return;
+    }
+
+    // Efectos adicionales para movimientos nuevos
+    if (move.effect === 'apply_confusion') {
+        if (Math.random() * 100 < move.effectChance || 100) {
+            target.confused = true;
+            addLog(`😵 ${target.name} está confundido`, 'boost');
+        }
+        return;
+    }
+
+    if (move.effect === 'apply_weather_rain') {
+        // Implementar clima de lluvia
+        addLog(`🌧️ Comienza a llover fuertemente`, 'important');
+        return;
+    }
+
+    if (move.effect === 'apply_weather_sun') {
+        // Implementar clima soleado
+        addLog(`☀️ El sol brilla con más fuerza`, 'important');
+        return;
+    }
+
+    if (move.effect === 'apply_weather_hail') {
+        // Implementar clima de granizo
+        addLog(`❄️ Comienza una tormenta de granizo`, 'important');
+        return;
+    }
+
+    if (move.effect === 'apply_weather_sand') {
+        // Implementar clima de arena
+        addLog(`🏖️ Comienza una tormenta de arena`, 'important');
+        return;
+    }
+
+    if (move.effect === 'apply_stealth_rock') {
+        const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
+        if (hz.stealthRock === undefined) hz.stealthRock = false;
+        if (!hz.stealthRock) {
+            hz.stealthRock = true;
+            addLog(`🪨 ¡Rocas sigilosas rodean el campo del equipo rival!`, 'boost');
+        } else {
+            addLog(`❌ Ya hay rocas sigilosas en el campo.`, '');
+        }
+        return;
+    }
+
+    if (move.effect === 'apply_spikes') {
+        const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
+        if (hz.spikes === undefined) hz.spikes = 0;
+        if (hz.spikes < 3) {
+            hz.spikes++;
+            addLog(`🪵 ¡Púas se esparcen por el equipo rival! (${hz.spikes}/3)`, 'boost');
+        } else {
+            addLog(`❌ Las púas no pueden apilarse más.`, '');
+        }
+        return;
+    }
+
+    if (move.effect === 'charge_turn') {
+        user.chargeTurn = true;
+        addLog(`⚡ ${user.name} está cargando energía`, 'important');
+        return;
+    }
+
+    if (move.effect === 'ignore_def_boosts') {
+        // Este efecto se maneja en el cálculo de daño
+        addLog(`💪 ${move.name} ignora las mejoras de defensa`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'level_damage') {
+        // Daño basado en nivel
+        const levelDamage = user.level * 1; // Ajustar según necesidad
+        addLog(`⚔️ ${target.name} recibe ${levelDamage} de daño basado en nivel`, 'damage');
+        return;
+    }
+
+    if (move.effect === 'hex') {
+        // Duplica poder si el objetivo tiene estado
+        if (target.status) {
+            addLog(`👻 ¡Poder duplicado por estado!`, 'boost');
+        }
+        return;
+    }
+
+    if (move.effect === 'knock_off') {
+        if (target.item) {
+            const knockedItem = target.item;
+            target.item = null;
+            addLog(`👟 ${target.name} perdió ${knockedItem.name}`, 'important');
+            // Aumentar daño si tenía item
+            dmg *= 1.5;
+        }
+        return;
+    }
+
+    if (move.effect === 'sucker_punch') {
+        // Solo funciona si el rival va a atacar
+        addLog(`👊 ${move.name} solo funciona si el rival ataca`, 'important');
+        return;
+    }
+
+    if (move.effect === 'fake_out') {
+        if (target.turnsInField === 0) {
+            addLog(`❌ ¡${move.name} solo funciona en el primer turno!`, '');
+            return;
+        }
+        return;
+    }
+
+    if (move.effect === 'destiny_bond') {
+        user.destinyBond = true;
+        addLog(`🔗 ¡${user.name} se preparó para llevarse consigo a su atacante!`, 'important');
+        return;
+    }
+
+    if (move.effect === 'apply_trick_room') {
+        // Implementar Trick Room
+        addLog(`🔄 ¡Se invirtió el orden de velocidad!`, 'important');
         return;
     }
 

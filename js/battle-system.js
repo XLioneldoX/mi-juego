@@ -808,6 +808,546 @@ function handleStatusMove(user, target, moveName) {
         return;
     }
 
+    // Nuevos efectos para movimientos competitivos
+    if (move.effect === 'facade') {
+        // Facade: duplica poder si el usuario tiene estado
+        if (user.status) {
+            addLog(`💪 ¡Fachada con poder duplicado por estado!`, 'boost');
+            dmg *= 2;
+        }
+        return;
+    }
+
+    if (move.effect === 'user_faint') {
+        // Explosion/Self-Destruct: el usuario se debilita
+        user.currentHp = 0;
+        addLog(`💥 ¡${user.name} se debilitó por el retroceso!`, 'important');
+        return;
+    }
+
+    if (move.effect === 'perish_song') {
+        // Perish Song: todos caen en 3 turnos
+        if (!user.perishSong) {
+            user.perishSong = 3;
+            target.perishSong = 3;
+            addLog(`⏰ ¡Canción Mortal activada! Todos caerán en 3 turnos`, 'important');
+        }
+        return;
+    }
+
+    if (move.effect === 'baton_pass') {
+        // Baton Pass: pasa mejoras al siguiente Pokémon
+        addLog(`🔄 ¡${user.name} pasó sus mejoras al siguiente Pokémon!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'boost_atk_spa_1') {
+        // Work Up: sube Ataque y Ataque Especial
+        applyBoost(user, 'atk', 1);
+        applyBoost(user, 'spa', 1);
+        addLog(`💪 ¡${user.name} subió Ataque y Ataque Especial!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'belly_drum') {
+        // Belly Drum: máximo Ataque a cambio de 50% HP
+        const cost = Math.floor(user.currentHp / 2);
+        if (user.currentHp > cost) {
+            user.currentHp -= cost;
+            user.atk = 6; // Máximo boost
+            addLog(`🥁 ¡${user.name} usó Batería! Máximo Ataque a cambio de HP`, 'important');
+        } else {
+            addLog(`❌ ¡No hay suficiente HP para Batería!`, '');
+        }
+        return;
+    }
+
+    if (move.effect === 'transform') {
+        // Transform: copia al objetivo completamente
+        if (!target.transformed) {
+            user.transformed = true;
+            user.originalStats = {...user.stats};
+            user.originalTypes = [...user.types];
+            user.originalMoves = [...user.moves];
+            
+            user.stats = {...target.stats};
+            user.types = [...target.types];
+            user.moves = [...target.moves];
+            
+            addLog(`🔄 ¡${user.name} se transformó en ${target.name}!`, 'important');
+        }
+        return;
+    }
+
+    if (move.effect === 'sketch') {
+        // Sketch: copia permanentemente el último movimiento rival
+        if (target.lastMoveUsed && !user.moves.includes(target.lastMoveUsed)) {
+            user.moves.push(target.lastMoveUsed);
+            addLog(`🎨 ¡${user.name} copió ${target.lastMoveUsed} permanentemente!`, 'important');
+        }
+        return;
+    }
+
+    if (move.effect === 'lower_user_spa_2') {
+        // Overheat/Leaf Storm/Draco Meteor: baja Ataque Especial 2 niveles
+        applyBoost(user, 'spa', -2);
+        addLog(`📉 ¡${user.name} bajó su Ataque Especial 2 niveles!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'recoil_33_and_burn') {
+        // Flare Blitz: retroceso 33% + posibilidad de quemar
+        const recoil = Math.floor(dmg / 3);
+        user.currentHp = Math.max(0, user.currentHp - recoil);
+        addLog(`💥 ¡${user.name} recibió ${recoil} de retroceso!`, 'damage');
+        return;
+    }
+
+    if (move.effect === 'lower_user_def_spd_1') {
+        // Close Combat: baja Defensa y Defensa Especial
+        applyBoost(user, 'def', -1);
+        applyBoost(user, 'spd', -1);
+        addLog(`📉 ¡${user.name} bajó sus defensas 1 nivel!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'always_crit') {
+        // Storm Throw/Frost Breath/Drill Run: siempre crítico
+        addLog(`⚔️ ¡Golpe crítico garantizado!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'lower_user_atk_def_1') {
+        // Superpower: baja Ataque y Defensa
+        applyBoost(user, 'atk', -1);
+        applyBoost(user, 'def', -1);
+        addLog(`📉 ¡${user.name} bajó Ataque y Defensa 1 nivel!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'apply_confusion') {
+        // Dynamic Punch: siempre confunde
+        target.confused = true;
+        addLog(`😵 ¡${target.name} está confundido!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'apply_toxic') {
+        // Toxic: envenenamiento progresivo
+        target.status = 'poison';
+        target.toxicCounter = 1;
+        addLog(`☠️ ¡${target.name} está envenenado gravemente!`, 'status');
+        return;
+    }
+
+    if (move.effect === 'clear_boosts') {
+        // Clear Smog: elimina todas las mejoras del rival
+        target.atk = 0;
+        target.def = 0;
+        target.spa = 0;
+        target.spd = 0;
+        target.spe = 0;
+        addLog(`🧹 ¡Se eliminaron todas las mejoras de ${target.name}!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'lower_target_spd_2') {
+        // Acid Spray: baja Defensa Especial 2 niveles
+        applyBoost(target, 'spd', -2);
+        addLog(`📉 ¡${target.name} bajó Defensa Especial 2 niveles!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'recoil_50') {
+        // Head Smash/Steel Beam: retroceso 50%
+        const recoil = Math.floor(dmg / 2);
+        user.currentHp = Math.max(0, user.currentHp - recoil);
+        addLog(`💥 ¡${user.name} recibió ${recoil} de retroceso masivo!`, 'damage');
+        return;
+    }
+
+    if (move.effect === 'high_crit') {
+        // Stone Edge/Shadow Claw: alta probabilidad de crítico
+        addLog(`⚔️ ¡Alta probabilidad de golpe crítico!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'user_switch') {
+        // U-turn/Volt Switch/Flip Turn: cambia de Pokémon
+        addLog(`🔄 ¡${user.name} atacó y cambiará de Pokémon!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'defog') {
+        // Defog: elimina trampas del campo rival
+        const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
+        hz.stealthRock = false;
+        hz.spikes = 0;
+        hz.toxicSpikes = 0;
+        hz.stickyWeb = false;
+        addLog(`🧹 ¡Se eliminaron las trampas del campo rival!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'boost_team_spe_2') {
+        // Tailwind: duplica Velocidad del equipo
+        const team = user === playerTeam[playerActive] ? playerTeam : enemyTeam;
+        team.forEach(pokemon => {
+            if (pokemon.currentHp > 0) {
+                applyBoost(pokemon, 'spe', 2);
+            }
+        });
+        addLog(`💨 ¡Viento Favorable duplica la Velocidad del equipo!`, 'important');
+        return;
+    }
+
+    if (move.effect === 'acrobatics') {
+        // Acrobatics: duplica poder sin objeto
+        if (!user.item) {
+            addLog(`🤸 ¡Acrobacias con poder duplicado sin objeto!`, 'boost');
+            dmg *= 2;
+        }
+        return;
+    }
+
+    if (move.effect === 'sky_drop') {
+        // Sky Drop: inmoviliza 1 turno luego ataca
+        target.skyDrop = true;
+        addLog(`☁️ ¡${target.name} fue levantado al cielo!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'psyshock') {
+        // Psyshock: usa Defensa física del objetivo
+        addLog(`🧠 ¡Psicocorte usa Defensa física!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'stored_power') {
+        // Stored Power: más fuerte con más mejoras
+        const totalBoosts = (user.atk || 0) + (user.def || 0) + (user.spa || 0) + (user.spd || 0) + (user.spe || 0);
+        if (totalBoosts > 0) {
+            const powerBonus = 20 * totalBoosts;
+            addLog(`💪 ¡Poder Almacenado con ${totalBoosts} mejoras! (+${powerBonus} poder)`, 'boost');
+            dmg += powerBonus;
+        }
+        return;
+    }
+
+    if (move.effect === 'expanding_force') {
+        // Expanding Force: más poderoso en Campo Psíquico
+        if (battleState.terrain === 'psychic') {
+            addLog(`🧠 ¡Fuerza Expansiva potenciada por Campo Psíquico!`, 'boost');
+            dmg *= 1.5;
+        }
+        return;
+    }
+
+    if (move.effect === 'future_sight') {
+        // Future Sight: ataca 2 turnos después
+        if (!user.futureSight) {
+            user.futureSight = { target: target, turns: 2, power: move.power };
+            addLog(`🔮 ¡Futuro Prever activado! Atacará en 2 turnos`, 'important');
+        }
+        return;
+    }
+
+    if (move.effect === 'heal_ally_50') {
+        // Heal Pulse: cura 50% HP de un aliado
+        const heal = Math.floor(target.stats.hp * 0.5);
+        target.currentHp = Math.min(target.currentHp + heal, target.stats.hp);
+        addLog(`💚 ¡${target.name} recuperó ${heal} HP!`, 'heal');
+        return;
+    }
+
+    if (move.effect === 'first_turn_only') {
+        // First Impression: solo funciona al entrar
+        if (user.turnsInField > 0) {
+            addLog(`❌ ¡Primera Impresión solo funciona al entrar!`, '');
+            return;
+        }
+        return;
+    }
+
+    if (move.effect === 'poltergeist') {
+        // Poltergeist: falla si el rival no tiene objeto
+        if (!target.item) {
+            addLog(`❌ ¡Poltergeist falló porque el rival no tiene objeto!`, '');
+            return;
+        }
+        return;
+    }
+
+    if (move.effect === 'outrage') {
+        // Outrage: ataca 2-3 turnos luego confunde
+        if (!user.outrage) {
+            user.outrage = { turns: Math.floor(Math.random() * 2) + 2, originalMove: move.name };
+            addLog(`🦀 ¡${user.name} entró en Furia!`, 'important');
+        }
+        return;
+    }
+
+    if (move.effect === 'force_switch') {
+        // Dragon Tail: fuerza al cambio de Pokémon
+        addLog(`🔄 ¡${target.name} fue forzado a cambiar de Pokémon!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'multihit_2') {
+        // Dual Chop: golpea 2 veces
+        addLog(`⚔️ ¡Doble Golpe!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'foul_play') {
+        // Foul Play: usa Ataque del rival
+        addLog(`👺 ¡Juego Sucio usa el Ataque del rival!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'boost_atk_accuracy_1') {
+        // Hone Claws: sube Ataque y Precisión
+        applyBoost(user, 'atk', 1);
+        user.accuracy = (user.accuracy || 100) + 33; // +1 nivel de precisión
+        addLog(`💪 ¡${user.name} subió Ataque y Precisión!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'parting_shot') {
+        // Parting Shot: baja estadísticas y cambia
+        applyBoost(target, 'atk', -1);
+        applyBoost(target, 'spa', -1);
+        addLog(`📉 ¡${target.name} bajó Ataque y Ataque Especial!`, 'boost');
+        addLog(`🔄 ¡${user.name} cambiará de Pokémon!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'charge_boost') {
+        // Meteor Beam: carga 1 turno, sube Ataque Especial
+        if (!user.charging) {
+            user.charging = true;
+            user.chargeMove = move.name;
+            addLog(`⚡ ¡${user.name} está cargando ${move.name}!`, 'important');
+        } else {
+            applyBoost(user, 'spa', 1);
+            addLog(`💪 ¡${user.name} subió Ataque Especial!`, 'boost');
+        }
+        return;
+    }
+
+    if (move.effect === 'weight_damage') {
+        // Heavy Slam: más poder si usuario es más pesado
+        addLog(`⚖️ ¡Placaje Pesado basado en el peso!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'boost_spe_2_and_lower_weight') {
+        // Autotomize: sube Velocidad 2 niveles y reduce peso
+        applyBoost(user, 'spe', 2);
+        user.weight = Math.max(0.1, (user.weight || 10) - 10);
+        addLog(`⚡ ¡${user.name} subió Velocidad 2 niveles y redujo su peso!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'body_press') {
+        // Body Press: usa Defensa en lugar de Ataque
+        addLog(`🛡️ ¡Placaje usa Defensa en lugar de Ataque!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'drain_75') {
+        // Draining Kiss: drena 75% del daño causado
+        const drain = Math.floor(dmg * 0.75);
+        user.currentHp = Math.min(user.currentHp + drain, user.stats.hp);
+        addLog(`💋 ¡${user.name} drenó ${drain} HP!`, 'heal');
+        return;
+    }
+
+    if (move.effect === 'apply_misty_terrain') {
+        // Misty Terrain: protege de estados por 5 turnos
+        battleState.terrain = 'misty';
+        battleState.terrainTurns = 5;
+        addLog(`🌫️ ¡Campo Nebuloso activado! Protege de estados`, 'important');
+        return;
+    }
+
+    if (move.effect === 'half_current_hp') {
+        // Nature's Madness: causa 50% del HP actual
+        const damage = Math.floor(target.currentHp / 2);
+        target.currentHp = Math.max(0, target.currentHp - damage);
+        addLog(`💥 ¡${target.name} recibió ${damage} de daño (50% HP)!`, 'damage');
+        return;
+    }
+
+    if (move.effect === 'apply_electric_terrain') {
+        // Electric Terrain: potencia movimientos eléctricos
+        battleState.terrain = 'electric';
+        battleState.terrainTurns = 5;
+        addLog(`⚡ ¡Campo Eléctrico activado!`, 'important');
+        return;
+    }
+
+    if (move.effect === 'apply_grassy_terrain') {
+        // Grassy Terrain: potencia movimientos planta
+        battleState.terrain = 'grassy';
+        battleState.terrainTurns = 5;
+        addLog(`🌿 ¡Campo Herboso activado!`, 'important');
+        return;
+    }
+
+    if (move.effect === 'rising_voltage') {
+        // Rising Voltage: duplica poder en Campo Eléctrico
+        if (battleState.terrain === 'electric') {
+            addLog(`⚡ ¡Voltio Ascendente duplicado por Campo Eléctrico!`, 'boost');
+            dmg *= 2;
+        }
+        return;
+    }
+
+    if (move.effect === 'eerie_spell') {
+        // Eerie Spell: reduce PP del movimiento rival
+        if (target.lastMoveUsed) {
+            // Simplificado: solo muestra el efecto
+            addLog(`👻 ¡Hechizo Extraño reduce PP de ${target.lastMoveUsed}!`, 'boost');
+        }
+        return;
+    }
+
+    if (move.effect === 'venoshock') {
+        // Venoshock: duplica poder si el rival está envenenado
+        if (target.status === 'poison' || target.status === 'toxic') {
+            addLog(`☠️ ¡Impacto Veno duplicado por envenenamiento!`, 'boost');
+            dmg *= 2;
+        }
+        return;
+    }
+
+    if (move.effect === 'burning_jealousy') {
+        // Burning Jealousy: daño masivo si el rival tiene mejoras
+        const totalBoosts = (target.atk || 0) + (target.def || 0) + (target.spa || 0) + (target.spd || 0) + (target.spe || 0);
+        if (totalBoosts > 0) {
+            addLog(`🔥 ¡Celos Ardientes con poder aumentado por ${totalBoosts} mejoras!`, 'boost');
+            dmg = Math.floor(dmg * (1 + totalBoosts * 0.5));
+        }
+        return;
+    }
+
+    if (move.effect === 'heal_weather_dependent') {
+        // Synthesis/Moonlight: recupera HP dependiendo del clima
+        let healPercent = 50;
+        if (battleState.weather === 'sun') healPercent = 66;
+        else if (battleState.weather === 'rain' || battleState.weather === 'sand' || battleState.weather === 'hail') healPercent = 25;
+        
+        const heal = Math.floor(user.stats.hp * healPercent / 100);
+        user.currentHp = Math.min(user.currentHp + heal, user.stats.hp);
+        addLog(`💚 ¡${user.name} recuperó ${heal} HP!`, 'heal');
+        return;
+    }
+
+    if (move.effect === 'knock_off') {
+        // Knock Off: elimina el objeto del rival
+        if (target.item) {
+            const knockedItem = target.item;
+            target.item = null;
+            addLog(`👟 ¡${target.name} perdió ${knockedItem.name}!`, 'important');
+            dmg *= 1.5; // Aumenta daño si tenía objeto
+        }
+        return;
+    }
+
+    if (move.effect === 'sucker_punch') {
+        // Sucker Punch: solo funciona si el rival va a atacar
+        addLog(`👊 ¡Golpe Bajo solo funciona si el rival ataca!`, 'important');
+        return;
+    }
+
+    if (move.effect === 'wide_guard') {
+        // Wide Guard: bloquea ataques multi-objetivo
+        const team = user === playerTeam[playerActive] ? playerTeam : enemyTeam;
+        team.forEach(pokemon => {
+            if (pokemon.currentHp > 0) {
+                pokemon.wideGuard = true;
+            }
+        });
+        addLog(`🛡️ ¡Protección Amplia activada para el equipo!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'poltergeist') {
+        // Poltergeist: falla si el rival no tiene objeto
+        if (!target.item) {
+            addLog(`❌ ¡Poltergeist falló porque el rival no tiene objeto!`, '');
+            return;
+        }
+        return;
+    }
+
+    if (move.effect === 'charge_turn') {
+        // Phantom Force: ataque de 2 turnos
+        if (!user.charging) {
+            user.charging = true;
+            user.chargeMove = move.name;
+            addLog(`⚡ ¡${user.name} está cargando ${move.name}!`, 'important');
+        }
+        return;
+    }
+
+    if (move.effect === 'boost_spa_spd_spe_1') {
+        // Quiver Dance: sube Ataque Especial, Defensa Especial y Velocidad
+        applyBoost(user, 'spa', 1);
+        applyBoost(user, 'spd', 1);
+        applyBoost(user, 'spe', 1);
+        addLog(`🦋 ¡${user.name} subió Ataque Especial, Defensa Especial y Velocidad!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'pollen_puff') {
+        // Pollen Puff: daña o cura según objetivo
+        if (user === target) {
+            // Cura al usuario
+            const heal = Math.floor(user.stats.hp * 0.5);
+            user.currentHp = Math.min(user.currentHp + heal, user.stats.hp);
+            addLog(`💚 ¡${user.name} se curó con Bola Polen!`, 'heal');
+        } else {
+            // Daña al objetivo
+            addLog(`🌼 ¡${target.name} recibió daño de Bola Polen!`, 'damage');
+        }
+        return;
+    }
+
+    // Efectos existentes (mantener compatibilidad)
+    if (move.effect === 'boost_atk_spe') {
+        applyBoost(user, 'atk', 1);
+        applyBoost(user, 'spe', 1);
+        addLog(`💪 ¡${user.name} subió Ataque y Velocidad!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'boost_spa_2') {
+        applyBoost(user, 'spa', 2);
+        addLog(`🧠 ¡${user.name} subió Ataque Especial 2 niveles!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'boost_spa_spd_1') {
+        applyBoost(user, 'spa', 1);
+        applyBoost(user, 'spd', 1);
+        addLog(`🧠 ¡${user.name} subió Ataque Especial y Defensa Especial!`, 'boost');
+        return;
+    }
+
+    if (move.effect === 'boost_atk_def_1') {
+        applyBoost(user, 'atk', 1);
+        applyBoost(user, 'def', 1);
+        addLog(`💪 ¡${user.name} subió Ataque y Defensa!`, 'boost');
+        return;
+    }
+
+    // ... mantener todos los efectos existentes ...
+
+    // Si no hay efecto especial, mostrar mensaje genérico
+    addLog(`➡️ ${user.name} usó ${move.name}`, '');
+
     if (move.effect === 'apply_spikes') {
         const hz = user === playerTeam[playerActive] ? enemyHazards : playerHazards;
         if (hz.spikes < 3) {

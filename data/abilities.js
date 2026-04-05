@@ -349,6 +349,21 @@ const AbilitiesDB = {
         value:       1.3,
     },
 
+    // ════════════════════════════════════════════════════════════════════════
+    // 🌐 HABILIDADES DE CAMPO (TERRAINS)
+    // ════════════════════════════════════════════════════════════════════════
+
+    "Electrogénesis": {
+        name:        "Electrogénesis",
+        icon:        "⚡",
+        description: "Al entrar, crea un campo eléctrico que potencia ataques ELÉCTRICO ×1.3.",
+        trigger:     "on_switch_in",
+        effect:      "set_terrain_electric",
+        value:       5, // Duración de 5 turnos
+    },
+
+    
+
     // ← AÑADE UNA HABILIDAD NUEVA AQUÍ
     // Recuerda después ir a js/battle-engine.js → applyAbility()
     // y añadir el case para tu nuevo "effect"

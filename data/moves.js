@@ -254,7 +254,7 @@ const MovesDB = {
         priority: 0,
         effect: "recoil_33",
         effectChance: 0,
-        description: "Mazo enorme que usa el usuario para golpear al oponente. El usuario recibe 1/3 de retroceso.",
+        description: "Mazo enorme que usa el usuario para golpear al oponente. El usuario recibe una ostia de 1/3 de retroceso.",
     },
 
 

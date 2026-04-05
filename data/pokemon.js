@@ -36,7 +36,7 @@ const PokemonDB = {
         abilities: ["Impetu", "Adaptabilidad", "Nado Rápido"],
         ability: "Impetu",
         moves: ["Megacuerno", "Surf", "Cascada", "Ataque Rápido"],
-        learnset: ["Megacuerno", "Surf", "Cascada", "Ataque Rápido", "Golpe Cuerpo", "Rustedge", "Hidrobomba", "Powder Bomb", "Protección", "Gigadrenado", "Sustituto", "Danza Lluvia"],
+        learnset: ["Megacuerno", "Surf", "Cascada", "Ataque Rápido", "Golpe Cuerpo", "Hidrobomba", "Protección", "Gigadrenado", "Sustituto", "Danza Lluvia", "Bug Buzz", "X-Scissor", "Leech Life", "First Impression", "Quiver Dance", "Energy Ball", "Ice Beam", "Sludge Bomb", "Earthquake", "Rock Slide", "U-turn", "Hydro Pump", "Waterfall", "Scald"],
         stats: { hp: 72, atk: 88, def: 88, spa: 72, spd: 72, spe: 58 },
     },
     2: {
@@ -45,7 +45,7 @@ const PokemonDB = {
         abilities: ["Velocidad", "Adaptabilidad", "Clorofila"],
         ability: "Velocidad",
         moves: ["Ataque Rápido", "Velocidad Extrema", "Golpe Cuerpo", "Superdiente"],
-        learnset: ["Ataque Rápido", "Velocidad Extrema", "Golpe Cuerpo", "Superdiente", "Protección", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Síntesis", "Rayo", "Onda Voltio", "Onda Trueno", "Shortcut", "Blossom Needle", "Frenzy Jungle", "Día Soleado"],
+        learnset: ["Ataque Rápido", "Velocidad Extrema", "Golpe Cuerpo", "Superdiente", "Protección", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Síntesis", "Rayo", "Onda Voltio", "Onda Trueno", "Leaf Storm", "Energy Ball", "Thunderbolt", "Thunder", "Volt Switch", "Solar Beam", "Thunder Punch", "Wild Charge", "Discharge", "Electric Terrain", "Rising Voltage"],
         stats: { hp: 55, atk: 76, def: 48, spa: 45, spd: 41, spe: 72 },
     },
     3: {
@@ -54,7 +54,7 @@ const PokemonDB = {
         abilities: ["Arena Volcanica", "Impetu", "Poder Arena"],
         ability: "Arena Volcanica",
         moves: ["Lanzallamas", "Terremoto", "Nitrocarga", "Llamarada"],
-        learnset: ["Lanzallamas", "Terremoto", "Nitrocarga", "Llamarada", "Onda Ígnea", "Supernova", "Colmillo Ígneo", "Grease Fire", "Bridge Burn", "Flame Jet", "Roca Afilada", "Avalancha", "Boulder Bout", "Rock Climb", "Día Soleado", "Tormenta Arena"],
+        learnset: ["Lanzallamas", "Terremoto", "Nitrocarga", "Llamarada", "Onda Ígnea", "Supernova", "Roca Afilada", "Avalancha", "Día Soleado", "Tormenta Arena", "Fire Blast", "Overheat", "Flare Blitz", "Fire Punch", "Will-O-Wisp", "Flame Charge", "Burning Jealousy", "Stealth Rock", "Rock Blast", "Head Smash", "Power Gem", "Earthquake", "Earth Power"],
         stats: { hp: 82, atk: 98, def: 78, spa: 110, spd: 82, spe: 65 },
     },
     4: {
@@ -63,7 +63,7 @@ const PokemonDB = {
         abilities: ["Humedad", "Perspicacia", "Nado Rápido"],
         ability: "Humedad",
         moves: ["Tiro Vital", "Surf", "Cascada", "Esfera Aural"],
-        learnset: ["Tiro Vital", "Surf", "Cascada", "Esfera Aural", "A Bocajarro", "Rustedge", "A Bocajarro", "Esfera Aural", "Gatling Slug", "Rowdy Tussle", "Danza Lluvia"],
+        learnset: ["Tiro Vital", "Surf", "Cascada", "Esfera Aural", "A Bocajarro", "Hidrobomba", "Danza Lluvia", "Close Combat", "Aura Sphere", "Focus Blast", "Mach Punch", "Drain Punch", "Superpower", "Bulk Up", "Dynamic Punch", "Vacuum Wave", "Storm Throw", "Waterfall", "Ice Punch", "Bullet Punch", "Extreme Speed"],
         stats: { hp: 76, atk: 101, def: 72, spa: 85, spd: 76, spe: 86 },
     },
     5: {
@@ -72,7 +72,7 @@ const PokemonDB = {
         abilities: ["Pasion", "Velocidad"],
         ability: "Pasion",
         moves: ["Lanzallamas", "A Bocajarro", "Enfado", "Velocidad Extrema"],
-        learnset: ["Lanzallamas", "A Bocajarro", "Enfado", "Velocidad Extrema", "Nitrocarga", "Tiro Vital", "Onda Ígnea", "Supernova", "Grease Fire", "Psíquico", "Foco Resplandor", "Hipnosis", "Guard Room", "Gravitas Clasp"],
+        learnset: ["Lanzallamas", "A Bocajarro", "Enfado", "Velocidad Extrema", "Nitrocarga", "Tiro Vital", "Onda Ígnea", "Supernova", "Psíquico", "Foco Resplandor", "Hipnosis", "Fire Blast", "Overheat", "Flare Blitz", "Close Combat", "Aura Sphere", "Psychic", "Psyshock", "Calm Mind", "Nasty Plot", "Trick Room", "Stored Power", "Expanding Force"],
         stats: { hp: 68, atk: 92, def: 60, spa: 85, spd: 65, spe: 95 },
     },
     6: {
@@ -81,7 +81,7 @@ const PokemonDB = {
         abilities: ["Absorber", "Pasion"],
         ability: "Absorber",
         moves: ["Picotazo", "Lanzallamas", "Telaraña", "Onda Ígnea"],
-        learnset: ["Picotazo", "Lanzallamas", "Telaraña", "Onda Ígnea", "Colmillo Ígneo", "Ataque Rápido", "Powder Bomb", "Roca Afilada", "Avalancha", "Boulder Bout", "Rock Climb", "Stalactbite"],
+        learnset: ["Picotazo", "Lanzallamas", "Telaraña", "Onda Ígnea", "Ataque Rápido", "Roca Afilada", "Avalancha", "Fire Blast", "Overheat", "Flare Blitz", "Bug Buzz", "X-Scissor", "Megahorn", "Stone Edge", "Rock Blast", "Power Gem", "Stealth Rock", "Wide Guard", "Flame Charge", "U-turn", "First Impression"],
         stats: { hp: 65, atk: 75, def: 65, spa: 90, spd: 70, spe: 80 },
     },
     7: {
@@ -90,7 +90,7 @@ const PokemonDB = {
         abilities: ["Cuerpo Puro", "Impetu"],
         ability: "Cuerpo Puro",
         moves: ["Lanzallamas", "Cabeza de Hierro", "Giro Metalico", "Carga"],
-        learnset: ["Lanzallamas", "Cabeza de Hierro", "Giro Metalico", "Carga", "Cabezazo", "Supernova", "Onda Ígnea", "Colmillo Ígneo", "Nitrocarga", "Grease Fire", "Ataque Rápido", "Velocidad Extrema", "Healing Spa", "Hasting"],
+        learnset: ["Lanzallamas", "Cabeza de Hierro", "Giro Metalico", "Carga", "Cabezazo", "Supernova", "Nitrocarga", "Ataque Rápido", "Velocidad Extrema", "Fire Blast", "Overheat", "Flare Blitz", "Iron Head", "Bullet Punch", "Meteor Beam", "Steel Beam", "Flash Cannon", "Heavy Slam", "Autotomize", "Shift Gear", "Body Press", "Facade", "Double Edge"],
         stats: { hp: 72, atk: 100, def: 92, spa: 85, spd: 75, spe: 70 },
     },
     8: {
@@ -99,7 +99,7 @@ const PokemonDB = {
         abilities: ["Levitación", "Aislamiento"],
         ability: "Levitación",
         moves: ["Rayo", "Rayo Hielo", "Onda Voltio", "Ventisca"],
-        learnset: ["Rayo", "Rayo Hielo", "Onda Voltio", "Ventisca", "Shortcut", "Viento Hielo", "Onda Trueno", "Puño Trueno", "Bola Voltio", "Vendaval", "Pico Taladro"],
+        learnset: ["Rayo", "Rayo Hielo", "Onda Voltio", "Ventisca", "Viento Hielo", "Onda Trueno", "Puño Trueno", "Bola Voltio", "Vendaval", "Pico Taladro", "Thunderbolt", "Thunder", "Volt Switch", "Thunder Punch", "Thunder Wave", "Wild Charge", "Discharge", "Electric Terrain", "Rising Voltage", "Eerie Spell", "Blizzard", "Ice Shard", "Ice Punch", "Icicle Crash", "Freeze-Dry", "Hurricane", "Brave Bird"],
         stats: { hp: 70, atk: 65, def: 75, spa: 115, spd: 85, spe: 95 },
     },
     9: {
@@ -108,7 +108,7 @@ const PokemonDB = {
         abilities: ["Magia Guard", "Magica Defensa"],
         ability: "Magia Guard",
         moves: ["Psíquico", "Foco Resplandor", "Hipnosis", "Recuperación"],
-        learnset: ["Psíquico", "Foco Resplandor", "Hipnosis", "Recuperación", "Healing Spa", "Teletransporte", "Triturar", "Rowdy Tussle", "Harmful Strike", "Gravitas Clasp"],
+        learnset: ["Psíquico", "Foco Resplandor", "Hipnosis", "Recuperación", "Teletransporte", "Triturar", "Psychic", "Psyshock", "Calm Mind", "Nasty Plot", "Trick Room", "Stored Power", "Expanding Force", "Future Sight", "Heal Pulse", "Dark Pulse", "Knock Off", "Sucker Punch", "Nasty Plot", "Foul Play", "Crunch", "Shadow Ball", "Shadow Claw"],
         stats: { hp: 55, atk: 50, def: 45, spa: 135, spd: 95, spe: 120 },
     },
     10: {
@@ -117,7 +117,7 @@ const PokemonDB = {
         abilities: ["Peso Pluma", "Perspicacia"],
         ability: "Peso Pluma",
         moves: ["A Bocajarro", "Cabeza de Hierro", "Tiro Vital", "Giro Metalico"],
-        learnset: ["A Bocajarro", "Cabeza de Hierro", "Tiro Vital", "Giro Metalico", "Esfera Aural", "Enfado", "Gatling Slug", "Hidrobomba", "Surf", "Cascada"],
+        learnset: ["A Bocajarro", "Cabeza de Hierro", "Tiro Vital", "Giro Metalico", "Esfera Aural", "Enfado", "Hidrobomba", "Surf", "Cascada", "Close Combat", "Aura Sphere", "Focus Blast", "Mach Punch", "Bullet Punch", "Drain Punch", "Superpower", "Bulk Up", "Swords Dance", "Dynamic Punch", "Vacuum Wave", "Storm Throw", "Waterfall", "Extreme Speed", "Flash Cannon", "Iron Head", "Meteor Beam"],
         stats: { hp: 70, atk: 110, def: 70, spa: 115, spd: 70, spe: 90 },
     },
     11: {
@@ -126,7 +126,7 @@ const PokemonDB = {
         abilities: ["Multiesqueleto", "Impetu"],
         ability: "Multiesqueleto",
         moves: ["A Bocajarro", "Vendaval", "Tiro Vital", "Pico Taladro"],
-        learnset: ["A Bocajarro", "Vendaval", "Tiro Vital", "Pico Taladro", "Velocidad Extrema", "Enfado", "Gatling Slug", "Vuelo"],
+        learnset: ["A Bocajarro", "Vendaval", "Tiro Vital", "Pico Taladro", "Velocidad Extrema", "Enfado", "Close Combat", "Aura Sphere", "Focus Blast", "Mach Punch", "Bullet Punch", "Superpower", "Bulk Up", "Swords Dance", "Dynamic Punch", "Vacuum Wave", "Storm Throw", "Brave Bird", "Hurricane", "Air Slash", "U-turn", "Defog", "Roost", "Tailwind", "Acrobatics", "Sky Drop"],
         stats: { hp: 78, atk: 120, def: 75, spa: 65, spd: 72, spe: 92 },
     },
     12: {
@@ -135,7 +135,7 @@ const PokemonDB = {
         abilities: ["Perspicacia", "Magia Guard"],
         ability: "Perspicacia",
         moves: ["Psíquico", "Surf", "Recuperación", "Hipnosis"],
-        learnset: ["Psíquico", "Surf", "Recuperación", "Hipnosis", "Foco Resplandor", "Teletransporte", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Síntesis", "Blossom Needle", "Cultivation"],
+        learnset: ["Psíquico", "Surf", "Recuperación", "Hipnosis", "Foco Resplandor", "Teletransporte", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Síntesis", "Psychic", "Psyshock", "Calm Mind", "Nasty Plot", "Trick Room", "Stored Power", "Expanding Force", "Future Sight", "Heal Pulse", "Moonblast", "Dazzling Gleam", "Play Rough", "Aromatic Mist", "Nature's Madness", "Energy Ball", "Hydro Pump", "Waterfall", "Scald"],
         stats: { hp: 80, atk: 60, def: 91, spa: 111, spd: 118, spe: 70 },
     },
     13: {
@@ -144,7 +144,7 @@ const PokemonDB = {
         abilities: ["Humedad", "Cuerpo Gelido"],
         ability: "Humedad",
         moves: ["Rayo Hielo", "Surf", "Ventisca", "Cascada"],
-        learnset: ["Rayo Hielo", "Surf", "Ventisca", "Cascada", "Recuperación", "Viento Hielo", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Lanzallamas", "Onda Ígnea", "Nitrocarga", "Blossom Needle", "Supernova", "Día Soleado", "Granizo"],
+        learnset: ["Rayo Hielo", "Surf", "Ventisca", "Cascada", "Recuperación", "Viento Hielo", "Rayo Solar", "Hoja Afilada", "Gigadrenado", "Lanzallamas", "Onda Ígnea", "Nitrocarga", "Blizzard", "Ice Shard", "Ice Punch", "Icicle Crash", "Freeze-Dry", "Hail", "Aurora Veil", "Frost Breath", "Glaciate", "Hydro Pump", "Waterfall", "Scald", "Energy Ball", "Leaf Storm", "Fire Blast", "Overheat"],
         stats: { hp: 75, atk: 70, def: 80, spa: 105, spd: 85, spe: 70 },
     },
     14: {
@@ -153,7 +153,7 @@ const PokemonDB = {
         abilities: ["Humedad", "Turbamulino"],
         ability: "Humedad",
         moves: ["Terremoto", "Surf", "Cascada", "Protección"],
-        learnset: ["Terremoto", "Surf", "Cascada", "Protección", "Hidrobomba", "Barro Bomba", "Loose Dirt", "Seismic Wave", "Landscape", "Lanzallamas", "Onda Ígnea", "Nitrocarga", "Supernova"],
+        learnset: ["Terremoto", "Surf", "Cascada", "Protección", "Hidrobomba", "Lanzallamas", "Onda Ígnea", "Nitrocarga", "Earthquake", "Earth Power", "Drill Run", "Bulldoze", "Stealth Rock", "Spikes", "Rapid Spin", "Sandstorm", "Mud Shot", "Head Smash", "Fire Blast", "Overheat", "Flare Blitz", "Hydro Pump", "Waterfall", "Scald", "Stone Edge", "Rock Slide"],
         stats: { hp: 80, atk: 90, def: 85, spa: 85, spd: 75, spe: 60 },
     },
     15: {
@@ -162,7 +162,7 @@ const PokemonDB = {
         abilities: ["Aislamiento", "Levitación"],
         ability: "Aislamiento",
         moves: ["Rayo Hielo", "Vendaval", "Pico Taladro", "Ventisca"],
-        learnset: ["Rayo Hielo", "Vendaval", "Pico Taladro", "Ventisca", "Viento Hielo", "Canto Helado", "Garra Dragón", "Enfado", "Danza Dragón", "Triturar", "Rowdy Tussle", "Harmful Strike"],
+        learnset: ["Rayo Hielo", "Vendaval", "Pico Taladro", "Ventisca", "Viento Hielo", "Canto Helado", "Garra Dragón", "Enfado", "Danza Dragón", "Draco Meteor", "Dragon Pulse", "Dragon Tail", "Dual Chop", "Breaking Swipe", "Dark Pulse", "Sludge Bomb", "Hurricane", "Brave Bird", "Air Slash", "U-turn", "Defog", "Blizzard", "Ice Shard", "Ice Punch", "Icicle Crash", "Freeze-Dry"],
         stats: { hp: 70, atk: 60, def: 75, spa: 110, spd: 85, spe: 95 },
     },
     16: {
@@ -171,7 +171,7 @@ const PokemonDB = {
         abilities: ["Peso Pluma", "Impetu"],
         ability: "Peso Pluma",
         moves: ["Megacuerno", "Golpe Cuerpo", "Avalancha", "Velocidad Extrema"],
-        learnset: ["Megacuerno", "Golpe Cuerpo", "Avalancha", "Velocidad Extrema", "Ataque Rápido", "Superdiente", "Healing Spa", "Antler Shed", "Hasting", "Terremoto", "Loose Dirt", "Seismic Wave"],
+        learnset: ["Megacuerno", "Golpe Cuerpo", "Avalancha", "Velocidad Extrema", "Ataque Rápido", "Superdiente", "Terremoto", "Earthquake", "Earth Power", "Drill Run", "Bulldoze", "Stone Edge", "Rock Slide", "Rock Blast", "Head Smash", "Power Gem", "Stealth Rock", "Wide Guard", "Facade", "Double Edge", "Explosion", "Self-Destruct", "Horn Drill", "Giga Impact", "Hyper Beam"],
         stats: { hp: 75, atk: 95, def: 85, spa: 65, spd: 70, spe: 80 },
     },
     17: {
@@ -180,7 +180,7 @@ const PokemonDB = {
         abilities: ["Humedad", "Fuerza Bruta"],
         ability: "Humedad",
         moves: ["Rayo Hielo", "Surf", "Cabezazo", "Recuperación"],
-        learnset: ["Rayo Hielo", "Surf", "Cabezazo", "Recuperación", "Ventisca", "Cascada", "Bola Sombra", "Possession", "Boo-mbs", "Spirit Charge", "Vendaval", "Pico Taladro"],
+        learnset: ["Rayo Hielo", "Surf", "Cabezazo", "Recuperación", "Ventisca", "Cascada", "Bola Sombra", "Vendaval", "Pico Taladro", "Shadow Ball", "Shadow Claw", "Poltergeist", "Phantom Force", "Destiny Bond", "Hex", "Shadow Sneak", "Astonish", "Blizzard", "Ice Shard", "Ice Punch", "Icicle Crash", "Freeze-Dry", "Hurricane", "Brave Bird", "Hydro Pump", "Waterfall", "Scald"],
         stats: { hp: 80, atk: 85, def: 90, spa: 95, spd: 80, spe: 65 },
     },
     18: {
@@ -189,7 +189,7 @@ const PokemonDB = {
         abilities: ["Magic Guard", "Filtro"],
         ability: "Magic Guard",
         moves: ["Giro Metalico", "Cabeza de Hierro", "Cabezazo", "Velocidad Extrema"],
-        learnset: ["Giro Metalico", "Cabeza de Hierro", "Cabezazo", "Velocidad Extrema", "Carga", "Ataque Rápido", "Steely Spikes", "Cabeza de Hierro"],
+        learnset: ["Giro Metalico", "Cabeza de Hierro", "Cabezazo", "Velocidad Extrema", "Carga", "Ataque Rápido", "Iron Head", "Bullet Punch", "Meteor Beam", "Steel Beam", "Flash Cannon", "Heavy Slam", "Autotomize", "Shift Gear", "Body Press", "Facade", "Double Edge", "Explosion", "Self-Destruct", "Iron Defense", "Metal Sound", "Stealth Rock", "Rock Slide", "Stone Edge", "Earthquake"],
         stats: { hp: 55, atk: 65, def: 80, spa: 60, spd: 65, spe: 65 },
     },
     19: {
@@ -198,7 +198,7 @@ const PokemonDB = {
         abilities: ["Peso Pluma", "Absorber"],
         ability: "Peso Pluma",
         moves: ["Picotazo", "Telaraña", "Golpe Cuerpo", "Ataque Rápido"],
-        learnset: ["Picotazo", "Telaraña", "Golpe Cuerpo", "Ataque Rápido", "Velocidad Extrema", "Superdiente", "Powder Bomb"],
+        learnset: ["Picotazo", "Telaraña", "Golpe Cuerpo", "Ataque Rápido", "Velocidad Extrema", "Superdiente", "Bug Buzz", "X-Scissor", "Megahorn", "U-turn", "First Impression", "Quiver Dance", "Leech Life", "Pollen Puff", "Spore", "Stun Spore", "Sleep Powder", "Facade", "Double Edge", "Protect", "Substitute", "Swords Dance", "Agility"],
         stats: { hp: 55, atk: 65, def: 60, spa: 65, spd: 65, spe: 75 },
     },
     20: {
@@ -207,7 +207,7 @@ const PokemonDB = {
         abilities: ["Pasion", "Perspicacia"],
         ability: "Pasion",
         moves: ["A Bocajarro", "Tiro Vital", "Carga", "Velocidad Extrema"],
-        learnset: ["A Bocajarro", "Tiro Vital", "Carga", "Velocidad Extrema", "Esfera Aural", "Enfado", "Gatling Slug"],
+        learnset: ["A Bocajarro", "Tiro Vital", "Carga", "Velocidad Extrema", "Esfera Aural", "Enfado", "Close Combat", "Aura Sphere", "Focus Blast", "Mach Punch", "Bullet Punch", "Drain Punch", "Superpower", "Bulk Up", "Swords Dance", "Dynamic Punch", "Vacuum Wave", "Storm Throw", "Facade", "Double Edge", "Protect", "Substitute", "Work Up", "Endure", "Reversal"],
         stats: { hp: 55, atk: 80, def: 65, spa: 60, spd: 65, spe: 75 },
     },
     21: {
@@ -216,7 +216,7 @@ const PokemonDB = {
         abilities: ["Filtro", "Humedad"],
         ability: "Filtro",
         moves: ["Ataque Rápido", "Surf", "Golpe Cuerpo", "Velocidad Extrema"],
-        learnset: ["Ataque Rápido", "Surf", "Golpe Cuerpo", "Velocidad Extrema", "Hidrobomba", "Superdiente", "Garra Dragón", "Enfado", "Danza Dragón", "Trick Room"],
+        learnset: ["Ataque Rápido", "Surf", "Golpe Cuerpo", "Velocidad Extrema", "Hidrobomba", "Superdiente", "Garra Dragón", "Enfado", "Danza Dragón", "Draco Meteor", "Dragon Pulse", "Dragon Tail", "Dual Chop", "Breaking Swipe", "Outrage", "Hydro Pump", "Waterfall", "Scald", "Ice Beam", "Blizzard", "Thunderbolt", "Thunder", "Fire Blast", "Solar Beam", "Extreme Speed", "Facade", "Protect", "Substitute", "Rest"],
         stats: { hp: 120, atk: 50, def: 180, spa: 50, spd: 110, spe: 25 },
     },
     22: {
@@ -225,7 +225,7 @@ const PokemonDB = {
         abilities: ["Levitación", "Magia Guard"],
         ability: "Levitación",
         moves: ["Psíquico", "Vendaval", "Pico Taladro", "Foco Resplandor"],
-        learnset: ["Psíquico", "Vendaval", "Pico Taladro", "Foco Resplandor", "Hipnosis", "Teletransporte", "A Bocajarro", "Esfera Aural", "Gatling Slug", "Giro Metalico", "Cabeza de Hierro", "Steely Spikes"],
+        learnset: ["Psíquico", "Vendaval", "Pico Taladro", "Foco Resplandor", "Hipnosis", "Teletransporte", "A Bocajarro", "Esfera Aural", "Close Combat", "Aura Sphere", "Focus Blast", "Mach Punch", "Bullet Punch", "Giro Metalico", "Cabeza de Hierro", "Steel Beam", "Flash Cannon", "Meteor Beam", "Psychic", "Psyshock", "Calm Mind", "Nasty Plot", "Trick Room", "Stored Power", "Expanding Force", "Future Sight", "Brave Bird", "Hurricane", "Air Slash", "U-turn", "Defog"],
         stats: { hp: 72, atk: 65, def: 70, spa: 115, spd: 85, spe: 95 },
     },
     23: {
@@ -234,7 +234,7 @@ const PokemonDB = {
         abilities: ["Pasion", "Fuerza Bruta"],
         ability: "Pasion",
         moves: ["Lanzallamas", "A Bocajarro", "Tiro Vital", "Enfado"],
-        learnset: ["Lanzallamas", "A Bocajarro", "Tiro Vital", "Enfado", "Onda Ígnea", "Nitrocarga", "Rayo Hielo", "Ventisca", "Viento Hielo", "Cryofreeze", "Arctic Slide", "Froglare Bash", "Supernova"],
+        learnset: ["Lanzallamas", "A Bocajarro", "Tiro Vital", "Enfado", "Onda Ígnea", "Nitrocarga", "Rayo Hielo", "Ventisca", "Viento Hielo", "Fire Blast", "Overheat", "Flare Blitz", "Close Combat", "Aura Sphere", "Focus Blast", "Mach Punch", "Drain Punch", "Ice Punch", "Icicle Crash", "Freeze-Dry", "Blizzard", "Hail", "Aurora Veil", "Bulk Up", "Swords Dance"],
         stats: { hp: 75, atk: 105, def: 70, spa: 95, spd: 70, spe: 80 },
     },
     24: {
@@ -243,7 +243,7 @@ const PokemonDB = {
         abilities: ["Pasion", "Fuerza Bruta"],
         ability: "Pasion",
         moves: ["Lanzallamas", "A Bocajarro", "Tiro Vital", "Enfado"],
-        learnset: ["Lanzallamas", "A Bocajarro", "Tiro Vital", "Enfado", "Onda Ígnea", "Nitrocarga", "Terremoto", "Loose Dirt", "Seismic Wave", "Seismic Land", "Supernova", "Tormenta Arena"],
+        learnset: ["Lanzallamas", "A Bocajarro", "Tiro Vital", "Enfado", "Onda Ígnea", "Nitrocarga", "Terremoto", "Earth Power", "Drill Run", "Bulldoze", "Fire Blast", "Overheat", "Flare Blitz", "Close Combat", "Aura Sphere", "Focus Blast", "Mach Punch", "Head Smash", "Stone Edge", "Rock Slide", "Stealth Rock", "Sandstorm", "Solar Beam", "Earthquake"],
         stats: { hp: 75, atk: 105, def: 70, spa: 95, spd: 70, spe: 80 },
     },
     25: {
@@ -252,7 +252,7 @@ const PokemonDB = {
         abilities: ["Peso Pluma", "Fuerza Bruta", "Ímpetu Nieve"],
         ability: "Peso Pluma",
         moves: ["A Bocajarro", "Terremoto", "Tiro Vital", "Enfado"],
-        learnset: ["A Bocajarro", "Terremoto", "Tiro Vital", "Enfado", "Esfera Aural", "Cabezazo", "Gatling Slug", "Rayo Hielo", "Ventisca", "Cryofreeze", "Arctic Slide", "Granizo"],
+        learnset: ["A Bocajarro", "Terremoto", "Tiro Vital", "Enfado", "Esfera Aural", "Cabezazo", "Close Combat", "Aura Sphere", "Focus Blast", "Mach Punch", "Bullet Punch", "Drain Punch", "Superpower", "Bulk Up", "Swords Dance", "Dynamic Punch", "Vacuum Wave", "Storm Throw", "Ice Punch", "Icicle Crash", "Freeze-Dry", "Blizzard", "Hail", "Earthquake", "Earth Power", "Drill Run"],
         stats: { hp: 80, atk: 110, def: 80, spa: 70, spd: 75, spe: 85 },
     },
     26: {
@@ -261,7 +261,7 @@ const PokemonDB = {
         abilities: ["Arena Volcanica", "Fuerza Bruta", "Poder Arena"],
         ability: "Arena Volcanica",
         moves: ["Terremoto", "Megacuerno", "Avalancha", "Cabezazo"],
-        learnset: ["Terremoto", "Megacuerno", "Avalancha", "Cabezazo", "Golpe Cuerpo", "Carga", "Loose Dirt", "Seismic Wave", "Landscape", "Bola Sombra", "Possession", "Boo-mbs", "Spirit Charge", "Tormenta Arena"],
+        learnset: ["Terremoto", "Megacuerno", "Avalancha", "Cabezazo", "Golpe Cuerpo", "Carga", "Earthquake", "Earth Power", "Drill Run", "Bulldoze", "Stone Edge", "Rock Slide", "Rock Blast", "Head Smash", "Power Gem", "Stealth Rock", "Wide Guard", "Sandstorm", "Bola Sombra", "Shadow Claw", "Poltergeist", "Phantom Force", "Destiny Bond", "Hex", "Shadow Sneak", "Earthquake"],
         stats: { hp: 85, atk: 115, def: 85, spa: 65, spd: 75, spe: 65 },
     },
     27: {
@@ -270,7 +270,7 @@ const PokemonDB = {
         abilities: ["Cuerpo Puro", "Fuerza Bruta"],
         ability: "Cuerpo Puro",
         moves: ["Terremoto", "Bomba Lodo", "Barro Bomba", "Cabezazo"],
-        learnset: ["Terremoto", "Bomba Lodo", "Barro Bomba", "Cabezazo", "Golpe Cuerpo", "Tóxico", "Loose Dirt", "Seismic Wave", "Bola Sombra", "Possession", "Boo-mbs"],
+        learnset: ["Terremoto", "Bomba Lodo", "Barro Bomba", "Cabezazo", "Golpe Cuerpo", "Tóxico", "Earthquake", "Earth Power", "Drill Run", "Bulldoze", "Sludge Bomb", "Sludge Wave", "Gunk Shot", "Poison Jab", "Toxic", "Venoshock", "Toxic Spikes", "Clear Smog", "Acid Spray", "Bola Sombra", "Shadow Claw", "Poltergeist", "Destiny Bond", "Hex", "Shadow Sneak"],
         stats: { hp: 85, atk: 110, def: 80, spa: 85, spd: 70, spe: 75 },
     },
     28: {
@@ -279,7 +279,7 @@ const PokemonDB = {
         abilities: ["Filtro", "Magia Guard"],
         ability: "Filtro",
         moves: ["Psíquico", "Surf", "Recuperación", "Hipnosis"],
-        learnset: ["Psíquico", "Surf", "Recuperación", "Hipnosis", "Foco Resplandor", "Cascada", "A Bocajarro", "Esfera Aural", "Gatling Slug", "Ataque Rápido", "Velocidad Extrema", "Healing Spa"],
+        learnset: ["Psíquico", "Surf", "Recuperación", "Hipnosis", "Foco Resplandor", "Cascada", "A Bocajarro", "Esfera Aural", "Close Combat", "Aura Sphere", "Focus Blast", "Mach Punch", "Ataque Rápido", "Velocidad Extrema", "Psychic", "Psyshock", "Calm Mind", "Nasty Plot", "Trick Room", "Stored Power", "Expanding Force", "Future Sight", "Heal Pulse", "Hydro Pump", "Waterfall", "Scald", "Ice Beam", "Blizzard"],
         stats: { hp: 80, atk: 70, def: 75, spa: 110, spd: 90, spe: 75 },
     },
     29: {
@@ -288,7 +288,7 @@ const PokemonDB = {
         abilities: ["Levitación", "Arena Volcanica"],
         ability: "Levitación",
         moves: ["Terremoto", "Vendaval", "Tiro Vital", "Cabezazo"],
-        learnset: ["Terremoto", "Vendaval", "Tiro Vital", "Cabezazo", "Pico Taladro", "Enfado", "Bola Sombra", "Possession", "Boo-mbs", "Spirit Charge", "Bomba Lodo", "Rusted Edge", "Biorrosion"],
+        learnset: ["Terremoto", "Vendaval", "Tiro Vital", "Cabezazo", "Pico Taladro", "Enfado", "Bola Sombra", "Shadow Claw", "Poltergeist", "Phantom Force", "Destiny Bond", "Hex", "Shadow Sneak", "Astonish", "Earthquake", "Earth Power", "Drill Run", "Bulldoze", "Sludge Bomb", "Sludge Wave", "Gunk Shot", "Poison Jab", "Toxic", "Venoshock", "Toxic Spikes", "Brave Bird", "Hurricane", "Air Slash", "U-turn"],
         stats: { hp: 75, atk: 95, def: 85, spa: 65, spd: 75, spe: 95 },
     },
     30: {
@@ -297,7 +297,7 @@ const PokemonDB = {
         abilities: ["Levitación", "Cuerpo Puro"],
         ability: "Levitación",
         moves: ["Bola Sombra", "Triturar", "Enfado", "Golpe Cuerpo"],
-        learnset: ["Bola Sombra", "Triturar", "Enfado", "Golpe Cuerpo", "Teletransporte", "Hipnosis", "Rowdy Tussle", "Harmful Strike", "Terremoto", "Loose Dirt", "Seismic Wave"],
+        learnset: ["Bola Sombra", "Triturar", "Enfado", "Golpe Cuerpo", "Terremoto", "Earth Power", "Drill Run", "Bulldoze", "Dark Pulse", "Knock Off", "Sucker Punch", "Nasty Plot", "Foul Play", "Crunch", "Dark Void", "Hone Claws", "Parting Shot", "Shadow Ball", "Shadow Claw", "Poltergeist", "Phantom Force", "Destiny Bond", "Hex", "Shadow Sneak", "Astonish", "Facade", "Double Edge"],
         stats: { hp: 75, atk: 75, def: 75, spa: 105, spd: 85, spe: 90 },
     },
     31: {
